@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-4-1-sharp-key-comparison';
+const CACHE_NAME = 'dbr-v0-4-2-camera-simple';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
