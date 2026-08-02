@@ -2,70 +2,85 @@ export {};
 
 type CameraMoment = {
   subject: string;
+  title: string;
   note: string;
   x: string;
-  direction: 'left' | 'right' | 'still';
+  y: string;
+  direction: string;
   door: string;
   visible: boolean;
-  subjectClass: string;
+  portrait: string;
 };
 
-const BUILD = 'v0.3.4';
+const BUILD = 'v0.3.5';
+const CORRIDOR_IMAGE = 'https://images.unsplash.com/photo-1725180333682-2746546519a4?auto=format&fit=crop&w=1800&q=82';
 
 const CAMERA_MOMENTS: Record<string, CameraMoment> = {
   '22:48': {
     subject: 'Елена Ветрова',
-    note: 'Подходит к номеру 314 и останавливается у двери.',
-    x: '72%',
-    direction: 'right',
+    title: 'Елена подходит к номеру 314',
+    note: 'Она останавливается у двери номера 314 и разговаривает с Ильёй.',
+    x: '78%',
+    y: '42%',
+    direction: 'движется к двери 314 →',
     door: '314',
     visible: true,
-    subjectClass: 'subject-elena'
+    portrait: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=320&q=82'
   },
   '23:04': {
     subject: 'Елена Ветрова',
-    note: 'Уходит от номера 314 в сторону своего номера 307.',
-    x: '23%',
-    direction: 'left',
+    title: 'Елена уходит в сторону номера 307',
+    note: 'После разговора она возвращается по коридору к своему номеру.',
+    x: '25%',
+    y: '45%',
+    direction: '← уходит к номеру 307',
     door: '307',
     visible: true,
-    subjectClass: 'subject-elena'
+    portrait: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=320&q=82'
   },
   '23:41': {
     subject: 'Кирилл Бессонов',
-    note: 'Входит в соседний номер 312. После этого в коридоре его не видно.',
-    x: '49%',
-    direction: 'right',
+    title: 'Кирилл входит в номер 312',
+    note: 'Он входит в соседний номер 312. После этого камера его в коридоре не фиксирует.',
+    x: '66%',
+    y: '39%',
+    direction: 'направляется к двери 312 →',
     door: '312',
     visible: true,
-    subjectClass: 'subject-kirill'
+    portrait: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=82'
   },
   '23:47': {
     subject: 'Илья Соколов',
-    note: 'Выходит из номера 314 и направляется за горячей водой.',
-    x: '66%',
-    direction: 'left',
+    title: 'Илья выходит из номера 314',
+    note: 'Он покидает комнату и идёт за горячей водой.',
+    x: '73%',
+    y: '43%',
+    direction: '← уходит от двери 314',
     door: '314',
     visible: true,
-    subjectClass: 'subject-ilya'
+    portrait: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=320&q=82'
   },
   '23:50': {
     subject: 'Илья Соколов',
-    note: 'Возвращается и входит в номер 314. Это последнее подтверждённое появление Ильи.',
-    x: '76%',
-    direction: 'right',
+    title: 'Илья возвращается в номер 314',
+    note: 'Это последнее подтверждённое появление Ильи в гостевом коридоре.',
+    x: '81%',
+    y: '42%',
+    direction: 'входит в дверь 314 →',
     door: '314',
     visible: true,
-    subjectClass: 'subject-ilya'
+    portrait: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=320&q=82'
   },
   '00:17': {
     subject: 'Движение не обнаружено',
-    note: 'Сообщение Ильи отправлено, но в гостевом коридоре никто не появляется.',
+    title: 'Коридор пуст',
+    note: 'Сообщение отправлено в 00:17, но камера не фиксирует движения у дверей 312–314.',
     x: '50%',
-    direction: 'still',
+    y: '50%',
+    direction: '',
     door: '—',
     visible: false,
-    subjectClass: 'subject-none'
+    portrait: ''
   }
 };
 
@@ -121,8 +136,7 @@ function enhanceRoom(layout: HTMLElement): void {
   };
 
   layout.querySelectorAll<HTMLButtonElement>('.room-marker').forEach((marker) => {
-    const label = marker.getAttribute('aria-label') ?? '';
-    const shortLabel = labelByZone[label];
+    const shortLabel = labelByZone[marker.getAttribute('aria-label') ?? ''];
     if (!shortLabel) return;
     marker.dataset.zoneLabel = shortLabel;
     const visibleLabel = marker.querySelector<HTMLElement>('i');
@@ -132,10 +146,8 @@ function enhanceRoom(layout: HTMLElement): void {
 
 function enhanceCamera(root: HTMLElement): void {
   const frame = root.querySelector<HTMLElement>('.cctv-frame');
-  const consoleElement = root.querySelector<HTMLElement>('.camera-console');
   const eventButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('.camera-events button'));
-  if (!frame || !consoleElement || eventButtons.length === 0) return;
-  if (root.dataset.uxEnhanced === BUILD) return;
+  if (!frame || eventButtons.length === 0 || root.dataset.uxEnhanced === BUILD) return;
 
   root.dataset.uxEnhanced = BUILD;
   root.querySelectorAll(':scope > .scene-taskbar.camera-taskbar').forEach((node) => node.remove());
@@ -143,36 +155,36 @@ function enhanceCamera(root: HTMLElement): void {
   const task = createElement(
     'div',
     'scene-taskbar camera-taskbar',
-    '<div><span>ЗАДАЧА ПО КАМЕРЕ</span><strong>Выберите время снизу и сравните, кто появляется в коридоре</strong></div><small class="camera-view-count">Просмотрено 0 из 6</small>'
+    '<div><span>ЗАДАЧА ПО КАМЕРЕ</span><strong>Нажимайте на время под кадром и сравнивайте, кого зафиксировала камера</strong></div><small class="camera-view-count">Просмотрено 0 из 6</small>'
   );
   root.prepend(task);
 
   frame.innerHTML = `
-    <div class="cctv-real-stage">
+    <div class="cctv-photo-stage">
+      <img class="cctv-photo" src="${CORRIDOR_IMAGE}" alt="Коридор третьего этажа отеля" />
+      <div class="cctv-photo-grade"></div>
       <div class="cctv-scanlines"></div>
       <div class="cctv-topbar"><span><i></i> CAM 3F · REC</span><time>18.10.2026 · 22:48:00</time></div>
-      <div class="cctv-ceiling"><span></span><span></span><span></span></div>
-      <div class="cctv-back-wall">
-        <div class="cctv-door cctv-door-307"><b>307</b><i></i></div>
-        <div class="cctv-door cctv-door-312"><b>312</b><i></i></div>
-        <div class="cctv-door cctv-door-314"><b>314</b><i></i></div>
+      <span class="cctv-room-tag room-307">307</span>
+      <span class="cctv-room-tag room-312">312</span>
+      <span class="cctv-room-tag room-314">314</span>
+      <div class="cctv-track-box">
+        <span class="track-corner tl"></span><span class="track-corner tr"></span><span class="track-corner bl"></span><span class="track-corner br"></span>
+        <img class="track-portrait" alt="" />
+        <strong class="track-name"></strong>
+        <small class="track-direction"></small>
       </div>
-      <div class="cctv-floor"><span></span><span></span><span></span><span></span></div>
-      <div class="cctv-blind-zone"><strong>СЛЕПАЯ ЗОНА</strong><small>служебный проход вне полного обзора</small></div>
-      <div class="cctv-person subject-elena direction-right">
-        <div class="person-head"></div><div class="person-body"></div><div class="person-leg left"></div><div class="person-leg right"></div>
-        <b>Елена Ветрова</b><small>идёт к номеру 314 →</small>
-      </div>
-      <div class="cctv-empty"><span>NO MOTION</span><strong>Движение не обнаружено</strong></div>
-      <div class="cctv-event-card"><time>22:48</time><div><span>ЗАФИКСИРОВАНО</span><strong>Елена подходит к номеру 314</strong><p>Подходит к номеру 314 и останавливается у двери.</p></div></div>
-      <div class="cctv-help">Нажмите на другую отметку времени под кадром</div>
+      <div class="cctv-empty" hidden><span>NO MOTION</span><strong>Движение не обнаружено</strong><small>Гостевой коридор пуст</small></div>
+      <div class="cctv-event-card"><time>22:48</time><div><span>ЗАФИКСИРОВАНО</span><strong>Елена подходит к номеру 314</strong><p>Она останавливается у двери номера 314 и разговаривает с Ильёй.</p></div></div>
+      <div class="cctv-source">CAM 3F · архив без разрывов</div>
     </div>`;
 
-  const stage = frame.querySelector<HTMLElement>('.cctv-real-stage');
+  const stage = frame.querySelector<HTMLElement>('.cctv-photo-stage');
   const topTime = frame.querySelector<HTMLTimeElement>('.cctv-topbar time');
-  const person = frame.querySelector<HTMLElement>('.cctv-person');
-  const personName = person?.querySelector<HTMLElement>('b');
-  const personDirection = person?.querySelector<HTMLElement>('small');
+  const track = frame.querySelector<HTMLElement>('.cctv-track-box');
+  const portrait = frame.querySelector<HTMLImageElement>('.track-portrait');
+  const name = frame.querySelector<HTMLElement>('.track-name');
+  const direction = frame.querySelector<HTMLElement>('.track-direction');
   const empty = frame.querySelector<HTMLElement>('.cctv-empty');
   const cardTime = frame.querySelector<HTMLTimeElement>('.cctv-event-card time');
   const cardTitle = frame.querySelector<HTMLElement>('.cctv-event-card strong');
@@ -180,11 +192,10 @@ function enhanceCamera(root: HTMLElement): void {
   const count = task.querySelector<HTMLElement>('.camera-view-count');
   const viewed = new Set<string>();
 
-  if (!stage || !topTime || !person || !personName || !personDirection || !empty || !cardTime || !cardTitle || !cardText) return;
+  if (!stage || !topTime || !track || !portrait || !name || !direction || !empty || !cardTime || !cardTitle || !cardText) return;
 
   const selectMoment = (button: HTMLButtonElement): void => {
     const time = button.querySelector('time')?.textContent?.trim() ?? '';
-    const description = button.querySelector('span')?.textContent?.trim() ?? '';
     const moment = CAMERA_MOMENTS[time];
     if (!moment) return;
 
@@ -199,15 +210,17 @@ function enhanceCamera(root: HTMLElement): void {
     stage.dataset.door = moment.door;
     topTime.textContent = `18.10.2026 · ${time}:00`;
     cardTime.textContent = time;
-    cardTitle.textContent = description;
+    cardTitle.textContent = moment.title;
     cardText.textContent = moment.note;
 
-    person.className = `cctv-person ${moment.subjectClass} direction-${moment.direction}`;
-    person.style.left = moment.x;
-    person.hidden = !moment.visible;
+    track.style.left = moment.x;
+    track.style.top = moment.y;
+    track.hidden = !moment.visible;
     empty.hidden = moment.visible;
-    personName.textContent = moment.subject;
-    personDirection.textContent = moment.direction === 'left' ? `← движение к номеру ${moment.door}` : moment.direction === 'right' ? `движение к номеру ${moment.door} →` : '';
+    name.textContent = moment.subject;
+    direction.textContent = moment.direction;
+    portrait.src = moment.portrait;
+    portrait.alt = moment.visible ? moment.subject : '';
 
     if (count) {
       count.textContent = `Просмотрено ${viewed.size} из ${eventButtons.length}`;
