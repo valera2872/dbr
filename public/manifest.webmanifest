@@ -1,0 +1,11 @@
+{
+  "name": "ДБР — Детективное бюро расследований",
+  "short_name": "ДБР",
+  "description": "Интерактивные детективные расследования",
+  "start_url": "/dbr/",
+  "scope": "/dbr/",
+  "display": "standalone",
+  "background_color": "#111318",
+  "theme_color": "#17191f",
+  "lang": "ru"
+}
