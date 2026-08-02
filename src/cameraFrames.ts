@@ -1,17 +1,8 @@
 export {};
 
-import sprite from './cameraFrameAssets/sprite';
-
-const BUILD = 'v0.4.1';
-
-const FRAME_POSITIONS: Record<string, string> = {
-  '22:48': '0% 0%',
-  '23:04': '50% 0%',
-  '23:41': '100% 0%',
-  '23:47': '0% 100%',
-  '23:50': '50% 100%',
-  '00:17': '100% 100%'
-};
+const BUILD = 'v0.4.2';
+const FRAME_2350 = 'https://images.pexels.com/photos/7599279/pexels-photo-7599279.jpeg?auto=compress&cs=tinysrgb&w=1600';
+const FRAME_0017 = 'https://unsplash.com/photos/S78ir0FODg8/download?force=true&w=1600';
 
 function setVersion(): void {
   document.title = `ДБР — Номер 314 · ${BUILD}`;
@@ -20,148 +11,94 @@ function setVersion(): void {
   if (marker) marker.textContent = BUILD;
 }
 
-function createKeyFrame(
-  time: '23:50' | '00:17',
-  eyebrow: string,
-  title: string,
-  note: string
-): HTMLButtonElement {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = `cctv-key-frame key-${time.replace(':', '')}`;
-  button.dataset.time = time;
-  button.innerHTML = `
-    <span class="key-frame-photo" aria-hidden="true"></span>
-    <span class="key-frame-top"><i></i> CAM 3F · ${time}:00</span>
-    <span class="key-frame-caption">
-      <small>${eyebrow}</small>
-      <strong>${title}</strong>
-      <em>${note}</em>
-    </span>
-    <span class="key-frame-check">✓ просмотрено</span>
+function relabelQuestion(question: HTMLElement): void {
+  const kicker = question.querySelector<HTMLElement>('.premium-kicker');
+  const heading = question.querySelector<HTMLElement>('h2');
+  const buttons = Array.from(question.querySelectorAll<HTMLButtonElement>('button'));
+
+  if (kicker) kicker.textContent = 'ОДИН ВЫВОД';
+  if (heading) heading.textContent = 'Что доказывают эти два кадра?';
+
+  if (buttons[0]) buttons[0].textContent = 'Илья вышел через коридор после 23:50';
+  if (buttons[1]) buttons[1].textContent = 'Кирилл вошёл в номер 314 через главную дверь';
+  if (buttons[2]) buttons[2].textContent = 'После 23:50 Илья не выходил через главный коридор';
+  if (buttons[3]) buttons[3].textContent = 'По этим кадрам нельзя сделать вывод';
+}
+
+function createFrame(time: string, title: string, note: string, src: string, empty = false): HTMLElement {
+  const figure = document.createElement('figure');
+  figure.className = `simple-camera-frame${empty ? ' is-empty' : ''}`;
+  figure.innerHTML = `
+    <div class="simple-camera-photo">
+      <img src="${src}" alt="${title}" loading="eager" referrerpolicy="no-referrer" />
+      <div class="simple-camera-stamp"><span><i></i> CAM 3F · REC</span><time>${time}:00</time></div>
+    </div>
+    <figcaption>
+      <time>${time}</time>
+      <div><strong>${title}</strong><p>${note}</p></div>
+    </figcaption>
   `;
-
-  const photo = button.querySelector<HTMLElement>('.key-frame-photo');
-  if (photo) {
-    photo.style.backgroundImage = `url("${sprite}")`;
-    photo.style.backgroundPosition = FRAME_POSITIONS[time];
-  }
-
-  return button;
+  return figure;
 }
 
 function enhanceCamera(root: HTMLElement): void {
-  if (root.dataset.sharpComparison === BUILD) return;
+  if (root.dataset.simpleCamera === BUILD) return;
 
   const frame = root.querySelector<HTMLElement>('.cctv-frame');
   const consoleElement = root.querySelector<HTMLElement>('.camera-console');
-  const events = root.querySelector<HTMLElement>('.camera-events');
   const question = root.querySelector<HTMLElement>('.camera-question');
-  const eventButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('.camera-events button'));
-  if (!frame || !consoleElement || !events || !question || eventButtons.length === 0) return;
-
-  root.dataset.sharpComparison = BUILD;
-
   const taskbar = root.querySelector<HTMLElement>('.scene-taskbar');
+  if (!frame || !question) return;
+
+  root.dataset.simpleCamera = BUILD;
+
   if (taskbar) {
     const title = taskbar.querySelector<HTMLElement>('strong');
     const helper = taskbar.querySelector<HTMLElement>('small');
-    if (title) title.textContent = 'Сравните два ключевых кадра: вход Ильи и последний кадр после него';
-    if (helper) helper.textContent = 'Сначала нажмите 23:50, затем 00:17';
+    if (title) title.textContent = 'Посмотрите только на два кадра: вход Ильи и состояние коридора позже';
+    if (helper) helper.textContent = 'Ничего искать и переключать не нужно';
   }
 
+  relabelQuestion(question);
+
   const layout = document.createElement('div');
-  layout.className = 'cctv-compare-layout';
+  layout.className = 'simple-camera-layout';
 
-  const main = document.createElement('section');
-  main.className = 'cctv-compare-main';
-  main.innerHTML = `
-    <div class="compare-heading">
-      <div><span>КЛЮЧЕВОЕ СРАВНЕНИЕ</span><strong>Что произошло после возвращения Ильи?</strong></div>
-      <small>Оба кадра показаны одновременно и не растягиваются сверх исходного разрешения</small>
-    </div>
+  const evidence = document.createElement('section');
+  evidence.className = 'simple-camera-evidence';
+  evidence.innerHTML = `
+    <header>
+      <span>СРАВНЕНИЕ ЗАПИСИ</span>
+      <h2>Что видно на камере?</h2>
+    </header>
   `;
 
-  const frameGrid = document.createElement('div');
-  frameGrid.className = 'cctv-key-grid';
-  const key2350 = createKeyFrame(
-    '23:50',
-    'КАДР 1 · ПОСЛЕДНИЙ ВХОД',
-    'Илья возвращается в номер 314',
-    'Камера фиксирует его у двери 314.'
+  const pair = document.createElement('div');
+  pair.className = 'simple-camera-pair';
+  pair.append(
+    createFrame('23:50', 'Илья возвращается в номер 314', 'Камера фиксирует его вход через главный коридор.', FRAME_2350),
+    createFrame('00:17', 'Коридор пуст', 'После входа камера не фиксирует выход Ильи обратно в коридор.', FRAME_0017, true)
   );
-  const key0017 = createKeyFrame(
-    '00:17',
-    'КАДР 2 · ПОСЛЕ ВХОДА',
-    'Гостевой коридор пуст',
-    'Выход Ильи через главный коридор не зафиксирован.'
-  );
-  frameGrid.append(key2350, key0017);
 
-  const finding = document.createElement('div');
-  finding.className = 'cctv-comparison-finding';
-  finding.innerHTML = `
-    <span>ВЫВОД ИЗ ЗАПИСИ</span>
-    <strong>23:50 — Илья входит в 314 → 00:17 — коридор пуст</strong>
-    <p>Камера подтверждает вход, но не показывает последующий выход через главную дверь и гостевой коридор.</p>
+  const sequence = document.createElement('div');
+  sequence.className = 'simple-camera-sequence';
+  sequence.innerHTML = `
+    <b>23:50</b><span>Илья входит в 314</span><i>→</i><b>00:17</b><span>коридор пуст</span>
   `;
 
-  const context = document.createElement('div');
-  context.className = 'cctv-context-strip';
-  context.innerHTML = '<div class="context-title"><span>ОСТАЛЬНАЯ ХРОНОЛОГИЯ</span><small>Нужна только для проверки последовательности событий</small></div>';
-  context.append(events);
+  const limitation = document.createElement('p');
+  limitation.className = 'simple-camera-limit';
+  limitation.innerHTML = '<strong>Важно:</strong> камера видит главный коридор, но не служебные пути.';
 
-  main.append(frameGrid, finding, context);
+  evidence.append(pair, sequence, limitation);
 
   const aside = document.createElement('aside');
-  aside.className = 'cctv-compare-aside';
-  const steps = document.createElement('div');
-  steps.className = 'cctv-compare-steps';
-  steps.innerHTML = `
-    <span>КАК ПРОВЕРИТЬ</span>
-    <div class="compare-step step-2350"><b>1</b><p><strong>Откройте 23:50</strong><small>Убедитесь, что Илья вернулся в 314</small></p><i>не просмотрено</i></div>
-    <div class="compare-step step-0017"><b>2</b><p><strong>Откройте 00:17</strong><small>Проверьте, появился ли он позже</small></p><i>не просмотрено</i></div>
-  `;
-  aside.append(steps, question);
+  aside.className = 'simple-camera-answer';
+  aside.append(question);
 
-  layout.append(main, aside);
+  layout.append(evidence, aside);
   frame.replaceChildren(layout);
-  consoleElement.remove();
-
-  const viewed = new Set<string>();
-  const statusByTime: Record<string, { card: HTMLButtonElement; step: HTMLElement | null }> = {
-    '23:50': { card: key2350, step: steps.querySelector('.step-2350') },
-    '00:17': { card: key0017, step: steps.querySelector('.step-0017') }
-  };
-
-  const markViewed = (time: string): void => {
-    if (!(time in statusByTime)) return;
-    viewed.add(time);
-    const status = statusByTime[time];
-    status.card.classList.add('is-viewed');
-    status.card.setAttribute('aria-pressed', 'true');
-    if (status.step) {
-      status.step.classList.add('is-complete');
-      const label = status.step.querySelector<HTMLElement>('i');
-      if (label) label.textContent = 'просмотрено';
-    }
-    if (viewed.size === 2) layout.classList.add('comparison-complete');
-  };
-
-  const activateTimeline = (time: string): void => {
-    const target = eventButtons.find((button) => button.querySelector('time')?.textContent?.trim() === time);
-    if (target) target.click();
-    markViewed(time);
-  };
-
-  key2350.addEventListener('click', () => activateTimeline('23:50'));
-  key0017.addEventListener('click', () => activateTimeline('00:17'));
-
-  eventButtons.forEach((button) => {
-    const time = button.querySelector('time')?.textContent?.trim() ?? '';
-    button.dataset.framePosition = FRAME_POSITIONS[time] ?? '';
-    button.addEventListener('click', () => markViewed(time));
-  });
+  consoleElement?.remove();
 }
 
 function scan(): void {
@@ -170,14 +107,14 @@ function scan(): void {
 }
 
 let scheduled = false;
-const scheduleScan = (): void => {
+function scheduleScan(): void {
   if (scheduled) return;
   scheduled = true;
   requestAnimationFrame(() => {
     scheduled = false;
     scan();
   });
-};
+}
 
 new MutationObserver(scheduleScan).observe(document.documentElement, { childList: true, subtree: true });
 document.addEventListener('click', () => window.setTimeout(scan, 80), true);
