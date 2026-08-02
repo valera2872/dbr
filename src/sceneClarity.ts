@@ -1,6 +1,6 @@
 export {};
 
-const BUILD = 'v0.3.3';
+const BUILD = 'v0.3.4';
 
 function applySceneClarity(): void {
   document.title = `ДБР — Номер 314 · ${BUILD}`;
@@ -19,9 +19,7 @@ function applySceneClarity(): void {
 
   document.querySelectorAll<HTMLElement>('.camera-taskbar').forEach((taskbar) => {
     const title = taskbar.querySelector<HTMLElement>('strong');
-    const hint = taskbar.querySelector<HTMLElement>('small');
-    if (title) title.textContent = '1. Нажимайте на время снизу  2. Сравните события  3. Выберите последнее появление Ильи';
-    if (hint && !hint.classList.contains('camera-view-count')) hint.textContent = 'Итоговый вопрос находится под временной шкалой';
+    if (title) title.textContent = 'Выберите время снизу и сравните, кто появляется в коридоре';
   });
 
   document.querySelectorAll<HTMLButtonElement>('.camera-events button').forEach((button) => {
@@ -35,8 +33,5 @@ function applySceneClarity(): void {
 const observer = new MutationObserver(() => requestAnimationFrame(applySceneClarity));
 observer.observe(document.documentElement, { childList: true, subtree: true });
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', applySceneClarity, { once: true });
-} else {
-  applySceneClarity();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applySceneClarity, { once: true });
+else applySceneClarity();
