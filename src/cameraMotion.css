@@ -1,0 +1,269 @@
+/* v0.3.8 — visible people inside the fixed CCTV frame */
+
+.evidence-e004 .cctv-track-box {
+  display: none !important;
+}
+
+.cctv-visible-person {
+  --person-scale: 1;
+  position: absolute;
+  z-index: 22;
+  width: 92px;
+  height: 210px;
+  transform: translate(-50%, -50%) scale(var(--person-scale));
+  transform-origin: 50% 100%;
+  transition: left .28s ease, top .28s ease, transform .28s ease, opacity .18s ease;
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, .55));
+}
+
+.cctv-visible-person[hidden] {
+  display: none !important;
+}
+
+.cctv-person-box {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 0;
+  bottom: 38px;
+  border: 1px solid rgba(119, 235, 228, .58);
+  background: rgba(8, 31, 34, .08);
+  box-shadow: 0 0 0 1px rgba(119, 235, 228, .08), 0 0 26px rgba(87, 220, 211, .12);
+}
+
+.person-corner {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  border-color: #87efe9;
+  border-style: solid;
+}
+
+.person-corner.tl { left: -2px; top: -2px; border-width: 3px 0 0 3px; }
+.person-corner.tr { right: -2px; top: -2px; border-width: 3px 3px 0 0; }
+.person-corner.bl { left: -2px; bottom: -2px; border-width: 0 0 3px 3px; }
+.person-corner.br { right: -2px; bottom: -2px; border-width: 0 3px 3px 0; }
+
+.cctv-body-wrap {
+  position: absolute;
+  inset: 8px 12px 3px;
+  transform-origin: 50% 60%;
+}
+
+.direction-left .cctv-body-wrap {
+  transform: scaleX(-1);
+}
+
+.cctv-figure-head {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 38px;
+  height: 38px;
+  transform: translateX(-50%);
+  overflow: hidden;
+  border: 2px solid rgba(136, 239, 233, .82);
+  border-radius: 50%;
+  background: #101b1e;
+  box-shadow: 0 0 18px rgba(101, 226, 217, .17);
+}
+
+.cctv-figure-head img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  filter: grayscale(1) contrast(1.2) brightness(.75);
+}
+
+.cctv-figure-torso {
+  position: absolute;
+  left: 50%;
+  top: 38px;
+  width: 42px;
+  height: 72px;
+  transform: translateX(-50%);
+  border-radius: 16px 16px 10px 10px;
+  border: 1px solid rgba(131, 216, 211, .35);
+  background: linear-gradient(180deg, rgba(77, 101, 104, .9), rgba(24, 39, 42, .98));
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, .025);
+}
+
+.role-elena .cctv-figure-torso {
+  width: 36px;
+  background: linear-gradient(180deg, rgba(78, 91, 96, .92), rgba(20, 31, 35, .98));
+}
+
+.role-kirill .cctv-figure-torso {
+  width: 47px;
+  background: linear-gradient(180deg, rgba(68, 75, 78, .95), rgba(15, 23, 26, .99));
+}
+
+.role-ilya .cctv-figure-torso {
+  background: linear-gradient(180deg, rgba(72, 94, 100, .94), rgba(20, 35, 39, .99));
+  border-color: rgba(139, 232, 226, .48);
+}
+
+.cctv-figure-arm {
+  position: absolute;
+  top: 43px;
+  width: 12px;
+  height: 69px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(62, 82, 85, .92), rgba(18, 30, 33, .98));
+  transform-origin: 50% 8px;
+}
+
+.cctv-figure-arm.left { left: 4px; transform: rotate(9deg); }
+.cctv-figure-arm.right { right: 4px; transform: rotate(-18deg); }
+
+.cctv-figure-leg {
+  position: absolute;
+  top: 104px;
+  width: 15px;
+  height: 62px;
+  border-radius: 8px 8px 5px 5px;
+  background: linear-gradient(180deg, rgba(47, 66, 69, .96), rgba(13, 22, 24, .99));
+  transform-origin: 50% 6px;
+}
+
+.cctv-figure-leg.left { left: 18px; transform: rotate(5deg); }
+.cctv-figure-leg.right { right: 18px; transform: rotate(-7deg); }
+
+.cctv-person-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  min-width: 150px;
+  transform: translateX(-50%);
+  display: grid;
+  gap: 3px;
+  padding: 6px 8px;
+  border: 1px solid rgba(124, 232, 227, .34);
+  border-radius: 6px;
+  background: rgba(3, 13, 16, .93);
+  text-align: center;
+  box-shadow: 0 9px 24px rgba(0, 0, 0, .36);
+}
+
+.cctv-person-caption strong {
+  color: #e7fbf9;
+  font: 800 9px/1.1 Manrope, sans-serif;
+}
+
+.cctv-person-caption small {
+  color: #8fd8d3;
+  font: 700 7px/1.15 ui-monospace, monospace;
+  letter-spacing: .02em;
+}
+
+.cctv-frame-change {
+  position: absolute;
+  z-index: 27;
+  left: 16px;
+  top: 42px;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2px 8px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border: 1px solid rgba(124, 232, 227, .2);
+  border-radius: 7px;
+  background: rgba(4, 15, 18, .76);
+  backdrop-filter: blur(6px);
+}
+
+.cctv-frame-change span {
+  color: #6f999a;
+  font: 800 7px/1 ui-monospace, monospace;
+  letter-spacing: .13em;
+}
+
+.cctv-frame-change strong {
+  color: #7ce9e3;
+  font: 900 15px/1 ui-monospace, monospace;
+}
+
+.cctv-frame-change small {
+  grid-column: 1 / -1;
+  max-width: 240px;
+  color: #b7cdcf;
+  font: 650 8px/1.25 Manrope, sans-serif;
+}
+
+.cctv-frame-change.empty-frame {
+  border-color: rgba(238, 117, 110, .3);
+}
+
+.cctv-frame-change.empty-frame strong,
+.cctv-frame-change.empty-frame small {
+  color: #efaaa5;
+}
+
+.cctv-frame-switch::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  background: rgba(199, 255, 251, .08);
+  animation: cctvFrameFlash .24s ease-out both;
+}
+
+@keyframes cctvFrameFlash {
+  0% { opacity: .85; }
+  100% { opacity: 0; }
+}
+
+@media (max-height: 760px) and (min-width: 900px) {
+  .cctv-visible-person {
+    width: 76px;
+    height: 176px;
+  }
+
+  .cctv-person-box {
+    left: 9px;
+    right: 9px;
+    bottom: 32px;
+  }
+
+  .cctv-figure-head {
+    width: 32px;
+    height: 32px;
+  }
+
+  .cctv-figure-torso {
+    top: 32px;
+    width: 35px;
+    height: 58px;
+  }
+
+  .cctv-figure-arm {
+    top: 37px;
+    height: 56px;
+  }
+
+  .cctv-figure-leg {
+    top: 86px;
+    height: 50px;
+  }
+
+  .cctv-figure-leg.left { left: 14px; }
+  .cctv-figure-leg.right { right: 14px; }
+}
+
+@media (max-width: 720px) {
+  .cctv-visible-person {
+    width: 72px;
+    height: 168px;
+  }
+
+  .cctv-person-caption {
+    min-width: 125px;
+  }
+
+  .cctv-frame-change {
+    left: 10px;
+    top: 38px;
+  }
+}
