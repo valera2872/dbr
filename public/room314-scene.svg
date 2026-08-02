@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+  <title id="title">Номер 314</title>
+  <desc id="desc">Схематичная сцена гостиничного номера: окно, письменный стол, сумка и ковёр.</desc>
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2d3443"/>
+      <stop offset="1" stop-color="#202633"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4a3c35"/>
+      <stop offset="1" stop-color="#2e2828"/>
+    </linearGradient>
+    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9fb4cc"/>
+      <stop offset="1" stop-color="#d9e1e8"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+    <pattern id="wood" width="90" height="36" patternUnits="userSpaceOnUse">
+      <rect width="90" height="36" fill="#3d332f"/>
+      <path d="M0 35H90M45 0V35" stroke="#57463e" stroke-width="2" opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="960" height="600" fill="#12161e"/>
+  <path d="M40 48H920V376H40Z" fill="url(#wall)"/>
+  <path d="M40 376H920V560H40Z" fill="url(#floor)"/>
+  <path d="M40 376H920" stroke="#171b23" stroke-width="8"/>
+  <rect x="40" y="48" width="880" height="512" rx="18" fill="none" stroke="#545f73" stroke-width="3"/>
+
+  <!-- window -->
+  <g filter="url(#shadow)">
+    <rect x="92" y="92" width="286" height="188" rx="8" fill="#111722" stroke="#707d92" stroke-width="8"/>
+    <rect x="104" y="104" width="262" height="164" fill="#40566f"/>
+    <path d="M104 220L176 151L229 198L286 130L366 223V268H104Z" fill="#24354a"/>
+    <path d="M104 238L177 181L228 219L288 157L366 229V268H104Z" fill="url(#snow)" opacity=".92"/>
+    <path d="M235 104V268M104 186H366" stroke="#8793a6" stroke-width="6"/>
+    <path d="M106 268H364" stroke="#dce3ea" stroke-width="5" opacity=".7"/>
+  </g>
+
+  <!-- curtains -->
+  <path d="M70 78C111 102 91 248 78 301H126C143 250 139 112 117 78Z" fill="#55506c" opacity=".85"/>
+  <path d="M353 78C335 116 342 249 360 301H407C389 235 387 105 407 78Z" fill="#55506c" opacity=".85"/>
+
+  <!-- bed -->
+  <g filter="url(#shadow)">
+    <rect x="103" y="330" width="330" height="116" rx="16" fill="#6b7282"/>
+    <rect x="116" y="341" width="304" height="86" rx="13" fill="#8f98aa"/>
+    <path d="M116 391H420V427H116Z" fill="#59677a"/>
+    <rect x="123" y="348" width="94" height="36" rx="12" fill="#c7cbd4"/>
+    <rect x="229" y="348" width="94" height="36" rx="12" fill="#c7cbd4"/>
+  </g>
+
+  <!-- rug -->
+  <g filter="url(#shadow)">
+    <path d="M276 438L632 421L718 552H214Z" fill="#7a3f45" stroke="#a86a70" stroke-width="5"/>
+    <path d="M311 455L604 443L668 529H262Z" fill="none" stroke="#c88c91" stroke-width="4" opacity=".55"/>
+    <path d="M364 466L571 458L614 513H325Z" fill="#4b2f39" opacity=".75"/>
+  </g>
+
+  <!-- desk -->
+  <g filter="url(#shadow)">
+    <path d="M602 274H863V306H602Z" fill="#7a5a45"/>
+    <path d="M620 306H642V454H620ZM825 306H847V454H825Z" fill="#4d392f"/>
+    <rect x="668" y="220" width="114" height="68" rx="6" fill="#161c27" stroke="#79869b" stroke-width="4"/>
+    <rect x="681" y="232" width="88" height="44" rx="3" fill="#26394d"/>
+    <path d="M717 288V302M687 302H748" stroke="#667388" stroke-width="5"/>
+    <rect x="800" y="250" width="28" height="38" rx="7" fill="#d1b987"/>
+    <path d="M808 250V230M808 230H844" stroke="#d3b97d" stroke-width="6"/>
+    <path d="M844 230L858 259H827Z" fill="#d9c697"/>
+    <ellipse cx="795" cy="296" rx="23" ry="7" fill="#1b2029" opacity=".65"/>
+    <path d="M739 320C778 314 809 337 811 378L807 432H697L701 378C704 347 717 326 739 320Z" fill="#343b48" stroke="#596273" stroke-width="4"/>
+    <path d="M721 432V476M786 432V476" stroke="#454d5a" stroke-width="8"/>
+  </g>
+
+  <!-- suitcase / bag -->
+  <g filter="url(#shadow)">
+    <rect x="112" y="445" width="112" height="74" rx="13" fill="#2b303a" stroke="#697487" stroke-width="4"/>
+    <path d="M147 445V432C147 421 154 414 168 414H178C192 414 199 421 199 432V445" fill="none" stroke="#697487" stroke-width="7"/>
+    <path d="M167 449V514" stroke="#515b6c" stroke-width="3"/>
+    <circle cx="132" cy="524" r="7" fill="#11151d"/>
+    <circle cx="204" cy="524" r="7" fill="#11151d"/>
+  </g>
+
+  <!-- wardrobe -->
+  <g filter="url(#shadow)">
+    <rect x="456" y="91" width="120" height="278" rx="8" fill="#3c302c" stroke="#6a5348" stroke-width="4"/>
+    <path d="M516 94V366" stroke="#70584e" stroke-width="4"/>
+    <circle cx="504" cy="234" r="5" fill="#b69266"/>
+    <circle cx="528" cy="234" r="5" fill="#b69266"/>
+  </g>
+
+  <!-- subtle evidence traces -->
+  <ellipse cx="607" cy="361" rx="17" ry="7" fill="#6b3036" opacity=".35"/>
+  <path d="M580 383C523 401 478 418 420 443" fill="none" stroke="#b5b9c2" stroke-width="5" stroke-dasharray="12 14" opacity=".25"/>
+
+  <rect x="58" y="70" width="844" height="468" rx="14" fill="none" stroke="#fff" stroke-opacity=".05"/>
+</svg>
