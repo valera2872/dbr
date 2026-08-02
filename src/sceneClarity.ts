@@ -1,3 +1,5 @@
+export {};
+
 const BUILD = 'v0.3.3';
 
 function applySceneClarity(): void {
