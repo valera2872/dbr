@@ -1,0 +1,59 @@
+.dbr-build-marker {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  z-index: 10000;
+  padding: 5px 8px;
+  border: 1px solid rgba(124, 232, 227, .22);
+  border-radius: 999px;
+  background: rgba(4, 13, 16, .82);
+  color: rgba(180, 240, 236, .7);
+  font: 700 9px/1 ui-monospace, monospace;
+  letter-spacing: .08em;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+.scene-taskbar {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 12px;
+  padding: 13px 16px;
+  border: 1px solid rgba(124, 232, 227, .2);
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(124, 232, 227, .08), rgba(124, 232, 227, .015));
+}
+.scene-taskbar > div { display: grid; gap: 4px; }
+.scene-taskbar span { color: var(--cyan); font: 800 9px/1 ui-monospace, monospace; letter-spacing: .14em; }
+.scene-taskbar strong { color: #eef8f8; font: 700 14px/1.35 Manrope, sans-serif; }
+.scene-taskbar small { color: #81969d; font-size: 10px; }
+
+.evidence-e001 .room-marker i {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 7px);
+  transform: translateX(-50%);
+  min-width: max-content;
+  padding: 6px 9px;
+  border: 1px solid rgba(124, 232, 227, .28);
+  border-radius: 7px;
+  background: rgba(4, 13, 16, .92);
+  color: #e2fbf9;
+  font: 800 9px/1 ui-monospace, monospace;
+  font-style: normal;
+  pointer-events: none;
+}
+
+.evidence-e001 .room-clue-overlays,
+.evidence-e004 .corridor-map { display: block !important; }
+
+@media (max-width: 760px) {
+  .dbr-build-marker { right: 6px; bottom: 72px; }
+  .scene-taskbar { align-items: flex-start; flex-direction: column; gap: 7px; }
+}

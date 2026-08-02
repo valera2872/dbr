@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-3-1-scene-camera';
+const CACHE_NAME = 'dbr-v0-3-2-cache-init';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
@@ -19,7 +19,7 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'no-store' })
       .then((response) => {
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));

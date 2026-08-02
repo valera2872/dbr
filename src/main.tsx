@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
 import './premium.css';
 import './premium-fix.css';
+import './premium-runtime.css';
 import './premiumEnhancements';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

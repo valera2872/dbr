@@ -5,63 +5,52 @@ type CameraMoment = {
   note: string;
 };
 
+const BUILD = 'v0.3.2';
+
 const CAMERA_MOMENTS: Record<string, CameraMoment> = {
-  '22:48': {
-    subject: 'Елена',
-    position: '72%',
-    lane: 'guest',
-    note: 'Подходит к двери номера 314.'
-  },
-  '23:04': {
-    subject: 'Елена',
-    position: '16%',
-    lane: 'guest',
-    note: 'Уходит в сторону номера 307.'
-  },
-  '23:41': {
-    subject: 'Кирилл',
-    position: '34%',
-    lane: 'guest',
-    note: 'Входит в соседний номер 312.'
-  },
-  '23:47': {
-    subject: 'Илья',
-    position: '67%',
-    lane: 'guest',
-    note: 'Выходит из номера 314 за горячей водой.'
-  },
-  '23:50': {
-    subject: 'Илья',
-    position: '73%',
-    lane: 'guest',
-    note: 'Возвращается в номер 314. Это его последнее подтверждённое появление.'
-  },
-  '00:17': {
-    subject: 'Нет движения',
-    position: '50%',
-    lane: 'service',
-    note: 'Сообщение отправлено, но в гостевом коридоре никто не появляется.'
-  }
+  '22:48': { subject: 'Елена', position: '72%', lane: 'guest', note: 'Подходит к двери номера 314.' },
+  '23:04': { subject: 'Елена', position: '16%', lane: 'guest', note: 'Уходит в сторону номера 307.' },
+  '23:41': { subject: 'Кирилл', position: '34%', lane: 'guest', note: 'Входит в соседний номер 312.' },
+  '23:47': { subject: 'Илья', position: '67%', lane: 'guest', note: 'Выходит из номера 314 за горячей водой.' },
+  '23:50': { subject: 'Илья', position: '73%', lane: 'guest', note: 'Возвращается в номер 314. Это его последнее подтверждённое появление.' },
+  '00:17': { subject: 'Нет движения', position: '50%', lane: 'service', note: 'Сообщение отправлено, но в гостевом коридоре никто не появляется.' }
 };
 
-function createElement<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  className: string,
-  html = ''
-): HTMLElementTagNameMap[K] {
+function createElement<K extends keyof HTMLElementTagNameMap>(tag: K, className: string, html = ''): HTMLElementTagNameMap[K] {
   const element = document.createElement(tag);
   element.className = className;
   element.innerHTML = html;
   return element;
 }
 
-function enhanceRoom(layout: HTMLElement): void {
-  if (layout.dataset.uxEnhanced === '1') return;
-  layout.dataset.uxEnhanced = '1';
+function installBuildMarker(): void {
+  document.documentElement.dataset.dbrBuild = BUILD;
+  document.title = `ДБР — Номер 314 · ${BUILD}`;
 
+  if (document.querySelector('.dbr-build-marker')) return;
+  const marker = createElement('div', 'dbr-build-marker', BUILD);
+  marker.setAttribute('aria-label', `Версия приложения ${BUILD}`);
+  document.body.appendChild(marker);
+}
+
+function explainLockedCamera(): void {
+  document.querySelectorAll<HTMLButtonElement>('.premium-evidence-card').forEach((card) => {
+    const title = card.querySelector('h2')?.textContent?.trim();
+    if (title !== 'Коридорная камера' || !card.disabled) return;
+    const description = card.querySelector<HTMLParagraphElement>('.evidence-card-copy p');
+    if (description) description.textContent = 'Сначала изучите «Журнал замка номера 314» (E003). После этого камера откроется автоматически.';
+  });
+}
+
+function enhanceRoom(layout: HTMLElement): void {
   const body = layout.parentElement;
   const image = layout.querySelector<HTMLElement>('.premium-room-image');
   if (!body || !image) return;
+  if (layout.dataset.uxEnhanced === BUILD) return;
+
+  layout.dataset.uxEnhanced = BUILD;
+  body.querySelectorAll(':scope > .scene-taskbar.room-taskbar').forEach((node) => node.remove());
+  image.querySelectorAll(':scope > .room-clue-overlays').forEach((node) => node.remove());
 
   const task = createElement(
     'div',
@@ -91,17 +80,22 @@ function enhanceRoom(layout: HTMLElement): void {
   layout.querySelectorAll<HTMLButtonElement>('.room-marker').forEach((marker) => {
     const label = marker.getAttribute('aria-label') ?? '';
     const shortLabel = labelByZone[label];
-    if (shortLabel) marker.dataset.zoneLabel = shortLabel;
+    if (!shortLabel) return;
+    marker.dataset.zoneLabel = shortLabel;
+    const visibleLabel = marker.querySelector<HTMLElement>('i');
+    if (visibleLabel) visibleLabel.textContent = shortLabel;
   });
 }
 
 function enhanceCamera(root: HTMLElement): void {
-  if (root.dataset.uxEnhanced === '1') return;
-  root.dataset.uxEnhanced = '1';
-
   const frame = root.querySelector<HTMLElement>('.cctv-frame');
   const eventButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('.camera-events button'));
   if (!frame || eventButtons.length === 0) return;
+  if (root.dataset.uxEnhanced === BUILD) return;
+
+  root.dataset.uxEnhanced = BUILD;
+  root.querySelectorAll(':scope > .scene-taskbar.camera-taskbar').forEach((node) => node.remove());
+  frame.querySelectorAll(':scope > .corridor-map').forEach((node) => node.remove());
 
   const task = createElement(
     'div',
@@ -168,20 +162,40 @@ function enhanceCamera(root: HTMLElement): void {
     button.addEventListener('click', () => selectMoment(button));
   });
 
-  const preferred = eventButtons.find((button) => button.querySelector('time')?.textContent?.trim() === '23:50');
-  selectMoment(preferred ?? eventButtons[0]);
+  selectMoment(eventButtons[0]);
 }
 
 function scan(): void {
+  installBuildMarker();
+  explainLockedCamera();
   document.querySelectorAll<HTMLElement>('.premium-room-layout').forEach(enhanceRoom);
   document.querySelectorAll<HTMLElement>('.camera-evidence').forEach(enhanceCamera);
 }
 
-const observer = new MutationObserver(scan);
+let scheduled = false;
+function scheduleScan(): void {
+  if (scheduled) return;
+  scheduled = true;
+  window.requestAnimationFrame(() => {
+    scheduled = false;
+    scan();
+  });
+}
+
+const observer = new MutationObserver(scheduleScan);
 observer.observe(document.documentElement, { childList: true, subtree: true });
+
+document.addEventListener('click', () => {
+  window.setTimeout(scan, 0);
+  window.setTimeout(scan, 120);
+  window.setTimeout(scan, 400);
+}, true);
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', scan, { once: true });
 } else {
   scan();
 }
+
+const startupPoll = window.setInterval(scan, 250);
+window.setTimeout(() => window.clearInterval(startupPoll), 15000);
