@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-3-5-photo-cctv';
+const CACHE_NAME = 'dbr-v0-3-6-camera-meaning';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {

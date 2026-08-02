@@ -1,0 +1,204 @@
+/* v0.3.6 — make the investigative meaning of the CCTV sequence explicit */
+
+.evidence-e004 .camera-evidence {
+  grid-template-rows: auto auto minmax(250px, 1fr) 178px;
+}
+
+.camera-objective-strip {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.2fr) minmax(220px, .8fr) 26px minmax(220px, .8fr);
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgba(124, 232, 227, .16);
+  border-radius: 12px;
+  background: rgba(8, 22, 26, .72);
+}
+
+.camera-objective-title,
+.camera-objective-step {
+  min-width: 0;
+  border-radius: 9px;
+}
+
+.camera-objective-title {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 9px 12px;
+  background: linear-gradient(90deg, rgba(124,232,227,.08), rgba(124,232,227,.02));
+}
+
+.camera-objective-title span,
+.camera-objective-step small {
+  color: #75ddd7;
+  font: 800 8px/1 ui-monospace, monospace;
+  letter-spacing: .13em;
+}
+
+.camera-objective-title strong {
+  color: #edf8f8;
+  font: 750 12px/1.35 Manrope, sans-serif;
+}
+
+.camera-objective-step {
+  display: grid;
+  grid-template-columns: 31px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: 1px solid rgba(132,168,173,.17);
+  background: rgba(12, 29, 33, .78);
+  transition: border-color .2s ease, background .2s ease;
+}
+
+.camera-objective-step i {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(124,232,227,.28);
+  color: #83e8e2;
+  font: 900 11px/1 ui-monospace, monospace;
+  font-style: normal;
+}
+
+.camera-objective-step > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.camera-objective-step strong {
+  overflow: hidden;
+  color: #e7f3f3;
+  font: 700 10px/1.25 Manrope, sans-serif;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.camera-objective-step b {
+  justify-self: end;
+  color: #778e92;
+  font: 700 8px/1.2 Manrope, sans-serif;
+  text-align: right;
+}
+
+.camera-objective-step.confirmed {
+  border-color: rgba(87, 221, 165, .38);
+  background: rgba(26, 84, 62, .24);
+}
+
+.camera-objective-step.confirmed i {
+  border-color: rgba(87, 221, 165, .52);
+  color: #7ce7b8;
+  box-shadow: 0 0 16px rgba(87,221,165,.12);
+}
+
+.camera-objective-step.confirmed b {
+  color: #83e2b6;
+}
+
+.camera-objective-arrow {
+  display: grid;
+  place-items: center;
+  color: #5e8588;
+  font-size: 20px;
+}
+
+.evidence-e004 .camera-events button[data-event-role="last-entry"],
+.evidence-e004 .camera-events button[data-event-role="after-entry"] {
+  position: relative;
+}
+
+.evidence-e004 .camera-events button[data-event-role="last-entry"]::after,
+.evidence-e004 .camera-events button[data-event-role="after-entry"]::after {
+  position: absolute;
+  right: 8px;
+  top: 7px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  font: 800 7px/1 ui-monospace, monospace;
+  letter-spacing: .08em;
+}
+
+.evidence-e004 .camera-events button[data-event-role="last-entry"]::after {
+  content: "КЛЮЧЕВОЙ ВХОД";
+  background: rgba(124,232,227,.12);
+  color: #80e8e2;
+}
+
+.evidence-e004 .camera-events button[data-event-role="after-entry"]::after {
+  content: "ПОСЛЕ ВХОДА";
+  background: rgba(238,117,110,.12);
+  color: #efaaa5;
+}
+
+.evidence-e004 .camera-question {
+  justify-content: flex-start;
+  overflow: auto;
+}
+
+.evidence-e004 .camera-question h2 {
+  margin-bottom: 6px;
+}
+
+.camera-question-helper {
+  margin: 0 0 9px;
+  color: #82989c;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.evidence-e004 .camera-question > div {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.evidence-e004 .camera-question button {
+  min-height: 34px;
+  padding: 7px 9px;
+  text-align: left;
+  font-size: 9px;
+  line-height: 1.25;
+}
+
+.camera-ready-for-conclusion .camera-question {
+  border-color: rgba(124,232,227,.42);
+  box-shadow: 0 0 0 1px rgba(124,232,227,.06), 0 0 25px rgba(124,232,227,.06);
+}
+
+@media (max-width: 1120px) {
+  .evidence-e004 .camera-evidence {
+    grid-template-rows: auto auto minmax(250px, 1fr) 232px;
+  }
+
+  .camera-objective-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .camera-objective-title {
+    grid-column: 1 / -1;
+  }
+
+  .camera-objective-arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .camera-objective-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .camera-objective-title,
+  .camera-objective-step {
+    min-height: 58px;
+  }
+
+  .evidence-e004 .camera-question > div {
+    grid-template-columns: 1fr;
+  }
+}
