@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-3-3-room-clarity';
+const CACHE_NAME = 'dbr-v0-3-4-real-cctv';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
