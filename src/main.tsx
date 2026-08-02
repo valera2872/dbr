@@ -6,7 +6,6 @@ import './premium-fix.css';
 import './premium-runtime.css';
 import './cctv.css';
 import './premiumEnhancements';
-import './sceneClarity';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
