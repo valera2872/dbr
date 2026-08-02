@@ -12,15 +12,15 @@ type VisibleMoment = {
   action: string;
 };
 
-const BUILD = 'v0.3.8';
+const BUILD = 'v0.3.9';
 
 const MOMENTS: Record<string, VisibleMoment> = {
   '22:48': {
     name: 'Елена Ветрова',
     portrait: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=82',
     x: '79%',
-    y: '61%',
-    scale: '0.92',
+    y: '64%',
+    scale: '0.94',
     direction: 'right',
     role: 'elena',
     visible: true,
@@ -29,9 +29,9 @@ const MOMENTS: Record<string, VisibleMoment> = {
   '23:04': {
     name: 'Елена Ветрова',
     portrait: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=82',
-    x: '26%',
-    y: '60%',
-    scale: '0.82',
+    x: '27%',
+    y: '63%',
+    scale: '0.84',
     direction: 'left',
     role: 'elena',
     visible: true,
@@ -41,8 +41,8 @@ const MOMENTS: Record<string, VisibleMoment> = {
     name: 'Кирилл Бессонов',
     portrait: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=82',
     x: '66%',
-    y: '60%',
-    scale: '1.02',
+    y: '63%',
+    scale: '1.04',
     direction: 'right',
     role: 'kirill',
     visible: true,
@@ -52,8 +52,8 @@ const MOMENTS: Record<string, VisibleMoment> = {
     name: 'Илья Соколов',
     portrait: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=82',
     x: '72%',
-    y: '60%',
-    scale: '0.97',
+    y: '63%',
+    scale: '0.99',
     direction: 'left',
     role: 'ilya',
     visible: true,
@@ -63,8 +63,8 @@ const MOMENTS: Record<string, VisibleMoment> = {
     name: 'Илья Соколов',
     portrait: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=82',
     x: '82%',
-    y: '61%',
-    scale: '0.94',
+    y: '64%',
+    scale: '0.96',
     direction: 'right',
     role: 'ilya',
     visible: true,
@@ -74,7 +74,7 @@ const MOMENTS: Record<string, VisibleMoment> = {
     name: 'Коридор пуст',
     portrait: '',
     x: '50%',
-    y: '60%',
+    y: '63%',
     scale: '1',
     direction: 'right',
     role: 'none',
@@ -104,14 +104,21 @@ function enhanceCamera(root: HTMLElement): void {
   figure.className = 'cctv-visible-person role-elena direction-right';
   figure.setAttribute('aria-live', 'polite');
   figure.innerHTML = `
+    <div class="cctv-person-shadow"></div>
     <div class="cctv-person-box">
       <span class="person-corner tl"></span><span class="person-corner tr"></span>
       <span class="person-corner bl"></span><span class="person-corner br"></span>
       <div class="cctv-body-wrap">
         <div class="cctv-figure-head"><img alt="" /></div>
-        <div class="cctv-figure-torso"></div>
-        <div class="cctv-figure-arm left"></div><div class="cctv-figure-arm right"></div>
-        <div class="cctv-figure-leg left"></div><div class="cctv-figure-leg right"></div>
+        <div class="cctv-figure-neck"></div>
+        <div class="cctv-figure-torso">
+          <span class="cctv-lapel left"></span><span class="cctv-lapel right"></span>
+          <span class="cctv-clothing-line"></span>
+        </div>
+        <div class="cctv-figure-arm left"><span class="cctv-hand"></span></div>
+        <div class="cctv-figure-arm right"><span class="cctv-hand"></span></div>
+        <div class="cctv-figure-leg left"><span class="cctv-shoe"></span></div>
+        <div class="cctv-figure-leg right"><span class="cctv-shoe"></span></div>
       </div>
     </div>
     <div class="cctv-person-caption"><strong></strong><small></small></div>
@@ -138,7 +145,6 @@ function enhanceCamera(root: HTMLElement): void {
     void stage.offsetWidth;
     stage.classList.add('cctv-frame-switch');
 
-    figure.hidden = !moment.visible;
     figure.style.left = moment.x;
     figure.style.top = moment.y;
     figure.style.setProperty('--person-scale', moment.scale);

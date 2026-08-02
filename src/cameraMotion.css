@@ -1,4 +1,4 @@
-/* v0.3.8 — visible people inside the fixed CCTV frame */
+/* v0.3.9 — solid, clearly human figures inside the fixed CCTV frame */
 
 .evidence-e004 .cctv-track-box {
   display: none !important;
@@ -8,33 +8,48 @@
   --person-scale: 1;
   position: absolute;
   z-index: 22;
-  width: 92px;
-  height: 210px;
+  width: 108px;
+  height: 238px;
   transform: translate(-50%, -50%) scale(var(--person-scale));
   transform-origin: 50% 100%;
   transition: left .28s ease, top .28s ease, transform .28s ease, opacity .18s ease;
-  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, .55));
+  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .72));
 }
 
 .cctv-visible-person[hidden] {
   display: none !important;
 }
 
+.cctv-person-shadow {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: 34px;
+  width: 78px;
+  height: 17px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .72);
+  filter: blur(6px);
+}
+
 .cctv-person-box {
   position: absolute;
-  left: 10px;
-  right: 10px;
+  z-index: 2;
+  left: 8px;
+  right: 8px;
   top: 0;
-  bottom: 38px;
-  border: 1px solid rgba(119, 235, 228, .58);
-  background: rgba(8, 31, 34, .08);
-  box-shadow: 0 0 0 1px rgba(119, 235, 228, .08), 0 0 26px rgba(87, 220, 211, .12);
+  bottom: 40px;
+  border: 1px solid rgba(119, 235, 228, .62);
+  background: transparent;
+  box-shadow: 0 0 0 1px rgba(119, 235, 228, .06);
 }
 
 .person-corner {
   position: absolute;
-  width: 17px;
-  height: 17px;
+  z-index: 10;
+  width: 18px;
+  height: 18px;
   border-color: #87efe9;
   border-style: solid;
 }
@@ -46,104 +61,195 @@
 
 .cctv-body-wrap {
   position: absolute;
-  inset: 8px 12px 3px;
-  transform-origin: 50% 60%;
+  left: 50%;
+  top: 5px;
+  width: 80px;
+  height: 184px;
+  transform: translateX(-50%);
+  transform-origin: 50% 70%;
 }
 
 .direction-left .cctv-body-wrap {
-  transform: scaleX(-1);
+  transform: translateX(-50%) scaleX(-1);
 }
 
 .cctv-figure-head {
   position: absolute;
+  z-index: 6;
   left: 50%;
   top: 0;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 44px;
   transform: translateX(-50%);
   overflow: hidden;
-  border: 2px solid rgba(136, 239, 233, .82);
-  border-radius: 50%;
-  background: #101b1e;
-  box-shadow: 0 0 18px rgba(101, 226, 217, .17);
+  border: 1px solid rgba(180, 210, 207, .5);
+  border-radius: 45% 45% 42% 42%;
+  background: #262a2b;
+  box-shadow: 0 2px 5px rgba(0,0,0,.8);
 }
 
 .cctv-figure-head img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 25%;
-  filter: grayscale(1) contrast(1.2) brightness(.75);
+  object-position: center 22%;
+  filter: grayscale(1) contrast(1.22) brightness(.68);
+}
+
+.cctv-figure-neck {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 39px;
+  width: 14px;
+  height: 16px;
+  transform: translateX(-50%);
+  border-radius: 3px;
+  background: linear-gradient(90deg, #4b4e4e, #747878 48%, #404343);
+  box-shadow: inset 0 0 3px rgba(0,0,0,.75);
 }
 
 .cctv-figure-torso {
   position: absolute;
+  z-index: 4;
   left: 50%;
-  top: 38px;
-  width: 42px;
-  height: 72px;
+  top: 48px;
+  width: 52px;
+  height: 78px;
   transform: translateX(-50%);
-  border-radius: 16px 16px 10px 10px;
-  border: 1px solid rgba(131, 216, 211, .35);
-  background: linear-gradient(180deg, rgba(77, 101, 104, .9), rgba(24, 39, 42, .98));
-  box-shadow: inset 0 0 18px rgba(255, 255, 255, .025);
+  overflow: hidden;
+  border: 1px solid #0a0e10;
+  border-radius: 15px 15px 8px 8px;
+  background: linear-gradient(90deg, #141a1c 0%, #323a3d 48%, #101517 100%);
+  box-shadow:
+    inset 8px 0 14px rgba(255,255,255,.03),
+    inset -9px 0 16px rgba(0,0,0,.42),
+    0 4px 9px rgba(0,0,0,.5);
 }
 
 .role-elena .cctv-figure-torso {
-  width: 36px;
-  background: linear-gradient(180deg, rgba(78, 91, 96, .92), rgba(20, 31, 35, .98));
+  width: 46px;
+  height: 84px;
+  border-radius: 13px 13px 5px 5px;
+  background: linear-gradient(90deg, #121618 0%, #2b3235 48%, #0d1113 100%);
 }
 
 .role-kirill .cctv-figure-torso {
-  width: 47px;
-  background: linear-gradient(180deg, rgba(68, 75, 78, .95), rgba(15, 23, 26, .99));
+  width: 58px;
+  background: linear-gradient(90deg, #111517 0%, #303638 48%, #090c0e 100%);
 }
 
 .role-ilya .cctv-figure-torso {
-  background: linear-gradient(180deg, rgba(72, 94, 100, .94), rgba(20, 35, 39, .99));
-  border-color: rgba(139, 232, 226, .48);
+  width: 54px;
+  background: linear-gradient(90deg, #101719 0%, #344147 50%, #0c1214 100%);
+}
+
+.cctv-lapel {
+  position: absolute;
+  top: 2px;
+  width: 20px;
+  height: 38px;
+  background: rgba(3, 7, 8, .72);
+  clip-path: polygon(0 0, 100% 0, 56% 100%, 0 58%);
+}
+
+.cctv-lapel.left { left: 3px; }
+.cctv-lapel.right { right: 3px; transform: scaleX(-1); }
+
+.cctv-clothing-line {
+  position: absolute;
+  left: 50%;
+  top: 27px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(120, 130, 132, .24);
 }
 
 .cctv-figure-arm {
   position: absolute;
-  top: 43px;
-  width: 12px;
-  height: 69px;
-  border-radius: 8px;
-  background: linear-gradient(180deg, rgba(62, 82, 85, .92), rgba(18, 30, 33, .98));
-  transform-origin: 50% 8px;
+  z-index: 2;
+  top: 52px;
+  width: 16px;
+  height: 82px;
+  border: 1px solid #0b0f10;
+  border-radius: 10px 10px 8px 8px;
+  background: linear-gradient(90deg, #0e1315, #293033 55%, #0a0e10);
+  box-shadow: 0 4px 8px rgba(0,0,0,.5);
+  transform-origin: 50% 7px;
 }
 
-.cctv-figure-arm.left { left: 4px; transform: rotate(9deg); }
-.cctv-figure-arm.right { right: 4px; transform: rotate(-18deg); }
+.cctv-figure-arm.left { left: 5px; transform: rotate(8deg); }
+.cctv-figure-arm.right { right: 5px; transform: rotate(-15deg); }
+
+.role-elena .cctv-figure-arm { width: 14px; }
+.role-kirill .cctv-figure-arm { width: 17px; }
+
+.cctv-hand {
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 12px;
+  height: 16px;
+  transform: translateX(-50%);
+  border-radius: 45% 45% 55% 55%;
+  background: linear-gradient(90deg, #555858, #777a79 50%, #414444);
+  box-shadow: inset 0 0 3px rgba(0,0,0,.7);
+}
 
 .cctv-figure-leg {
   position: absolute;
-  top: 104px;
-  width: 15px;
+  z-index: 1;
+  top: 119px;
+  width: 21px;
   height: 62px;
-  border-radius: 8px 8px 5px 5px;
-  background: linear-gradient(180deg, rgba(47, 66, 69, .96), rgba(13, 22, 24, .99));
-  transform-origin: 50% 6px;
+  border: 1px solid #080b0c;
+  border-radius: 6px 6px 4px 4px;
+  background: linear-gradient(90deg, #0b0f10, #202629 52%, #070a0b);
+  box-shadow: inset -4px 0 7px rgba(0,0,0,.38);
+  transform-origin: 50% 5px;
 }
 
-.cctv-figure-leg.left { left: 18px; transform: rotate(5deg); }
-.cctv-figure-leg.right { right: 18px; transform: rotate(-7deg); }
+.cctv-figure-leg.left { left: 16px; transform: rotate(3deg); }
+.cctv-figure-leg.right { right: 16px; transform: rotate(-6deg); }
+
+.role-elena .cctv-figure-leg {
+  top: 126px;
+  width: 18px;
+  height: 55px;
+}
+
+.role-elena .cctv-figure-leg.left { left: 19px; }
+.role-elena .cctv-figure-leg.right { right: 19px; }
+
+.cctv-shoe {
+  position: absolute;
+  left: -2px;
+  bottom: -5px;
+  width: 27px;
+  height: 10px;
+  border-radius: 6px 10px 3px 3px;
+  background: #050708;
+  box-shadow: 0 3px 5px rgba(0,0,0,.62);
+}
+
+.cctv-figure-leg.right .cctv-shoe {
+  transform: scaleX(-1);
+}
 
 .cctv-person-caption {
   position: absolute;
   left: 50%;
   bottom: 0;
-  min-width: 150px;
+  min-width: 154px;
   transform: translateX(-50%);
   display: grid;
   gap: 3px;
   padding: 6px 8px;
   border: 1px solid rgba(124, 232, 227, .34);
   border-radius: 6px;
-  background: rgba(3, 13, 16, .93);
+  background: rgba(3, 13, 16, .94);
   text-align: center;
-  box-shadow: 0 9px 24px rgba(0, 0, 0, .36);
+  box-shadow: 0 9px 24px rgba(0, 0, 0, .42);
 }
 
 .cctv-person-caption strong {
@@ -206,60 +312,57 @@
   inset: 0;
   z-index: 35;
   pointer-events: none;
-  background: rgba(199, 255, 251, .08);
-  animation: cctvFrameFlash .24s ease-out both;
+  background: rgba(199, 255, 251, .07);
+  animation: cctvFrameFlash .22s ease-out both;
 }
 
 @keyframes cctvFrameFlash {
-  0% { opacity: .85; }
+  0% { opacity: .8; }
   100% { opacity: 0; }
 }
 
 @media (max-height: 760px) and (min-width: 900px) {
   .cctv-visible-person {
-    width: 76px;
-    height: 176px;
+    width: 88px;
+    height: 196px;
   }
 
   .cctv-person-box {
-    left: 9px;
-    right: 9px;
-    bottom: 32px;
+    bottom: 34px;
+  }
+
+  .cctv-body-wrap {
+    width: 66px;
+    height: 150px;
   }
 
   .cctv-figure-head {
-    width: 32px;
-    height: 32px;
+    width: 31px;
+    height: 38px;
   }
 
-  .cctv-figure-torso {
-    top: 32px;
-    width: 35px;
-    height: 58px;
-  }
-
-  .cctv-figure-arm {
-    top: 37px;
-    height: 56px;
-  }
-
-  .cctv-figure-leg {
-    top: 86px;
-    height: 50px;
-  }
-
-  .cctv-figure-leg.left { left: 14px; }
-  .cctv-figure-leg.right { right: 14px; }
+  .cctv-figure-neck { top: 34px; height: 13px; }
+  .cctv-figure-torso { top: 42px; width: 43px; height: 62px; }
+  .role-kirill .cctv-figure-torso { width: 48px; }
+  .role-elena .cctv-figure-torso { width: 39px; height: 68px; }
+  .cctv-figure-arm { top: 46px; width: 13px; height: 65px; }
+  .cctv-figure-leg { top: 98px; width: 17px; height: 49px; }
+  .cctv-figure-leg.left { left: 13px; }
+  .cctv-figure-leg.right { right: 13px; }
+  .role-elena .cctv-figure-leg { top: 104px; width: 15px; height: 43px; }
+  .role-elena .cctv-figure-leg.left { left: 15px; }
+  .role-elena .cctv-figure-leg.right { right: 15px; }
+  .cctv-shoe { width: 22px; height: 8px; }
 }
 
 @media (max-width: 720px) {
   .cctv-visible-person {
-    width: 72px;
-    height: 168px;
+    width: 78px;
+    height: 180px;
   }
 
   .cctv-person-caption {
-    min-width: 125px;
+    min-width: 128px;
   }
 
   .cctv-frame-change {
