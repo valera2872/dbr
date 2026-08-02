@@ -6,10 +6,10 @@ import './premium-fix.css';
 import './premium-runtime.css';
 import './cctv.css';
 import './cameraMeaning.css';
-import './cameraMotion.css';
+import './cameraFrames.css';
 import './premiumEnhancements';
 import './cameraMeaning';
-import './cameraMotion';
+import './cameraFrames';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
