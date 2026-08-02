@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-3-2-cache-init';
+const CACHE_NAME = 'dbr-v0-3-3-room-clarity';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
