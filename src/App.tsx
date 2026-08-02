@@ -3,6 +3,29 @@ import room314Source from './cases/room314.json';
 
 type TabId = 'case' | 'evidence' | 'people' | 'versions' | 'timeline';
 type Phase = 'home' | 'prologue' | 'hq';
+type EvidenceMode = 'standard' | 'scene' | 'camera';
+
+interface Hotspot {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  createsFactIds: string[];
+}
+
+interface CameraOption {
+  id: string;
+  label: string;
+  correct?: boolean;
+}
+
+interface CameraQuestion {
+  prompt: string;
+  options: CameraOption[];
+  successFactIds: string[];
+  successText: string;
+  failureText: string;
+}
 
 interface Evidence {
   id: string;
@@ -13,6 +36,18 @@ interface Evidence {
   quote?: string;
   requiresSeen?: string[];
   createsFactIds: string[];
+  mode?: EvidenceMode;
+  hotspots?: Hotspot[];
+  cameraEvents?: Array<{ time: string; text: string }>;
+  cameraQuestion?: CameraQuestion;
+}
+
+interface DialogueTopic {
+  id: string;
+  question: string;
+  answer: string;
+  requiresSeen?: string[];
+  createsFactIds?: string[];
 }
 
 interface Character {
@@ -21,6 +56,14 @@ interface Character {
   room: string;
   role: string;
   statement: string;
+  topics: DialogueTopic[];
+}
+
+interface CheckpointOption {
+  id: string;
+  text: string;
+  correct?: boolean;
+  feedback: string;
 }
 
 interface CaseData {
@@ -45,7 +88,16 @@ interface CaseData {
   facts: Record<string, string>;
   characters: Character[];
   hypotheses: string[];
-  timeline: Array<{ time: string; text: string }>;
+  timeline: Array<{ time: string; text: string; requiresSeen?: string[] }>;
+  checkpoint: {
+    title: string;
+    prompt: string;
+    requiredFactIds: string[];
+    minimumFacts: number;
+    successFactIds: string[];
+    successText: string;
+    options: CheckpointOption[];
+  };
 }
 
 interface Progress {
@@ -54,8 +106,13 @@ interface Progress {
   activeTab: TabId;
   seenEvidenceIds: string[];
   flaggedEvidenceIds: string[];
+  inspectedHotspotIds: string[];
+  seenDialogueTopicIds: string[];
   discoveredFactIds: string[];
   selectedHypotheses: string[];
+  puzzleAnswers: Record<string, string>;
+  checkpointAnswerId: string | null;
+  act1Complete: boolean;
   startedAt: string | null;
 }
 
@@ -68,8 +125,13 @@ const initialProgress: Progress = {
   activeTab: 'case',
   seenEvidenceIds: [],
   flaggedEvidenceIds: [],
+  inspectedHotspotIds: [],
+  seenDialogueTopicIds: [],
   discoveredFactIds: [],
   selectedHypotheses: [],
+  puzzleAnswers: {},
+  checkpointAnswerId: null,
+  act1Complete: false,
   startedAt: null
 };
 
@@ -77,7 +139,12 @@ function loadProgress(): Progress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return initialProgress;
-    return { ...initialProgress, ...(JSON.parse(raw) as Partial<Progress>) };
+    const saved = JSON.parse(raw) as Partial<Progress>;
+    return {
+      ...initialProgress,
+      ...saved,
+      puzzleAnswers: saved.puzzleAnswers ?? {}
+    };
   } catch {
     return initialProgress;
   }
@@ -91,9 +158,14 @@ const tabs: Array<{ id: TabId; label: string }> = [
   { id: 'timeline', label: 'Хронология' }
 ];
 
+function addUnique(current: string[], additions: string[]): string[] {
+  return Array.from(new Set([...current, ...additions]));
+}
+
 export default function App() {
   const [progress, setProgress] = useState<Progress>(loadProgress);
   const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(null);
+  const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
@@ -102,6 +174,11 @@ export default function App() {
   const selectedEvidence = useMemo(
     () => caseData.evidence.find((item) => item.id === selectedEvidenceId) ?? null,
     [selectedEvidenceId]
+  );
+
+  const selectedCharacter = useMemo(
+    () => caseData.characters.find((item) => item.id === selectedCharacterId) ?? null,
+    [selectedCharacterId]
   );
 
   const unlockedEvidenceIds = useMemo(() => {
@@ -113,6 +190,21 @@ export default function App() {
       )
       .map((item) => item.id);
   }, [progress.seenEvidenceIds]);
+
+  const visibleTimeline = useMemo(
+    () => caseData.timeline.filter((entry) =>
+      (entry.requiresSeen ?? []).every((id) => progress.seenEvidenceIds.includes(id))
+    ),
+    [progress.seenEvidenceIds]
+  );
+
+  const checkpointFactCount = caseData.checkpoint.requiredFactIds.filter((factId) =>
+    progress.discoveredFactIds.includes(factId)
+  ).length;
+  const checkpointReady = checkpointFactCount >= caseData.checkpoint.minimumFacts;
+  const checkpointAnswer = caseData.checkpoint.options.find(
+    (option) => option.id === progress.checkpointAnswerId
+  );
 
   function startCase() {
     setProgress({
@@ -139,14 +231,56 @@ export default function App() {
 
     setProgress((current) => ({
       ...current,
-      seenEvidenceIds: current.seenEvidenceIds.includes(evidence.id)
-        ? current.seenEvidenceIds
-        : [...current.seenEvidenceIds, evidence.id],
-      discoveredFactIds: Array.from(
-        new Set([...current.discoveredFactIds, ...evidence.createsFactIds])
-      )
+      seenEvidenceIds: addUnique(current.seenEvidenceIds, [evidence.id]),
+      discoveredFactIds: addUnique(current.discoveredFactIds, evidence.createsFactIds)
     }));
     setSelectedEvidenceId(evidence.id);
+  }
+
+  function inspectHotspot(evidenceId: string, hotspot: Hotspot) {
+    const hotspotKey = `${evidenceId}:${hotspot.id}`;
+    setProgress((current) => ({
+      ...current,
+      inspectedHotspotIds: addUnique(current.inspectedHotspotIds, [hotspotKey]),
+      discoveredFactIds: addUnique(current.discoveredFactIds, hotspot.createsFactIds)
+    }));
+  }
+
+  function answerCameraQuestion(evidence: Evidence, option: CameraOption) {
+    const question = evidence.cameraQuestion;
+    if (!question) return;
+
+    setProgress((current) => ({
+      ...current,
+      puzzleAnswers: { ...current.puzzleAnswers, [evidence.id]: option.id },
+      discoveredFactIds: option.correct
+        ? addUnique(current.discoveredFactIds, question.successFactIds)
+        : current.discoveredFactIds
+    }));
+  }
+
+  function askDialogueTopic(topic: DialogueTopic) {
+    const unlocked = (topic.requiresSeen ?? []).every((id) =>
+      progress.seenEvidenceIds.includes(id)
+    );
+    if (!unlocked) return;
+
+    setProgress((current) => ({
+      ...current,
+      seenDialogueTopicIds: addUnique(current.seenDialogueTopicIds, [topic.id]),
+      discoveredFactIds: addUnique(current.discoveredFactIds, topic.createsFactIds ?? [])
+    }));
+  }
+
+  function submitCheckpoint(option: CheckpointOption) {
+    setProgress((current) => ({
+      ...current,
+      checkpointAnswerId: option.id,
+      act1Complete: option.correct ? true : current.act1Complete,
+      discoveredFactIds: option.correct
+        ? addUnique(current.discoveredFactIds, caseData.checkpoint.successFactIds)
+        : current.discoveredFactIds
+    }));
   }
 
   function toggleFlag(evidenceId: string) {
@@ -171,6 +305,7 @@ export default function App() {
     if (!window.confirm('Сбросить расследование и удалить сохранённый прогресс?')) return;
     localStorage.removeItem(STORAGE_KEY);
     setSelectedEvidenceId(null);
+    setSelectedCharacterId(null);
     setProgress(initialProgress);
   }
 
@@ -230,7 +365,7 @@ export default function App() {
     <div className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">ДБР · Дело №001</p>
+          <p className="eyebrow">ДБР · Дело №001 · v{caseData.manifest.version}</p>
           <h1>{caseData.manifest.title}</h1>
         </div>
         <button className="text-button" onClick={resetCase}>Сбросить</button>
@@ -239,21 +374,75 @@ export default function App() {
       <main className="hq-content">
         {progress.activeTab === 'case' && (
           <section className="stack">
-            <article className="status-card">
-              <p className="eyebrow">Текущая стадия</p>
-              <h2>Осмотр места</h2>
-              <p>Установите, мог ли Илья самостоятельно покинуть номер 314 после 23:50.</p>
+            <article className={`status-card ${progress.act1Complete ? 'complete' : ''}`}>
+              <p className="eyebrow">{progress.act1Complete ? 'Контрольная точка пройдена' : 'Текущая стадия'}</p>
+              <h2>{progress.act1Complete ? 'Акт I. Запертый номер — завершён' : 'Осмотр места'}</h2>
+              <p>
+                {progress.act1Complete
+                  ? 'Вы установили, что Илья не мог уйти обычным путём. Следующий этап расследования — прежняя планировка отеля и номер 312.'
+                  : 'Установите, мог ли Илья самостоятельно покинуть номер 314 после 23:50.'}
+              </p>
               <div className="stat-row">
                 <span>Изучено: {progress.seenEvidenceIds.length}/{caseData.evidence.length}</span>
                 <span>Фактов: {progress.discoveredFactIds.length}</span>
-                <span>Отмечено: {progress.flaggedEvidenceIds.length}</span>
+                <span>Допросов: {progress.seenDialogueTopicIds.length}</span>
               </div>
-              <button
-                className="primary-button compact"
-                onClick={() => setProgress((current) => ({ ...current, activeTab: 'evidence' }))}
-              >
-                Перейти к материалам
-              </button>
+              {!progress.act1Complete && (
+                <button
+                  className="primary-button compact"
+                  onClick={() => setProgress((current) => ({ ...current, activeTab: 'evidence' }))}
+                >
+                  Перейти к материалам
+                </button>
+              )}
+            </article>
+
+            <article className="panel">
+              <div className="panel-heading">
+                <div>
+                  <p className="eyebrow">Логический узел</p>
+                  <h2>{caseData.checkpoint.title}</h2>
+                </div>
+                <span className={`readiness ${checkpointReady ? 'ready' : ''}`}>
+                  {checkpointFactCount}/{caseData.checkpoint.minimumFacts} ключевых факта
+                </span>
+              </div>
+
+              {!checkpointReady && !progress.act1Complete && (
+                <p className="muted">
+                  Сначала подтвердите минимум три обстоятельства: путь через дверь, окно, признаки конфликта и состояние телефона.
+                </p>
+              )}
+
+              {(checkpointReady || progress.act1Complete) && (
+                <div className="checkpoint-box">
+                  <p className="checkpoint-prompt">{caseData.checkpoint.prompt}</p>
+                  <div className="checkpoint-options">
+                    {caseData.checkpoint.options.map((option) => {
+                      const chosen = progress.checkpointAnswerId === option.id;
+                      return (
+                        <button
+                          key={option.id}
+                          className={`checkpoint-option ${chosen ? 'chosen' : ''} ${chosen && option.correct ? 'correct' : ''}`}
+                          onClick={() => submitCheckpoint(option)}
+                          disabled={progress.act1Complete && !chosen}
+                        >
+                          {option.text}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {checkpointAnswer && (
+                    <div className={`feedback ${checkpointAnswer.correct ? 'success' : 'warning'}`}>
+                      <strong>{checkpointAnswer.correct ? 'Вывод подтверждён.' : 'Версия пока не сходится.'}</strong>
+                      <p>{checkpointAnswer.feedback}</p>
+                    </div>
+                  )}
+                  {progress.act1Complete && (
+                    <div className="act-complete-note">{caseData.checkpoint.successText}</div>
+                  )}
+                </div>
+              )}
             </article>
 
             <article className="panel">
@@ -270,10 +459,11 @@ export default function App() {
             </article>
 
             <article className="panel technical-panel">
-              <h2>Проверка сценарного пакета</h2>
-              <p>Пакет загружен: <strong>{caseData.manifest.caseId}</strong></p>
-              <p>Версия контента: {caseData.manifest.version}</p>
+              <h2>Состояние прототипа</h2>
+              <p>Пакет: <strong>{caseData.manifest.caseId}</strong></p>
+              <p>Контент: {caseData.manifest.version}</p>
               <p>Сохранение: localStorage</p>
+              <p>Доступно: интерактивный осмотр, камера, первичные допросы, промежуточный отчёт.</p>
             </article>
           </section>
         )}
@@ -321,22 +511,31 @@ export default function App() {
                 <p className="eyebrow">Первые показания</p>
                 <h2>Участники встречи</h2>
               </div>
+              <span>{progress.seenDialogueTopicIds.length} вопросов задано</span>
             </div>
             <div className="card-grid people-grid">
-              {caseData.characters.map((character) => (
-                <article className="person-card" key={character.id}>
-                  <div className="avatar-placeholder" aria-hidden="true">
-                    {character.name.charAt(0)}
-                  </div>
-                  <p className="eyebrow">{character.room}</p>
-                  <h3>{character.name}</h3>
-                  <p className="muted">{character.role}</p>
-                  <blockquote>{character.statement}</blockquote>
-                  <button className="secondary-button" disabled>
-                    Расширенный допрос — в v0.2
-                  </button>
-                </article>
-              ))}
+              {caseData.characters.map((character) => {
+                const askedCount = character.topics.filter((topic) =>
+                  progress.seenDialogueTopicIds.includes(topic.id)
+                ).length;
+                return (
+                  <article className="person-card" key={character.id}>
+                    <div className="avatar-placeholder" aria-hidden="true">
+                      {character.name.charAt(0)}
+                    </div>
+                    <p className="eyebrow">{character.room}</p>
+                    <h3>{character.name}</h3>
+                    <p className="muted">{character.role}</p>
+                    <blockquote>{character.statement}</blockquote>
+                    <button
+                      className="secondary-button"
+                      onClick={() => setSelectedCharacterId(character.id)}
+                    >
+                      Допросить · {askedCount}/{character.topics.length}
+                    </button>
+                  </article>
+                );
+              })}
             </div>
           </section>
         )}
@@ -366,7 +565,7 @@ export default function App() {
               })}
             </div>
             <p className="muted helper-copy">
-              Версия не помечается как правильная или ошибочная сразу. Новые факты будут усиливать или ослаблять её.
+              Версия не помечается как правильная сразу. Проверяйте, объясняет ли она все найденные следы.
             </p>
           </section>
         )}
@@ -378,9 +577,10 @@ export default function App() {
                 <p className="eyebrow">Ночь исчезновения</p>
                 <h2>Хронология</h2>
               </div>
+              <span>{visibleTimeline.length} событий</span>
             </div>
             <div className="timeline">
-              {caseData.timeline.map((entry) => (
+              {visibleTimeline.map((entry) => (
                 <article key={`${entry.time}-${entry.text}`} className="timeline-entry">
                   <time>{entry.time}</time>
                   <div>
@@ -414,9 +614,79 @@ export default function App() {
             <h2>{selectedEvidence.title}</h2>
             {selectedEvidence.quote && <blockquote>{selectedEvidence.quote}</blockquote>}
             <p>{selectedEvidence.summary}</p>
-            <ul className="detail-list">
-              {selectedEvidence.details.map((detail) => <li key={detail}>{detail}</li>)}
-            </ul>
+
+            {selectedEvidence.mode === 'scene' && selectedEvidence.hotspots && (
+              <div className="room-scene" aria-label="Зоны осмотра номера">
+                {selectedEvidence.hotspots.map((hotspot) => {
+                  const key = `${selectedEvidence.id}:${hotspot.id}`;
+                  const inspected = progress.inspectedHotspotIds.includes(key);
+                  return (
+                    <button
+                      key={hotspot.id}
+                      className={`hotspot-card ${inspected ? 'inspected' : ''}`}
+                      onClick={() => inspectHotspot(selectedEvidence.id, hotspot)}
+                    >
+                      <span>{inspected ? '✓ Изучено' : 'Осмотреть'}</span>
+                      <strong>{hotspot.label}</strong>
+                      {inspected && (
+                        <div className="hotspot-result">
+                          <b>{hotspot.title}</b>
+                          <p>{hotspot.description}</p>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {selectedEvidence.mode === 'camera' && selectedEvidence.cameraEvents && selectedEvidence.cameraQuestion && (
+              <div className="camera-puzzle">
+                <div className="camera-feed">
+                  <div className="camera-label">CAM 3F · запись восстановлена</div>
+                  {selectedEvidence.cameraEvents.map((event) => (
+                    <div className="camera-event" key={`${event.time}-${event.text}`}>
+                      <time>{event.time}</time>
+                      <span>{event.text}</span>
+                    </div>
+                  ))}
+                </div>
+                <h3>{selectedEvidence.cameraQuestion.prompt}</h3>
+                <div className="answer-grid">
+                  {selectedEvidence.cameraQuestion.options.map((option) => {
+                    const selected = progress.puzzleAnswers[selectedEvidence.id] === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        className={`answer-button ${selected ? 'selected' : ''} ${selected && option.correct ? 'correct' : ''}`}
+                        onClick={() => answerCameraQuestion(selectedEvidence, option)}
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                {progress.puzzleAnswers[selectedEvidence.id] && (() => {
+                  const chosen = selectedEvidence.cameraQuestion?.options.find(
+                    (option) => option.id === progress.puzzleAnswers[selectedEvidence.id]
+                  );
+                  return (
+                    <div className={`feedback ${chosen?.correct ? 'success' : 'warning'}`}>
+                      {chosen?.correct
+                        ? selectedEvidence.cameraQuestion?.successText
+                        : selectedEvidence.cameraQuestion?.failureText}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {selectedEvidence.mode !== 'scene' && selectedEvidence.mode !== 'camera' && (
+              <ul className="detail-list">
+                {selectedEvidence.details.map((detail) => <li key={detail}>{detail}</li>)}
+              </ul>
+            )}
+
             <button
               className={progress.flaggedEvidenceIds.includes(selectedEvidence.id) ? 'secondary-button selected' : 'secondary-button'}
               onClick={() => toggleFlag(selectedEvidence.id)}
@@ -425,6 +695,36 @@ export default function App() {
                 ? '★ Отмечено как важное'
                 : '☆ Отметить как важное'}
             </button>
+          </article>
+        </div>
+      )}
+
+      {selectedCharacter && (
+        <div className="modal-backdrop" role="presentation" onClick={() => setSelectedCharacterId(null)}>
+          <article className="evidence-modal dialogue-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+            <button className="close-button" onClick={() => setSelectedCharacterId(null)} aria-label="Закрыть">×</button>
+            <p className="eyebrow">Допрос · {selectedCharacter.room}</p>
+            <h2>{selectedCharacter.name}</h2>
+            <p className="muted">{selectedCharacter.role}</p>
+            <blockquote>{selectedCharacter.statement}</blockquote>
+
+            <div className="dialogue-list">
+              {selectedCharacter.topics.map((topic) => {
+                const unlocked = (topic.requiresSeen ?? []).every((id) =>
+                  progress.seenEvidenceIds.includes(id)
+                );
+                const asked = progress.seenDialogueTopicIds.includes(topic.id);
+                return (
+                  <div className={`dialogue-topic ${!unlocked ? 'locked' : ''}`} key={topic.id}>
+                    <button disabled={!unlocked} onClick={() => askDialogueTopic(topic)}>
+                      <span>{asked ? 'Повторить вопрос' : unlocked ? 'Задать вопрос' : 'Вопрос пока недоступен'}</span>
+                      <strong>{topic.question}</strong>
+                    </button>
+                    {asked && <div className="dialogue-answer">{topic.answer}</div>}
+                  </div>
+                );
+              })}
+            </div>
           </article>
         </div>
       )}
