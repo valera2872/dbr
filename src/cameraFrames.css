@@ -1,0 +1,65 @@
+/* v0.4.0 — six photographic CCTV frames */
+
+.evidence-e004 .cctv-photo,
+.evidence-e004 .cctv-track-box,
+.evidence-e004 .cctv-visible-person,
+.evidence-e004 .cctv-person-box,
+.evidence-e004 .cctv-frame-change {
+  display: none !important;
+}
+
+.cctv-real-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: 300% 200%;
+  filter: grayscale(.92) saturate(.42) contrast(1.12) brightness(.72);
+  transform: scale(1.01);
+}
+
+.cctv-real-empty {
+  position: absolute;
+  z-index: 17;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  min-width: min(480px, 78%);
+  padding: 24px 30px;
+  border: 1px solid rgba(236, 121, 114, .48);
+  border-radius: 12px;
+  background: rgba(19, 8, 10, .76);
+  text-align: center;
+  box-shadow: 0 22px 60px rgba(0,0,0,.42);
+  backdrop-filter: blur(7px);
+}
+
+.cctv-real-empty[hidden] { display: none !important; }
+.cctv-real-empty span { display: block; color: #efa49e; font: 800 9px/1 ui-monospace, monospace; letter-spacing: .16em; }
+.cctv-real-empty strong { display: block; margin-top: 9px; color: #fff4f3; font: 800 22px/1.2 Manrope, sans-serif; }
+.cctv-real-empty small { display: block; margin-top: 7px; color: #c0a19e; font: 600 10px/1.4 Manrope, sans-serif; }
+
+.real-frame-switch .cctv-real-frame {
+  animation: realFrameCut .22s ease-out both;
+}
+
+@keyframes realFrameCut {
+  0% { opacity: .22; filter: grayscale(1) contrast(1.45) brightness(1.02); }
+  100% { opacity: 1; }
+}
+
+.evidence-e004 .cctv-photo-grade { z-index: 2; }
+.evidence-e004 .cctv-room-tag { z-index: 12; }
+.evidence-e004 .cctv-event-card { z-index: 24; }
+.evidence-e004 .cctv-topbar,
+.evidence-e004 .cctv-scanlines,
+.evidence-e004 .cctv-source { z-index: 30; }
+
+@media (max-width: 720px) {
+  .cctv-real-empty {
+    min-width: 84%;
+    padding: 18px;
+  }
+}
