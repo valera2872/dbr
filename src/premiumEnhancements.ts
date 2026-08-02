@@ -1,19 +1,72 @@
+export {};
+
 type CameraMoment = {
   subject: string;
-  position: string;
-  lane: 'guest' | 'service';
   note: string;
+  x: string;
+  direction: 'left' | 'right' | 'still';
+  door: string;
+  visible: boolean;
+  subjectClass: string;
 };
 
-const BUILD = 'v0.3.2';
+const BUILD = 'v0.3.4';
 
 const CAMERA_MOMENTS: Record<string, CameraMoment> = {
-  '22:48': { subject: 'Елена', position: '72%', lane: 'guest', note: 'Подходит к двери номера 314.' },
-  '23:04': { subject: 'Елена', position: '16%', lane: 'guest', note: 'Уходит в сторону номера 307.' },
-  '23:41': { subject: 'Кирилл', position: '34%', lane: 'guest', note: 'Входит в соседний номер 312.' },
-  '23:47': { subject: 'Илья', position: '67%', lane: 'guest', note: 'Выходит из номера 314 за горячей водой.' },
-  '23:50': { subject: 'Илья', position: '73%', lane: 'guest', note: 'Возвращается в номер 314. Это его последнее подтверждённое появление.' },
-  '00:17': { subject: 'Нет движения', position: '50%', lane: 'service', note: 'Сообщение отправлено, но в гостевом коридоре никто не появляется.' }
+  '22:48': {
+    subject: 'Елена Ветрова',
+    note: 'Подходит к номеру 314 и останавливается у двери.',
+    x: '72%',
+    direction: 'right',
+    door: '314',
+    visible: true,
+    subjectClass: 'subject-elena'
+  },
+  '23:04': {
+    subject: 'Елена Ветрова',
+    note: 'Уходит от номера 314 в сторону своего номера 307.',
+    x: '23%',
+    direction: 'left',
+    door: '307',
+    visible: true,
+    subjectClass: 'subject-elena'
+  },
+  '23:41': {
+    subject: 'Кирилл Бессонов',
+    note: 'Входит в соседний номер 312. После этого в коридоре его не видно.',
+    x: '49%',
+    direction: 'right',
+    door: '312',
+    visible: true,
+    subjectClass: 'subject-kirill'
+  },
+  '23:47': {
+    subject: 'Илья Соколов',
+    note: 'Выходит из номера 314 и направляется за горячей водой.',
+    x: '66%',
+    direction: 'left',
+    door: '314',
+    visible: true,
+    subjectClass: 'subject-ilya'
+  },
+  '23:50': {
+    subject: 'Илья Соколов',
+    note: 'Возвращается и входит в номер 314. Это последнее подтверждённое появление Ильи.',
+    x: '76%',
+    direction: 'right',
+    door: '314',
+    visible: true,
+    subjectClass: 'subject-ilya'
+  },
+  '00:17': {
+    subject: 'Движение не обнаружено',
+    note: 'Сообщение Ильи отправлено, но в гостевом коридоре никто не появляется.',
+    x: '50%',
+    direction: 'still',
+    door: '—',
+    visible: false,
+    subjectClass: 'subject-none'
+  }
 };
 
 function createElement<K extends keyof HTMLElementTagNameMap>(tag: K, className: string, html = ''): HTMLElementTagNameMap[K] {
@@ -27,10 +80,13 @@ function installBuildMarker(): void {
   document.documentElement.dataset.dbrBuild = BUILD;
   document.title = `ДБР — Номер 314 · ${BUILD}`;
 
-  if (document.querySelector('.dbr-build-marker')) return;
-  const marker = createElement('div', 'dbr-build-marker', BUILD);
-  marker.setAttribute('aria-label', `Версия приложения ${BUILD}`);
-  document.body.appendChild(marker);
+  let marker = document.querySelector<HTMLElement>('.dbr-build-marker');
+  if (!marker) {
+    marker = createElement('div', 'dbr-build-marker');
+    marker.setAttribute('aria-label', `Версия приложения ${BUILD}`);
+    document.body.appendChild(marker);
+  }
+  marker.textContent = BUILD;
 }
 
 function explainLockedCamera(): void {
@@ -38,37 +94,24 @@ function explainLockedCamera(): void {
     const title = card.querySelector('h2')?.textContent?.trim();
     if (title !== 'Коридорная камера' || !card.disabled) return;
     const description = card.querySelector<HTMLParagraphElement>('.evidence-card-copy p');
-    if (description) description.textContent = 'Сначала изучите «Журнал замка номера 314» (E003). После этого камера откроется автоматически.';
+    if (description) description.textContent = 'Сначала изучите «Журнал замка номера 314». После закрытия журнала камера откроется автоматически.';
   });
 }
 
 function enhanceRoom(layout: HTMLElement): void {
   const body = layout.parentElement;
-  const image = layout.querySelector<HTMLElement>('.premium-room-image');
-  if (!body || !image) return;
-  if (layout.dataset.uxEnhanced === BUILD) return;
-
+  if (!body || layout.dataset.uxEnhanced === BUILD) return;
   layout.dataset.uxEnhanced = BUILD;
+
   body.querySelectorAll(':scope > .scene-taskbar.room-taskbar').forEach((node) => node.remove());
-  image.querySelectorAll(':scope > .room-clue-overlays').forEach((node) => node.remove());
+  layout.querySelectorAll('.room-clue-overlays').forEach((node) => node.remove());
 
   const task = createElement(
     'div',
     'scene-taskbar room-taskbar',
-    '<div><span>ЗАДАЧА ОСМОТРА</span><strong>Найдите четыре детали, исключающие обычный уход из номера</strong></div><small>Нажимайте на подписанные метки прямо на фотографии</small>'
+    '<div><span>ЗАДАЧА ОСМОТРА</span><strong>Нажмите четыре метки на фотографии и изучите найденные детали</strong></div><small>Галочка означает, что зона уже осмотрена</small>'
   );
   body.insertBefore(task, layout);
-
-  const props = createElement(
-    'div',
-    'room-clue-overlays',
-    '<span class="clue-prop clue-window" aria-hidden="true"></span>' +
-      '<span class="clue-prop clue-impact" aria-hidden="true"></span>' +
-      '<span class="clue-prop clue-bag" aria-hidden="true"><i></i></span>' +
-      '<span class="clue-prop clue-drag one" aria-hidden="true"></span>' +
-      '<span class="clue-prop clue-drag two" aria-hidden="true"></span>'
-  );
-  image.appendChild(props);
 
   const labelByZone: Record<string, string> = {
     'Осмотреть Окно': 'Окно',
@@ -89,46 +132,61 @@ function enhanceRoom(layout: HTMLElement): void {
 
 function enhanceCamera(root: HTMLElement): void {
   const frame = root.querySelector<HTMLElement>('.cctv-frame');
+  const consoleElement = root.querySelector<HTMLElement>('.camera-console');
   const eventButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('.camera-events button'));
-  if (!frame || eventButtons.length === 0) return;
+  if (!frame || !consoleElement || eventButtons.length === 0) return;
   if (root.dataset.uxEnhanced === BUILD) return;
 
   root.dataset.uxEnhanced = BUILD;
   root.querySelectorAll(':scope > .scene-taskbar.camera-taskbar').forEach((node) => node.remove());
-  frame.querySelectorAll(':scope > .corridor-map').forEach((node) => node.remove());
 
   const task = createElement(
     'div',
     'scene-taskbar camera-taskbar',
-    '<div><span>ЗАДАЧА ПО КАМЕРЕ</span><strong>Просмотрите отметки и найдите последнее появление Ильи</strong></div><small class="camera-view-count">Просмотрено 0 из 6</small>'
+    '<div><span>ЗАДАЧА ПО КАМЕРЕ</span><strong>Выберите время снизу и сравните, кто появляется в коридоре</strong></div><small class="camera-view-count">Просмотрено 0 из 6</small>'
   );
   root.prepend(task);
 
-  const map = createElement(
-    'div',
-    'corridor-map',
-    '<div class="camera-cone"></div>' +
-      '<div class="corridor-wall top"><span class="door door-307">307</span><span class="door door-312">312</span><span class="door door-314">314</span></div>' +
-      '<div class="corridor-path"><span>ГОСТЕВОЙ КОРИДОР</span></div>' +
-      '<div class="service-pocket"><span>СЛУЖЕБНАЯ ЗОНА</span><small>частично вне обзора</small></div>' +
-      '<div class="camera-device"><b>CAM 3F</b><i></i></div>' +
-      '<div class="tracked-person"><span></span><strong></strong></div>' +
-      '<div class="camera-moment-card"><time></time><div><strong></strong><p></p></div></div>'
-  );
-  frame.appendChild(map);
+  frame.innerHTML = `
+    <div class="cctv-real-stage">
+      <div class="cctv-scanlines"></div>
+      <div class="cctv-topbar"><span><i></i> CAM 3F · REC</span><time>18.10.2026 · 22:48:00</time></div>
+      <div class="cctv-ceiling"><span></span><span></span><span></span></div>
+      <div class="cctv-back-wall">
+        <div class="cctv-door cctv-door-307"><b>307</b><i></i></div>
+        <div class="cctv-door cctv-door-312"><b>312</b><i></i></div>
+        <div class="cctv-door cctv-door-314"><b>314</b><i></i></div>
+      </div>
+      <div class="cctv-floor"><span></span><span></span><span></span><span></span></div>
+      <div class="cctv-blind-zone"><strong>СЛЕПАЯ ЗОНА</strong><small>служебный проход вне полного обзора</small></div>
+      <div class="cctv-person subject-elena direction-right">
+        <div class="person-head"></div><div class="person-body"></div><div class="person-leg left"></div><div class="person-leg right"></div>
+        <b>Елена Ветрова</b><small>идёт к номеру 314 →</small>
+      </div>
+      <div class="cctv-empty"><span>NO MOTION</span><strong>Движение не обнаружено</strong></div>
+      <div class="cctv-event-card"><time>22:48</time><div><span>ЗАФИКСИРОВАНО</span><strong>Елена подходит к номеру 314</strong><p>Подходит к номеру 314 и останавливается у двери.</p></div></div>
+      <div class="cctv-help">Нажмите на другую отметку времени под кадром</div>
+    </div>`;
 
-  const viewed = new Set<string>();
+  const stage = frame.querySelector<HTMLElement>('.cctv-real-stage');
+  const topTime = frame.querySelector<HTMLTimeElement>('.cctv-topbar time');
+  const person = frame.querySelector<HTMLElement>('.cctv-person');
+  const personName = person?.querySelector<HTMLElement>('b');
+  const personDirection = person?.querySelector<HTMLElement>('small');
+  const empty = frame.querySelector<HTMLElement>('.cctv-empty');
+  const cardTime = frame.querySelector<HTMLTimeElement>('.cctv-event-card time');
+  const cardTitle = frame.querySelector<HTMLElement>('.cctv-event-card strong');
+  const cardText = frame.querySelector<HTMLElement>('.cctv-event-card p');
   const count = task.querySelector<HTMLElement>('.camera-view-count');
-  const tracked = map.querySelector<HTMLElement>('.tracked-person');
-  const momentTime = map.querySelector<HTMLTimeElement>('.camera-moment-card time');
-  const momentTitle = map.querySelector<HTMLElement>('.camera-moment-card strong');
-  const momentText = map.querySelector<HTMLElement>('.camera-moment-card p');
+  const viewed = new Set<string>();
+
+  if (!stage || !topTime || !person || !personName || !personDirection || !empty || !cardTime || !cardTitle || !cardText) return;
 
   const selectMoment = (button: HTMLButtonElement): void => {
     const time = button.querySelector('time')?.textContent?.trim() ?? '';
     const description = button.querySelector('span')?.textContent?.trim() ?? '';
     const moment = CAMERA_MOMENTS[time];
-    if (!moment || !tracked || !momentTime || !momentTitle || !momentText) return;
+    if (!moment) return;
 
     viewed.add(time);
     eventButtons.forEach((item) => {
@@ -137,22 +195,23 @@ function enhanceCamera(root: HTMLElement): void {
       item.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
 
-    tracked.style.left = moment.position;
-    tracked.classList.toggle('no-movement', moment.subject === 'Нет движения');
-    tracked.classList.toggle('service-lane', moment.lane === 'service');
-    const trackedLabel = tracked.querySelector<HTMLElement>('strong');
-    if (trackedLabel) trackedLabel.textContent = moment.subject;
+    stage.dataset.time = time;
+    stage.dataset.door = moment.door;
+    topTime.textContent = `18.10.2026 · ${time}:00`;
+    cardTime.textContent = time;
+    cardTitle.textContent = description;
+    cardText.textContent = moment.note;
 
-    momentTime.textContent = time;
-    momentTitle.textContent = description || moment.subject;
-    momentText.textContent = moment.note;
+    person.className = `cctv-person ${moment.subjectClass} direction-${moment.direction}`;
+    person.style.left = moment.x;
+    person.hidden = !moment.visible;
+    empty.hidden = moment.visible;
+    personName.textContent = moment.subject;
+    personDirection.textContent = moment.direction === 'left' ? `← движение к номеру ${moment.door}` : moment.direction === 'right' ? `движение к номеру ${moment.door} →` : '';
 
     if (count) {
       count.textContent = `Просмотрено ${viewed.size} из ${eventButtons.length}`;
-      if (viewed.size === eventButtons.length) {
-        count.textContent = 'Все отметки просмотрены — выберите ответ ниже';
-        root.classList.add('camera-review-complete');
-      }
+      if (viewed.size === eventButtons.length) count.textContent = 'Все кадры просмотрены — выберите ответ справа';
     }
   };
 
@@ -187,15 +246,12 @@ observer.observe(document.documentElement, { childList: true, subtree: true });
 
 document.addEventListener('click', () => {
   window.setTimeout(scan, 0);
-  window.setTimeout(scan, 120);
-  window.setTimeout(scan, 400);
+  window.setTimeout(scan, 100);
+  window.setTimeout(scan, 350);
 }, true);
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', scan, { once: true });
-} else {
-  scan();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan, { once: true });
+else scan();
 
 const startupPoll = window.setInterval(scan, 250);
-window.setTimeout(() => window.clearInterval(startupPoll), 15000);
+window.setTimeout(() => window.clearInterval(startupPoll), 12000);
