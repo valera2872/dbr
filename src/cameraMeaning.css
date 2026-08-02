@@ -1,204 +1,287 @@
-/* v0.3.6 — make the investigative meaning of the CCTV sequence explicit */
+/* v0.3.7 — stable two-column CCTV layout without clipped controls */
+
+.evidence-e004 .premium-modal-header {
+  padding-block: 14px 12px;
+}
+
+.evidence-e004 .premium-modal-header h1 {
+  font-size: clamp(30px, 2.7vw, 44px);
+}
+
+.evidence-e004 .premium-modal-body {
+  min-height: 0;
+  overflow: hidden;
+}
 
 .evidence-e004 .camera-evidence {
-  grid-template-rows: auto auto minmax(250px, 1fr) 178px;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 365px;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px 12px;
+}
+
+.evidence-e004 .camera-taskbar {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  margin: 0;
+  padding-block: 11px;
+}
+
+.evidence-e004 .cctv-frame {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+}
+
+.evidence-e004 .camera-console {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 8px;
+  overflow: hidden;
 }
 
 .camera-objective-strip {
+  display: none !important;
+}
+
+.camera-objective-side {
   display: grid;
-  grid-template-columns: minmax(260px, 1.2fr) minmax(220px, .8fr) 26px minmax(220px, .8fr);
-  align-items: stretch;
-  gap: 10px;
-  padding: 10px;
-  border: 1px solid rgba(124, 232, 227, .16);
-  border-radius: 12px;
-  background: rgba(8, 22, 26, .72);
+  gap: 6px;
+  padding: 9px;
+  border: 1px solid rgba(124, 232, 227, .18);
+  border-radius: 11px;
+  background: rgba(8, 22, 26, .78);
 }
 
-.camera-objective-title,
-.camera-objective-step {
-  min-width: 0;
-  border-radius: 9px;
-}
-
-.camera-objective-title {
+.camera-side-title {
   display: grid;
-  align-content: center;
-  gap: 4px;
-  padding: 9px 12px;
-  background: linear-gradient(90deg, rgba(124,232,227,.08), rgba(124,232,227,.02));
+  gap: 3px;
+  padding: 3px 3px 5px;
 }
 
-.camera-objective-title span,
-.camera-objective-step small {
+.camera-side-title span,
+.camera-objective-side button small {
   color: #75ddd7;
-  font: 800 8px/1 ui-monospace, monospace;
-  letter-spacing: .13em;
+  font: 800 7px/1 ui-monospace, monospace;
+  letter-spacing: .12em;
 }
 
-.camera-objective-title strong {
-  color: #edf8f8;
-  font: 750 12px/1.35 Manrope, sans-serif;
+.camera-side-title strong {
+  color: #eef8f8;
+  font: 750 11px/1.3 Manrope, sans-serif;
 }
 
-.camera-objective-step {
+.camera-objective-side button {
   display: grid;
-  grid-template-columns: 31px minmax(0, 1fr) auto;
+  grid-template-columns: 27px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 9px;
-  padding: 8px 10px;
-  border: 1px solid rgba(132,168,173,.17);
-  background: rgba(12, 29, 33, .78);
-  transition: border-color .2s ease, background .2s ease;
+  gap: 8px;
+  min-height: 48px;
+  padding: 7px 8px;
+  border: 1px solid rgba(132, 168, 173, .18);
+  border-radius: 8px;
+  background: rgba(13, 29, 33, .78);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
-.camera-objective-step i {
+.camera-objective-side button i {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 25px;
+  height: 25px;
+  border: 1px solid rgba(124, 232, 227, .32);
   border-radius: 50%;
-  border: 1px solid rgba(124,232,227,.28);
-  color: #83e8e2;
-  font: 900 11px/1 ui-monospace, monospace;
+  color: #81e8e2;
+  font: 900 10px/1 ui-monospace, monospace;
   font-style: normal;
 }
 
-.camera-objective-step > div {
+.camera-objective-side button > div {
   display: grid;
   gap: 3px;
   min-width: 0;
 }
 
-.camera-objective-step strong {
+.camera-objective-side button strong {
   overflow: hidden;
-  color: #e7f3f3;
-  font: 700 10px/1.25 Manrope, sans-serif;
+  color: #e7f4f4;
+  font: 700 9px/1.25 Manrope, sans-serif;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.camera-objective-step b {
-  justify-self: end;
-  color: #778e92;
-  font: 700 8px/1.2 Manrope, sans-serif;
+.camera-objective-side button b {
+  color: #7d9397;
+  font: 700 7px/1.2 Manrope, sans-serif;
   text-align: right;
 }
 
-.camera-objective-step.confirmed {
-  border-color: rgba(87, 221, 165, .38);
-  background: rgba(26, 84, 62, .24);
+.camera-objective-side button.confirmed {
+  border-color: rgba(87, 221, 165, .4);
+  background: rgba(27, 80, 60, .25);
 }
 
-.camera-objective-step.confirmed i {
-  border-color: rgba(87, 221, 165, .52);
-  color: #7ce7b8;
-  box-shadow: 0 0 16px rgba(87,221,165,.12);
+.camera-objective-side button.confirmed i,
+.camera-objective-side button.confirmed b {
+  color: #82e1b5;
 }
 
-.camera-objective-step.confirmed b {
-  color: #83e2b6;
-}
-
-.camera-objective-arrow {
+.evidence-e004 .camera-events {
   display: grid;
-  place-items: center;
-  color: #5e8588;
-  font-size: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, 1fr);
+  gap: 6px;
+  min-height: 150px;
+}
+
+.evidence-e004 .camera-events button {
+  min-height: 0;
+  padding: 7px 8px;
+}
+
+.evidence-e004 .camera-events button span {
+  white-space: normal;
+  line-height: 1.25;
 }
 
 .evidence-e004 .camera-events button[data-event-role="last-entry"],
 .evidence-e004 .camera-events button[data-event-role="after-entry"] {
-  position: relative;
+  border-color: rgba(124, 232, 227, .32);
 }
 
 .evidence-e004 .camera-events button[data-event-role="last-entry"]::after,
 .evidence-e004 .camera-events button[data-event-role="after-entry"]::after {
-  position: absolute;
-  right: 8px;
-  top: 7px;
-  padding: 3px 5px;
-  border-radius: 4px;
-  font: 800 7px/1 ui-monospace, monospace;
-  letter-spacing: .08em;
-}
-
-.evidence-e004 .camera-events button[data-event-role="last-entry"]::after {
-  content: "КЛЮЧЕВОЙ ВХОД";
-  background: rgba(124,232,227,.12);
-  color: #80e8e2;
-}
-
-.evidence-e004 .camera-events button[data-event-role="after-entry"]::after {
-  content: "ПОСЛЕ ВХОДА";
-  background: rgba(238,117,110,.12);
-  color: #efaaa5;
+  content: none;
 }
 
 .evidence-e004 .camera-question {
-  justify-content: flex-start;
+  min-height: 0;
+  margin: 0;
+  padding: 11px 12px;
   overflow: auto;
+  justify-content: flex-start;
 }
 
 .evidence-e004 .camera-question h2 {
-  margin-bottom: 6px;
+  margin: 4px 0 6px;
+  font-size: 14px;
 }
 
 .camera-question-helper {
-  margin: 0 0 9px;
+  margin: 0 0 7px;
   color: #82989c;
-  font-size: 9px;
+  font-size: 8px;
   line-height: 1.35;
 }
 
 .evidence-e004 .camera-question > div {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 6px;
+  gap: 5px;
 }
 
 .evidence-e004 .camera-question button {
-  min-height: 34px;
-  padding: 7px 9px;
+  min-height: 31px;
+  padding: 6px 8px;
   text-align: left;
-  font-size: 9px;
+  font-size: 8px;
   line-height: 1.25;
 }
 
+.evidence-e004 .camera-feedback {
+  margin-top: 6px;
+  font-size: 8px;
+}
+
 .camera-ready-for-conclusion .camera-question {
-  border-color: rgba(124,232,227,.42);
-  box-shadow: 0 0 0 1px rgba(124,232,227,.06), 0 0 25px rgba(124,232,227,.06);
+  border-color: rgba(124, 232, 227, .42);
+  box-shadow: 0 0 0 1px rgba(124,232,227,.06), 0 0 24px rgba(124,232,227,.06);
 }
 
 @media (max-width: 1120px) {
+  .evidence-e004 .premium-modal-body {
+    overflow: auto;
+  }
+
   .evidence-e004 .camera-evidence {
-    grid-template-rows: auto auto minmax(250px, 1fr) 232px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
   }
 
-  .camera-objective-strip {
+  .evidence-e004 .cctv-frame {
+    height: 330px;
+    min-height: 330px;
+  }
+
+  .evidence-e004 .camera-console {
+    display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
   }
 
-  .camera-objective-title {
+  .camera-objective-side {
     grid-column: 1 / -1;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 
-  .camera-objective-arrow {
-    display: none;
+  .camera-side-title {
+    align-content: center;
+  }
+
+  .evidence-e004 .camera-events,
+  .evidence-e004 .camera-question {
+    min-height: 210px;
   }
 }
 
 @media (max-width: 720px) {
-  .camera-objective-strip {
+  .evidence-e004 .camera-console,
+  .camera-objective-side {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .evidence-e004 .camera-events {
     grid-template-columns: 1fr;
   }
 
-  .camera-objective-title,
-  .camera-objective-step {
-    min-height: 58px;
+  .evidence-e004 .camera-events button,
+  .evidence-e004 .camera-question button {
+    min-height: 42px;
+    font-size: 10px;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 1121px) {
+  .evidence-e004 .premium-modal-header {
+    padding-block: 9px 8px;
   }
 
-  .evidence-e004 .camera-question > div {
-    grid-template-columns: 1fr;
+  .evidence-e004 .premium-modal-header h1 {
+    font-size: 30px;
+  }
+
+  .evidence-e004 .camera-taskbar {
+    padding-block: 8px;
+  }
+
+  .camera-objective-side button {
+    min-height: 42px;
+  }
+
+  .evidence-e004 .camera-events {
+    min-height: 132px;
   }
 }
