@@ -1,5 +1,7 @@
 import './freshStart';
+import './routeFixtures';
 import './performanceKernel';
+import './investigationState';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
@@ -21,17 +23,19 @@ import './livingSuspect.css';
 import './actorStudio.css';
 import './actorStudioGuide.css';
 import './act4FinalOperation.css';
+import './stabilityPass.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
 import './act2HiddenRouteV2';
 import './act2GatePreview';
 import './act3ArchiveIdentity';
-import './premiumPass';
+import './premiumPassV2';
 import './interactiveInterrogation';
 import './livingSuspect';
 import './kirillVideoRuntime';
 import './act4FinalOperation';
+import './stabilityDiagnostics';
 import './versionGuard';
 
 const rootElement = document.getElementById('root');
