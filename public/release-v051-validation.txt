@@ -1,0 +1,2 @@
+DBR v0.5.1 validation trigger
+Version guard loaded after legacy modules.
