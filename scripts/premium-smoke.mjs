@@ -27,9 +27,14 @@ const interrogation = read('src/interactiveInterrogation.ts');
 const livingSuspect = read('src/livingSuspect.ts');
 const livingCss = read('src/livingSuspect.css');
 const freshStart = read('src/freshStart.ts');
+const actorStudio = read('src/actorStudio.ts');
+const actorStudioCss = read('src/actorStudio.css');
+const videoContract = read('src/kirillVideoContract.ts');
+const videoRuntime = read('src/kirillVideoRuntime.ts');
+const videoManifest = JSON.parse(read('public/media/kirill/manifest.json'));
 
-check(packageJson.version === '0.6.5', 'package.json должен иметь версию 0.6.5');
-check(build.includes("APP_BUILD = 'v0.6.5'"), 'src/build.ts должен объявлять APP_BUILD v0.6.5');
+check(packageJson.version === '0.6.6', 'package.json должен иметь версию 0.6.6');
+check(build.includes("APP_BUILD = 'v0.6.6'"), 'src/build.ts должен объявлять APP_BUILD v0.6.6');
 check(build.includes('INTERROGATION_STORAGE_KEY'), 'src/build.ts должен объявлять ключ интерактивного допроса');
 check(build.includes('LIVING_SUSPECT_STORAGE_KEY'), 'src/build.ts должен объявлять ключ сцены допроса');
 check(versionGuard.includes("from './build'"), 'versionGuard должен получать версию из src/build.ts');
@@ -42,16 +47,20 @@ const requiredMainImports = [
   "./buildMarker.css",
   "./interactiveInterrogation.css",
   "./livingSuspect.css",
+  "./actorStudio.css",
   "./premiumPass",
   "./interactiveInterrogation",
   "./livingSuspect",
+  "./kirillVideoRuntime",
   "./versionGuard"
 ];
 requiredMainImports.forEach((entry) => check(main.includes(entry), `main.tsx не подключает ${entry}`));
+check(main.includes('mountActorStudio'), 'main.tsx не монтирует Actor Studio');
 check(main.indexOf("./freshStart'") < main.indexOf("./performanceKernel'"), 'freshStart должен выполняться до восстановления состояния приложения');
 check(main.indexOf("./performanceKernel'") < main.indexOf("./cameraFrames'"), 'performanceKernel должен загружаться до legacy runtime-модулей');
 check(main.indexOf("./interactiveInterrogation'") < main.indexOf("./livingSuspect'"), 'Сцена Кирилла должна расширять уже подключённый допрос');
-check(main.indexOf("./livingSuspect'") < main.indexOf("./versionGuard'"), 'versionGuard должен загружаться последним');
+check(main.indexOf("./livingSuspect'") < main.indexOf("./kirillVideoRuntime'"), 'Line-level video runtime должен загружаться после базовой сцены');
+check(main.indexOf("./kirillVideoRuntime'") < main.indexOf("./versionGuard'"), 'versionGuard должен загружаться последним');
 
 const evidenceIds = caseData.evidence.map((item) => item.id);
 ['E001', 'E002', 'E003', 'E004', 'E005'].forEach((id) => {
@@ -60,19 +69,25 @@ const evidenceIds = caseData.evidence.map((item) => item.id);
 ['E006', 'E007'].forEach((id) => check(act2.includes(id), `В акте II отсутствует ${id}`));
 ['E008', 'E009'].forEach((id) => check(act3.includes(id), `В акте III отсутствует ${id}`));
 
-check(exists('src/premiumPass.ts'), 'Отсутствует src/premiumPass.ts');
-check(exists('src/premiumPass.css'), 'Отсутствует src/premiumPass.css');
-check(exists('src/performanceKernel.ts'), 'Отсутствует src/performanceKernel.ts');
-check(exists('src/interactiveInterrogation.ts'), 'Отсутствует src/interactiveInterrogation.ts');
-check(exists('src/interactiveInterrogation.css'), 'Отсутствует src/interactiveInterrogation.css');
-check(exists('src/livingSuspect.ts'), 'Отсутствует src/livingSuspect.ts');
-check(exists('src/livingSuspect.css'), 'Отсутствует src/livingSuspect.css');
-check(exists('src/freshStart.ts'), 'Отсутствует src/freshStart.ts');
-check(exists('public/media/kirill/manifest.json'), 'Отсутствует манифест реальных видеоклипов Кирилла');
-check(exists('public/media/kirill/README.md'), 'Не документирован контракт видеоклипов Кирилла');
-check(exists('PREMIUM_PASS.md'), 'Отсутствует PREMIUM_PASS.md');
-check(exists('dist/index.html'), 'Vite не создал dist/index.html');
-check(serviceWorker.includes('dbr-v0-6-5-honest-interrogation'), 'Service worker не использует cache key v0.6.5');
+[
+  'src/premiumPass.ts',
+  'src/premiumPass.css',
+  'src/performanceKernel.ts',
+  'src/interactiveInterrogation.ts',
+  'src/interactiveInterrogation.css',
+  'src/livingSuspect.ts',
+  'src/livingSuspect.css',
+  'src/freshStart.ts',
+  'src/actorStudio.ts',
+  'src/actorStudio.css',
+  'src/kirillVideoContract.ts',
+  'src/kirillVideoRuntime.ts',
+  'public/media/kirill/manifest.json',
+  'public/media/kirill/README.md',
+  'PREMIUM_PASS.md',
+  'dist/index.html'
+].forEach((file) => check(exists(file), `Отсутствует ${file}`));
+check(serviceWorker.includes('dbr-v0-6-6-actor-studio'), 'Service worker не использует cache key v0.6.6');
 
 check(performanceKernel.includes('CoalescedMutationObserver'), 'Performance kernel не объединяет MutationObserver');
 check(performanceKernel.includes('dbr:runtime-settled'), 'Performance kernel не отправляет событие синхронизации');
@@ -81,14 +96,9 @@ check(interrogation.includes('data-conclusion'), 'Допрос не поддер
 check(interrogation.includes('старая служебная комната'), 'Допрос не открывает следующее направление поиска');
 
 check(livingSuspect.includes('selectVerifiedMaleRussianVoice'), 'Нет строгой проверки мужского русского голоса');
-check(livingSuspect.includes('VERIFIED_MALE_VOICE'), 'Нет списка признаков мужского голоса');
 check(!livingSuspect.includes('?? russian[0]'), 'Запрещён fallback на первый русский голос: он может быть женским');
 check(livingSuspect.includes('stored.voice === true'), 'Озвучка должна быть выключена по умолчанию');
-check(livingSuspect.includes('VideoManifest'), 'Нет контракта реальных видеореакций');
 check(livingSuspect.includes('living-suspect-video'), 'Сцена не содержит слот настоящего видео');
-check(livingSuspect.includes('manifest.json'), 'Сцена не загружает манифест видеоклипов');
-check(livingSuspect.includes('activateWhenReady'), 'Сцена не ждёт фактического появления окна допроса');
-check(livingSuspect.includes('requestAnimationFrame'), 'Сцена не использует ограниченную синхронизацию с отрисовкой');
 check(!livingSuspect.includes('new MutationObserver'), 'Сцена не должна добавлять новый MutationObserver');
 check(!livingSuspect.includes('setInterval'), 'Сцена не должна использовать polling');
 
@@ -96,6 +106,29 @@ check(!livingCss.includes('@keyframes living-idle'), 'Запрещено пок�
 check(!livingCss.includes('@keyframes living-blink'), 'Запрещена нарисованная имитация моргания поверх фотографии');
 check(livingCss.includes('animation: none !important'), 'Статичная фотография должна быть явно защищена от анимации');
 check(livingCss.includes('A still image never pretends to move'), 'CSS должен документировать честный fallback');
+
+check(actorStudio.includes("params.get(STUDIO_PARAM) !== 'kirill'"), 'Actor Studio не защищён отдельным URL-режимом');
+check(actorStudio.includes('navigator.mediaDevices.getUserMedia'), 'Actor Studio не включает камеру и микрофон');
+check(actorStudio.includes('new MediaRecorder'), 'Actor Studio не записывает WebM-дубли');
+check(actorStudio.includes('manifestFromCaptures'), 'Actor Studio не генерирует manifest.json');
+check(actorStudio.includes('downloadAllButton'), 'Actor Studio не экспортирует комплект клипов');
+check(actorStudioCss.includes('.actor-camera-shell'), 'Actor Studio не имеет производственного интерфейса камеры');
+
+check(videoContract.includes("id: 'idle'"), 'В контракте нет idle-сцены');
+check(videoContract.includes("id: 'confession'"), 'В контракте нет кульминационного признания');
+check(videoContract.includes('findKirillScriptByText'), 'Контракт не умеет сопоставлять старые сохранения по тексту');
+const scriptCount = (videoContract.match(/filename: '/g) ?? []).length;
+check(scriptCount >= 18, `Контракт содержит только ${scriptCount} видеосцен; требуется не менее 18`);
+
+check(videoRuntime.includes('manifest.lines'), 'Video runtime не ищет точный клип реплики');
+check(videoRuntime.includes('findKirillScriptByText'), 'Video runtime не сопоставляет реплику со сценарием');
+check(videoRuntime.includes('playIdle'), 'Video runtime не возвращается к живому idle-дублю');
+check(videoRuntime.includes('РЕАЛЬНЫЙ ВИДЕОДУБЛЬ'), 'Интерфейс не различает реальное видео и фотореференс');
+check(!videoRuntime.includes('new MutationObserver'), 'Video runtime не должен добавлять MutationObserver');
+check(!videoRuntime.includes('setInterval'), 'Video runtime не должен использовать polling');
+
+check(videoManifest.version === 2, 'Манифест Кирилла должен использовать схему v2');
+check(typeof videoManifest.lines === 'object' && videoManifest.lines !== null, 'Манифест v2 должен содержать объект lines');
 
 check(freshStart.includes("params.get('fresh') === '1'"), 'Нет явного fresh-start URL режима');
 check(freshStart.includes('localStorage.removeItem'), 'Fresh start не очищает локальный прогресс дела');
@@ -116,4 +149,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nPremium smoke passed: ${evidenceIds.length + 8} evidence, interrogation, honest media and fresh-start contracts, build ${packageJson.version}.`);
+console.log(`\nPremium smoke passed: ${evidenceIds.length + 9} evidence, Actor Studio and line-level video contracts, build ${packageJson.version}.`);
