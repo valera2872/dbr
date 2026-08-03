@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-4-5-visible-camera-people';
+const CACHE_NAME = 'dbr-v0-4-6-camera-reconstruction';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
