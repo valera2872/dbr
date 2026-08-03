@@ -1,0 +1,497 @@
+/* v0.5.0 — Act II: archive plan, hidden route and room 312 */
+
+.act2-next-action {
+  border-color: rgba(224, 181, 99, .42) !important;
+  background: linear-gradient(110deg, rgba(72, 48, 20, .78), rgba(16, 35, 38, .92)) !important;
+}
+
+.act2-next-action .action-index { color: #e8c77f !important; }
+.act2-action-arrow { margin-left: auto; color: #7ce8e2; font-size: 26px; }
+
+.act2-card-blueprint {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(125, 211, 207, .08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 207, .08) 1px, transparent 1px),
+    radial-gradient(circle at 62% 42%, rgba(232, 199, 128, .24), transparent 22%),
+    linear-gradient(135deg, #102d32, #07181b 72%);
+  background-size: 24px 24px, 24px 24px, auto, auto;
+}
+
+.act2-card-blueprint::before,
+.act2-card-blueprint::after {
+  content: '';
+  position: absolute;
+  border: 2px solid rgba(138, 225, 219, .34);
+}
+
+.act2-card-blueprint::before { left: 18%; top: 23%; width: 31%; height: 40%; }
+.act2-card-blueprint::after { left: 51%; top: 23%; width: 31%; height: 40%; border-left-style: dashed; }
+
+.act2-modal-backdrop { z-index: 100000 !important; }
+
+.act2-modal {
+  width: min(1540px, calc(100vw - 24px)) !important;
+  height: min(900px, calc(100dvh - 24px)) !important;
+  max-height: calc(100dvh - 24px) !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  overflow: hidden !important;
+}
+
+.act2-modal .premium-modal-header { padding: 19px 28px 15px !important; }
+.act2-modal .premium-modal-header h1 { font-size: clamp(28px, 3vw, 44px) !important; }
+.act2-modal-body { min-height: 0; overflow: hidden; padding: 16px 28px 18px !important; }
+.act2-modal .premium-modal-footer { padding: 13px 28px !important; }
+.act2-close { font-size: 25px; line-height: 1; }
+.act2-save-note { color: #718a8d; font: 600 10px/1.2 Manrope, sans-serif; }
+
+.act2-plan-layout,
+.act2-room-layout {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(330px, .78fr);
+  gap: 16px;
+}
+
+.archive-plan-sheet,
+.act2-room-photo,
+.act2-investigation-panel {
+  min-height: 0;
+  border: 1px solid rgba(124, 232, 227, .2);
+  border-radius: 14px;
+  background: rgba(6, 20, 23, .92);
+}
+
+.archive-plan-sheet {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(234, 205, 145, .08), transparent 24%),
+    linear-gradient(135deg, #12383d, #092126 74%);
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, .34), 0 18px 46px rgba(0,0,0,.26);
+  isolation: isolate;
+}
+
+.archive-plan-sheet::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: .22;
+  background:
+    repeating-linear-gradient(4deg, transparent 0 34px, rgba(237,215,166,.06) 34px 35px),
+    radial-gradient(circle at 85% 80%, rgba(235, 204, 138, .16), transparent 15%);
+  mix-blend-mode: screen;
+}
+
+.plan-paper-grid {
+  position: absolute;
+  inset: 0;
+  opacity: .32;
+  background-image:
+    linear-gradient(rgba(124,232,227,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,232,227,.08) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.plan-heading {
+  position: absolute;
+  z-index: 5;
+  left: 28px;
+  top: 24px;
+  display: grid;
+  gap: 4px;
+  color: #b8e9e5;
+}
+
+.plan-heading span { font: 800 8px/1 ui-monospace, monospace; letter-spacing: .17em; }
+.plan-heading strong { font: 900 18px/1.15 ui-monospace, monospace; }
+.plan-heading small { color: #72999b; font: 600 8px/1.2 Manrope, sans-serif; }
+
+.plan-corridor {
+  position: absolute;
+  z-index: 2;
+  left: 7%;
+  right: 6%;
+  bottom: 12%;
+  height: 20%;
+  border: 2px solid rgba(145, 226, 220, .36);
+  background: repeating-linear-gradient(90deg, rgba(124,232,227,.025) 0 22px, rgba(124,232,227,.06) 22px 23px);
+}
+
+.plan-corridor span {
+  position: absolute;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  color: rgba(164, 232, 227, .42);
+  font: 900 11px/1 ui-monospace, monospace;
+  letter-spacing: .2em;
+}
+
+.plan-room {
+  position: absolute;
+  z-index: 3;
+  top: 24%;
+  height: 45%;
+  border: 3px solid rgba(152, 231, 224, .54);
+  background: rgba(10, 41, 45, .28);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  color: #bcebe6;
+}
+
+.plan-room::after {
+  content: '';
+  position: absolute;
+  left: 44%;
+  bottom: -3px;
+  width: 25%;
+  height: 5px;
+  background: #0b272b;
+  border-left: 2px solid rgba(152,231,224,.5);
+  border-right: 2px solid rgba(152,231,224,.5);
+}
+
+.plan-room b { font: 900 28px/1 ui-monospace, monospace; }
+.plan-room small { color: #719a9c; font: 700 9px/1 ui-monospace, monospace; }
+.plan-room i { color: #ddb96f; font: 800 8px/1 ui-monospace, monospace; font-style: normal; letter-spacing: .1em; }
+.plan-310 { left: 7%; width: 25%; }
+.plan-312 { left: 34%; width: 28%; }
+.plan-314 { left: 65%; width: 29%; }
+
+.plan-hidden-door {
+  position: absolute;
+  z-index: 8;
+  left: 62%;
+  top: 42%;
+  width: 3%;
+  height: 18%;
+  opacity: .28;
+  transition: opacity .25s ease, filter .25s ease;
+}
+
+.plan-hidden-door span {
+  position: absolute;
+  inset: 0;
+  border: 2px dashed #e2bd72;
+  background: rgba(226, 189, 114, .08);
+}
+
+.plan-hidden-door em {
+  position: absolute;
+  left: 50%; top: -27px; transform: translateX(-50%);
+  width: max-content;
+  color: #dcb66c;
+  font: 800 8px/1 ui-monospace, monospace;
+  font-style: normal;
+}
+
+.plan-hidden-door.revealed { opacity: 1; filter: drop-shadow(0 0 12px rgba(226,189,114,.45)); }
+
+.plan-service-void {
+  position: absolute;
+  z-index: 4;
+  left: 59.6%;
+  top: 26%;
+  width: 5.4%;
+  height: 41%;
+  border-left: 1px dashed rgba(226,189,114,.5);
+  border-right: 1px dashed rgba(226,189,114,.5);
+}
+
+.plan-service-void span {
+  position: absolute;
+  left: 50%; top: 6px; transform: translateX(-50%);
+  color: #d9b66f;
+  font: 800 8px/1 ui-monospace, monospace;
+}
+
+.plan-renovation-stamp {
+  position: absolute;
+  z-index: 5;
+  right: 6%;
+  top: 7%;
+  padding: 10px 13px;
+  border: 2px solid rgba(216, 112, 100, .62);
+  transform: rotate(-4deg);
+  color: #d88a80;
+  font: 900 9px/1.35 ui-monospace, monospace;
+  text-align: center;
+  opacity: .78;
+}
+
+.plan-scale {
+  position: absolute;
+  z-index: 5;
+  left: 30px;
+  bottom: 30px;
+  padding-top: 6px;
+  width: 145px;
+  border-top: 5px alternating;
+  color: #87b6b4;
+  font: 800 9px/1 ui-monospace, monospace;
+}
+
+.plan-hotspot,
+.act2-room-marker {
+  position: absolute;
+  z-index: 30;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.plan-hotspot > span,
+.act2-room-marker > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(124,232,227,.76);
+  border-radius: 50%;
+  background: rgba(6,24,27,.92);
+  color: #8cf1eb;
+  font: 900 11px/1 ui-monospace, monospace;
+  box-shadow: 0 0 0 6px rgba(124,232,227,.08), 0 0 24px rgba(124,232,227,.2);
+}
+
+.plan-hotspot > i,
+.act2-room-marker > i {
+  position: absolute;
+  left: 44px;
+  top: 8px;
+  width: max-content;
+  padding: 6px 8px;
+  border: 1px solid rgba(124,232,227,.25);
+  border-radius: 6px;
+  background: rgba(5,19,22,.9);
+  color: #dceeed;
+  font: 800 8px/1 Manrope, sans-serif;
+  font-style: normal;
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.plan-hotspot:hover > i,
+.plan-hotspot:focus-visible > i,
+.act2-room-marker:hover > i,
+.act2-room-marker:focus-visible > i { opacity: 1; transform: translateX(0); }
+
+.plan-hotspot.inspected > span,
+.act2-room-marker.inspected > span {
+  border-color: #e5c57e;
+  background: rgba(83, 61, 26, .94);
+  color: #ffe2a1;
+  box-shadow: 0 0 0 6px rgba(229,197,126,.09), 0 0 26px rgba(229,197,126,.22);
+}
+
+.plan-hotspot[data-finding='wall-gap'] { left: 60.4%; top: 40%; }
+.plan-hotspot[data-finding='renovation-stamp'] { right: 19%; top: 14%; }
+.plan-hotspot[data-finding='service-width'] { left: 54%; top: 29%; }
+
+.act2-investigation-panel {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.act2-progress {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.act2-progress > span {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(124,232,227,.45);
+  border-radius: 50%;
+  color: #7ce8e2;
+  font: 900 13px/1 ui-monospace, monospace;
+}
+
+.act2-progress > div { display: grid; gap: 3px; }
+.act2-progress strong { color: #eef8f8; font: 800 14px/1.2 Manrope, sans-serif; }
+.act2-progress small { color: #758f92; font: 600 9px/1.25 Manrope, sans-serif; }
+
+.act2-finding-list {
+  display: grid;
+  gap: 7px;
+  overflow: auto;
+  padding-right: 3px;
+}
+
+.act2-finding-list button {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 9px;
+  align-items: center;
+  padding: 9px;
+  border: 1px solid rgba(126,168,173,.18);
+  border-radius: 9px;
+  background: rgba(12,29,32,.78);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.act2-finding-list button > span {
+  width: 28px; height: 28px; display: grid; place-items: center;
+  border: 1px solid rgba(124,232,227,.38); border-radius: 50%; color: #7ce8e2;
+  font: 900 9px/1 ui-monospace, monospace;
+}
+
+.act2-finding-list button > div { display: grid; gap: 2px; }
+.act2-finding-list strong { color: #eaf5f5; font: 800 10px/1.2 Manrope, sans-serif; }
+.act2-finding-list small { color: #71898c; font: 600 8px/1.25 Manrope, sans-serif; }
+.act2-finding-list button.done { border-color: rgba(229,197,126,.42); background: rgba(79,57,25,.28); }
+.act2-finding-list button.done > span { border-color: #e5c57e; color: #e5c57e; }
+
+.act2-result {
+  margin-top: auto;
+  min-height: 125px;
+  padding: 15px;
+  border: 1px solid rgba(124,232,227,.16);
+  border-radius: 11px;
+  background: rgba(5,18,21,.78);
+  display: grid;
+  align-content: center;
+  gap: 6px;
+}
+
+.act2-result > span { color: #6b9293; font-size: 25px; }
+.act2-result > strong,
+.act2-result h3 { margin: 0; color: #eff8f8; font: 800 15px/1.25 Manrope, sans-serif; }
+.act2-result > p { margin: 0; color: #839b9d; font: 500 9px/1.45 Manrope, sans-serif; }
+.act2-result.success { border-color: rgba(229,197,126,.4); background: linear-gradient(135deg, rgba(78,57,24,.36), rgba(5,18,21,.82)); }
+.act2-result .premium-kicker { color: #e5c57e !important; }
+
+.act2-open-room {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid rgba(124,232,227,.44);
+  border-radius: 8px;
+  background: rgba(35,91,88,.36);
+  color: #dff8f6;
+  font: 800 10px/1.2 Manrope, sans-serif;
+  cursor: pointer;
+}
+
+.act2-room-photo {
+  position: relative;
+  overflow: hidden;
+  background: #071014;
+}
+
+.act2-room-photo > img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(.74) contrast(1.04) brightness(.72);
+}
+
+.act2-room-grade {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, transparent 38%, rgba(0,0,0,.42) 100%),
+    linear-gradient(180deg, rgba(4,16,19,.05), rgba(4,16,19,.35));
+  pointer-events: none;
+}
+
+.act2-scene-label {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid rgba(124,232,227,.3);
+  border-radius: 7px;
+  background: rgba(4,17,20,.74);
+}
+
+.act2-scene-label span { color: #81eae5; font: 900 9px/1 ui-monospace, monospace; }
+.act2-scene-label small { color: #839c9e; font: 600 7px/1.2 Manrope, sans-serif; }
+
+.act2-room-marker.marker-wardrobe-panel { left: 75%; top: 43%; }
+.act2-room-marker.marker-carpet-tracks { left: 55%; top: 77%; }
+.act2-room-marker.marker-archive-envelope { left: 25%; top: 59%; }
+.act2-room-marker.marker-vent-fibres { left: 85%; top: 22%; }
+.act2-room-marker.marker-wardrobe-panel > i,
+.act2-room-marker.marker-vent-fibres > i { left: auto; right: 44px; }
+
+.act2-final-conclusion {
+  margin-top: 6px;
+  display: grid;
+  gap: 4px;
+  padding: 9px 10px;
+  border-left: 2px solid #e5c57e;
+  background: rgba(229,197,126,.07);
+}
+
+.act2-final-conclusion strong { color: #f3d998; font: 800 10px/1.2 Manrope, sans-serif; }
+.act2-final-conclusion span { color: #dff4f2; font: 900 11px/1 ui-monospace, monospace; }
+
+.act2-interview-topic {
+  border-color: rgba(229,197,126,.22) !important;
+  background: rgba(72,52,25,.12) !important;
+}
+
+.act2-interview-topic button small { color: #e1bd72 !important; }
+.act2-interview-topic.asked { border-color: rgba(229,197,126,.42) !important; }
+
+@media (max-height: 800px) and (min-width: 1051px) {
+  .act2-modal .premium-modal-header { padding: 12px 22px 9px !important; }
+  .act2-modal .premium-modal-header h1 { font-size: 30px !important; }
+  .act2-modal-body { padding: 9px 22px 11px !important; }
+  .act2-modal .premium-modal-footer { padding: 9px 22px !important; }
+  .plan-heading { top: 16px; }
+  .act2-investigation-panel { padding: 10px; gap: 8px; }
+  .act2-finding-list { gap: 5px; }
+  .act2-finding-list button { padding: 6px 8px; }
+  .act2-result { min-height: 96px; padding: 10px; }
+}
+
+@media (max-width: 1050px) {
+  .act2-modal { height: auto !important; min-height: calc(100dvh - 18px); overflow: auto !important; }
+  .act2-modal-body { overflow: visible; }
+  .act2-plan-layout,
+  .act2-room-layout { height: auto; grid-template-columns: 1fr; }
+  .archive-plan-sheet,
+  .act2-room-photo { min-height: 560px; }
+  .act2-investigation-panel { overflow: visible; }
+}
+
+@media (max-width: 720px) {
+  .act2-modal { width: calc(100vw - 10px) !important; }
+  .act2-modal .premium-modal-header { padding: 14px 16px 10px !important; }
+  .act2-modal-body { padding: 10px 12px !important; }
+  .act2-modal .premium-modal-footer { padding: 10px 12px !important; }
+  .archive-plan-sheet { min-height: 470px; }
+  .act2-room-photo { min-height: 430px; }
+  .plan-heading strong { font-size: 13px; }
+  .plan-heading { left: 14px; top: 14px; }
+  .plan-renovation-stamp { right: 3%; top: 12%; transform: rotate(-4deg) scale(.75); }
+  .plan-room b { font-size: 19px; }
+  .plan-room small { font-size: 7px; }
+  .plan-room i { font-size: 6px; }
+  .plan-hotspot > i,
+  .act2-room-marker > i { display: none; }
+  .plan-hotspot[data-finding='renovation-stamp'] { right: 13%; }
+  .act2-save-note { display: none; }
+}
