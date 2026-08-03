@@ -1,6 +1,6 @@
 export {};
 
-const APP_BUILD = 'v0.5.3';
+const APP_BUILD = 'v0.6.0';
 
 function applyBuildVersion(): void {
   if (document.documentElement.dataset.dbrBuild !== APP_BUILD) {
@@ -20,8 +20,6 @@ function applyBuildVersion(): void {
   });
 }
 
-// Следим только за появлением новых узлов. Изменение текста версии больше не запускает
-// рекурсивный цикл наблюдателя и не блокирует главный поток браузера.
 const observer = new MutationObserver(() => applyBuildVersion());
 observer.observe(document.documentElement, {
   childList: true,
@@ -37,8 +35,6 @@ if (document.readyState === 'loading') {
   applyBuildVersion();
 }
 
-// Старые модули могут один раз поздно переписать метку. Несколько безопасных повторов
-// достаточно; постоянного интервала и characterData-наблюдения больше нет.
 [100, 500, 1500, 4000, 8000].forEach((delay) => {
   window.setTimeout(applyBuildVersion, delay);
 });
