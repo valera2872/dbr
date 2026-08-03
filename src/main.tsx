@@ -14,6 +14,7 @@ import './act3ArchiveIdentity.css';
 import './premiumPass.css';
 import './buildMarker.css';
 import './interactiveInterrogation.css';
+import './livingSuspect.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -22,6 +23,7 @@ import './act2GatePreview';
 import './act3ArchiveIdentity';
 import './premiumPass';
 import './interactiveInterrogation';
+import './livingSuspect';
 import './versionGuard';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

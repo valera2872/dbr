@@ -24,10 +24,12 @@ const act3 = read('src/act3ArchiveIdentity.ts');
 const serviceWorker = read('public/sw.js');
 const performanceKernel = read('src/performanceKernel.ts');
 const interrogation = read('src/interactiveInterrogation.ts');
+const livingSuspect = read('src/livingSuspect.ts');
 
-check(packageJson.version === '0.6.2', 'package.json должен иметь версию 0.6.2');
-check(build.includes("APP_BUILD = 'v0.6.2'"), 'src/build.ts должен объявлять APP_BUILD v0.6.2');
+check(packageJson.version === '0.6.3', 'package.json должен иметь версию 0.6.3');
+check(build.includes("APP_BUILD = 'v0.6.3'"), 'src/build.ts должен объявлять APP_BUILD v0.6.3');
 check(build.includes('INTERROGATION_STORAGE_KEY'), 'src/build.ts должен объявлять ключ интерактивного допроса');
+check(build.includes('LIVING_SUSPECT_STORAGE_KEY'), 'src/build.ts должен объявлять ключ живого подозреваемого');
 check(versionGuard.includes("from './build'"), 'versionGuard должен получать версию из src/build.ts');
 check(versionGuard.includes('premium-build-marker'), 'versionGuard должен защищать единую метку сборки');
 
@@ -36,13 +38,16 @@ const requiredMainImports = [
   "./premiumPass.css",
   "./buildMarker.css",
   "./interactiveInterrogation.css",
+  "./livingSuspect.css",
   "./premiumPass",
   "./interactiveInterrogation",
+  "./livingSuspect",
   "./versionGuard"
 ];
 requiredMainImports.forEach((entry) => check(main.includes(entry), `main.tsx не подключает ${entry}`));
 check(main.indexOf("./performanceKernel'") < main.indexOf("./cameraFrames'"), 'performanceKernel должен загружаться до legacy runtime-модулей');
-check(main.indexOf("./interactiveInterrogation'") < main.indexOf("./versionGuard'"), 'versionGuard должен загружаться последним');
+check(main.indexOf("./interactiveInterrogation'") < main.indexOf("./livingSuspect'"), 'Living Suspect должен расширять уже подключённый допрос');
+check(main.indexOf("./livingSuspect'") < main.indexOf("./versionGuard'"), 'versionGuard должен загружаться последним');
 
 const evidenceIds = caseData.evidence.map((item) => item.id);
 ['E001', 'E002', 'E003', 'E004', 'E005'].forEach((id) => {
@@ -56,15 +61,25 @@ check(exists('src/premiumPass.css'), 'Отсутствует src/premiumPass.css
 check(exists('src/performanceKernel.ts'), 'Отсутствует src/performanceKernel.ts');
 check(exists('src/interactiveInterrogation.ts'), 'Отсутствует src/interactiveInterrogation.ts');
 check(exists('src/interactiveInterrogation.css'), 'Отсутствует src/interactiveInterrogation.css');
+check(exists('src/livingSuspect.ts'), 'Отсутствует src/livingSuspect.ts');
+check(exists('src/livingSuspect.css'), 'Отсутствует src/livingSuspect.css');
 check(exists('PREMIUM_PASS.md'), 'Отсутствует PREMIUM_PASS.md');
 check(exists('dist/index.html'), 'Vite не создал dist/index.html');
-check(serviceWorker.includes('dbr-v0-6-2-performance-interrogation'), 'Service worker не использует cache key v0.6.2');
+check(serviceWorker.includes('dbr-v0-6-3-living-suspect'), 'Service worker не использует cache key v0.6.3');
 
 check(performanceKernel.includes('CoalescedMutationObserver'), 'Performance kernel не объединяет MutationObserver');
 check(performanceKernel.includes('dbr:runtime-settled'), 'Performance kernel не отправляет событие синхронизации');
 check(interrogation.includes('data-present'), 'Допрос не поддерживает предъявление улик');
 check(interrogation.includes('data-conclusion'), 'Допрос не поддерживает фиксацию противоречия');
 check(interrogation.includes('старая служебная комната'), 'Допрос не открывает следующее направление поиска');
+
+check(livingSuspect.includes('SpeechSynthesisUtterance'), 'Живой подозреваемый не поддерживает озвучку реплик');
+check(livingSuspect.includes("'look-away'"), 'Нет реакции отвода взгляда');
+check(livingSuspect.includes("'flinch'"), 'Нет непроизвольной реакции на улику');
+check(livingSuspect.includes("'confess'"), 'Нет кульминационной реакции признания');
+check(livingSuspect.includes('pointerdown'), 'Living Suspect должен подключаться без MutationObserver');
+check(!livingSuspect.includes('new MutationObserver'), 'Living Suspect не должен добавлять новый MutationObserver');
+check(!livingSuspect.includes('setInterval'), 'Living Suspect не должен использовать polling');
 
 warn(!act2.includes('function setVersion'), 'Акт II всё ещё содержит legacy setVersion; защита выполняется versionGuard');
 warn(!act3.includes('function setVersion'), 'Акт III всё ещё содержит legacy setVersion; защита выполняется versionGuard');
@@ -81,4 +96,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nPremium smoke passed: ${evidenceIds.length + 5} evidence and interrogation contracts, build ${packageJson.version}.`);
+console.log(`\nPremium smoke passed: ${evidenceIds.length + 6} evidence, interrogation and living suspect contracts, build ${packageJson.version}.`);
