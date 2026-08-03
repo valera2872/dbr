@@ -8,9 +8,11 @@ import './cctv.css';
 import './cameraMeaning.css';
 import './cameraFrames.css';
 import './cameraMap.css';
+import './act2HiddenRoute.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
+import './act2HiddenRouteV2';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
