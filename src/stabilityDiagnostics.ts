@@ -15,9 +15,14 @@ if (INTERNAL_MODE) {
   let panel: HTMLElement | null = null;
 
   function escapeHtml(value: string): string {
-    return value.replace(/[&<>'\"]/g, (character) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '\"': '&quot;'
-    })[character] ?? character);
+    const entities: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    };
+    return value.replace(/[&<>'"]/g, (character) => entities[character] ?? character);
   }
 
   async function copySnapshot(): Promise<void> {
