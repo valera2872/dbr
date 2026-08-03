@@ -1,10 +1,9 @@
-/* Living Suspect Engine — large reactive portrait without polling or extra observers */
+/* Honest interrogation scene: static fallback, real video clips when available. */
 
 .interrogation-shell.living-suspect-enabled .interrogation-workspace {
   grid-template-columns: minmax(360px, .88fr) minmax(360px, .72fr) minmax(390px, .8fr);
   grid-template-areas: "subject dialogue control";
 }
-
 .interrogation-shell.living-suspect-enabled .interrogation-dialogue { grid-area: dialogue; }
 .interrogation-shell.living-suspect-enabled .interrogation-control { grid-area: control; }
 
@@ -14,34 +13,32 @@
   min-height: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto;
-  border-right: 1px solid rgba(123, 232, 225, .12);
-  background:
-    radial-gradient(circle at 50% 30%, rgba(76, 161, 156, .12), transparent 42%),
-    linear-gradient(180deg, rgba(7, 22, 24, .98), rgba(3, 12, 14, .98));
   overflow: hidden;
+  border-right: 1px solid rgba(123, 232, 225, .12);
+  background: linear-gradient(180deg, rgba(7,22,24,.98), rgba(3,12,14,.98));
 }
 
 .living-camera-bar,
 .living-suspect-controls {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
   align-items: center;
+  gap: 12px;
   padding: 12px 15px;
-  border-bottom: 1px solid rgba(123, 232, 225, .09);
   color: #789d99;
   font: 700 9px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: .11em;
+  background: #061416;
 }
-
+.living-camera-bar { border-bottom: 1px solid rgba(123,232,225,.09); }
+.living-suspect-controls { border-top: 1px solid rgba(123,232,225,.08); }
 .living-camera-bar span { display: inline-flex; align-items: center; gap: 7px; }
 .living-camera-bar i {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #e35f55;
-  box-shadow: 0 0 12px rgba(227, 95, 85, .7);
-  animation: living-rec 1.4s ease-in-out infinite;
+  background: #d96b61;
+  box-shadow: 0 0 10px rgba(217,107,97,.45);
 }
 .living-camera-bar small { color: #526e6b; font: inherit; }
 
@@ -50,12 +47,8 @@
   min-height: 0;
   overflow: hidden;
   isolation: isolate;
-  background:
-    linear-gradient(90deg, rgba(0,0,0,.5), transparent 30% 70%, rgba(0,0,0,.48)),
-    radial-gradient(circle at 50% 22%, rgba(173, 224, 216, .10), transparent 38%),
-    #071315;
+  background: #071315;
 }
-
 .living-suspect-frame::before {
   content: '';
   position: absolute;
@@ -63,82 +56,37 @@
   z-index: 4;
   pointer-events: none;
   background:
-    repeating-linear-gradient(180deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px),
-    linear-gradient(180deg, transparent 72%, rgba(1,8,9,.75));
-  mix-blend-mode: screen;
+    repeating-linear-gradient(180deg, rgba(255,255,255,.014) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, transparent 68%, rgba(1,8,9,.8));
   opacity: .55;
 }
 
-.living-suspect-portrait {
-  position: absolute;
-  inset: 0;
-  transform-origin: 50% 56%;
-  perspective: 900px;
-}
-
-.living-suspect-portrait img {
+.living-suspect-still,
+.living-suspect-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: 50% 28%;
-  filter: saturate(.72) contrast(1.08) brightness(.88);
-  transform: scale(1.045);
-  transform-origin: 50% 45%;
-  animation: living-idle 7.5s ease-in-out infinite;
-  will-change: transform, filter;
+  display: block;
 }
+.living-suspect-still {
+  filter: saturate(.72) contrast(1.08) brightness(.88);
+  transform: none;
+  animation: none !important;
+}
+.living-suspect-video[hidden],
+.living-suspect-still[hidden] { display: none; }
 
 .living-face-light {
   position: absolute;
   inset: 0;
+  z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 47% 34%, rgba(180, 230, 219, .13), transparent 22%),
-    linear-gradient(102deg, rgba(89, 176, 168, .08), transparent 38%, rgba(0,0,0,.26) 76%);
-  mix-blend-mode: screen;
-  opacity: .8;
+    radial-gradient(ellipse at 47% 34%, rgba(180,230,219,.11), transparent 23%),
+    linear-gradient(102deg, rgba(89,176,168,.07), transparent 38%, rgba(0,0,0,.28) 76%);
+  transition: opacity .3s ease, background .3s ease;
 }
-
-.living-eyelid {
-  position: absolute;
-  z-index: 3;
-  top: 35.8%;
-  width: 8.2%;
-  height: 1.8%;
-  border-radius: 999px;
-  background: rgba(31, 21, 18, .82);
-  transform: scaleY(.05);
-  transform-origin: center;
-  opacity: 0;
-  animation: living-blink 5.8s infinite;
-  filter: blur(.4px);
-}
-.living-eyelid.left { left: 37.2%; }
-.living-eyelid.right { left: 53.8%; animation-delay: .02s; }
-
-.living-breath-indicator {
-  position: absolute;
-  left: 16px;
-  bottom: 18px;
-  z-index: 6;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #698985;
-  font: 700 8px/1 ui-monospace, monospace;
-  letter-spacing: .08em;
-}
-.living-breath-indicator::before { content: 'MICRO-MOTION'; }
-.living-breath-indicator span,
-.living-breath-indicator i {
-  display: block;
-  width: 18px;
-  height: 2px;
-  border-radius: 9px;
-  background: #4b817d;
-  animation: living-breath 2.8s ease-in-out infinite;
-}
-.living-breath-indicator i { width: 8px; animation-delay: .35s; }
 
 .living-subject-readout {
   position: absolute;
@@ -148,9 +96,9 @@
   display: grid;
   gap: 5px;
   padding: 9px 11px;
-  border: 1px solid rgba(123, 232, 225, .13);
+  border: 1px solid rgba(123,232,225,.13);
   border-radius: 10px;
-  background: rgba(3, 15, 17, .68);
+  background: rgba(3,15,17,.72);
   backdrop-filter: blur(8px);
 }
 .living-subject-readout span {
@@ -158,11 +106,7 @@
   font: 700 8px/1 ui-monospace, monospace;
   letter-spacing: .12em;
 }
-.living-subject-readout strong {
-  color: #d8ece9;
-  font-size: 11px;
-  font-weight: 600;
-}
+.living-subject-readout strong { color: #d8ece9; font-size: 11px; font-weight: 600; }
 
 .living-voice-wave {
   position: absolute;
@@ -173,7 +117,7 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  opacity: .34;
+  opacity: .22;
 }
 .living-voice-wave i {
   width: 2px;
@@ -182,7 +126,7 @@
   background: #75d9d2;
   transform: scaleY(.55);
 }
-.living-suspect-stage[data-speaking="true"] .living-voice-wave { opacity: .92; }
+.living-suspect-stage[data-speaking="true"] .living-voice-wave { opacity: .9; }
 .living-suspect-stage[data-speaking="true"] .living-voice-wave i {
   animation: living-wave .48s ease-in-out infinite alternate;
   animation-delay: calc(var(--wave) * -37ms);
@@ -191,8 +135,8 @@
 .living-suspect-subtitle {
   min-height: 105px;
   padding: 15px 17px 17px;
-  border-top: 1px solid rgba(123, 232, 225, .10);
-  background: rgba(4, 16, 18, .94);
+  border-top: 1px solid rgba(123,232,225,.10);
+  background: rgba(4,16,18,.94);
 }
 .living-suspect-subtitle small {
   display: block;
@@ -208,123 +152,69 @@
   line-height: 1.55;
 }
 
-.living-suspect-controls {
-  border-top: 1px solid rgba(123, 232, 225, .08);
-  border-bottom: 0;
-  background: #061416;
-}
 .living-voice-toggle {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   padding: 7px 9px;
-  border: 1px solid rgba(123, 232, 225, .13);
+  border: 1px solid rgba(123,232,225,.13);
   border-radius: 999px;
   color: #acd9d5;
-  background: rgba(18, 61, 63, .38);
+  background: rgba(18,61,63,.38);
   font: 600 10px/1 inherit;
   cursor: pointer;
 }
 .living-voice-toggle span { color: #75d9d2; }
-.living-media-status { color: #476562; font-size: 8px; letter-spacing: .1em; }
-
-.living-suspect-stage.is-thinking .living-suspect-portrait img {
-  animation: living-think .8s ease-in-out both;
+.living-voice-toggle.unavailable {
+  color: #6f8582;
+  border-color: rgba(123,232,225,.08);
+  background: rgba(18,35,36,.4);
+  cursor: not-allowed;
 }
+.living-media-status { color: #526d69; font-size: 8px; letter-spacing: .08em; }
+
+/* Reactions change framing and light only. A still image never pretends to move. */
+.living-suspect-stage[data-reaction="deflect"] .living-face-light,
+.living-suspect-stage[data-reaction="look-away"] .living-face-light {
+  opacity: .58;
+  background: linear-gradient(100deg, rgba(73,142,138,.05), transparent 35%, rgba(0,0,0,.4) 76%);
+}
+.living-suspect-stage[data-reaction="skeptical"] .living-face-light { opacity: .75; }
+.living-suspect-stage[data-reaction="tense"] .living-face-light,
+.living-suspect-stage[data-reaction="flinch"] .living-face-light {
+  opacity: .48;
+  background: linear-gradient(110deg, rgba(126,151,139,.05), transparent 28%, rgba(32,9,8,.34) 80%);
+}
+.living-suspect-stage[data-reaction="confess"] .living-face-light {
+  opacity: .32;
+  background: linear-gradient(110deg, rgba(84,78,63,.04), transparent 28%, rgba(0,0,0,.52) 80%);
+}
+.living-suspect-stage[data-reaction="confess"] .living-subject-readout {
+  border-color: rgba(229,167,91,.32);
+  background: rgba(45,28,13,.7);
+}
+
 .living-suspect-stage.is-thinking .living-subject-readout strong::after {
   content: ' · пауза';
   color: #9bb6b2;
 }
-
-.living-suspect-stage.is-speaking .living-suspect-portrait img {
-  animation: living-speaking 1.55s ease-in-out infinite;
-  filter: saturate(.78) contrast(1.1) brightness(.94);
+.living-suspect-stage.is-thinking .living-suspect-frame::after {
+  content: '';
+  position: absolute;
+  inset: auto 16px 16px 16px;
+  z-index: 8;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(117,217,210,.5), transparent);
+  animation: living-pause .8s ease-in-out infinite alternate;
 }
 
-.living-suspect-stage[data-reaction="deflect"] .living-suspect-portrait img {
-  animation: living-deflect 2.3s ease-in-out both, living-idle 7.5s ease-in-out 2.3s infinite;
+@keyframes living-wave {
+  from { transform: scaleY(.45); }
+  to { transform: scaleY(1.6); }
 }
-.living-suspect-stage[data-reaction="skeptical"] .living-suspect-portrait img {
-  animation: living-skeptical 1.9s ease-in-out both, living-idle 7.5s ease-in-out 1.9s infinite;
-}
-.living-suspect-stage[data-reaction="look-away"] .living-suspect-portrait img {
-  animation: living-look-away 2.8s ease-in-out both, living-idle 7.5s ease-in-out 2.8s infinite;
-}
-.living-suspect-stage[data-reaction="tense"] .living-suspect-portrait img {
-  animation: living-tense 2.25s ease-in-out both, living-idle 7.5s ease-in-out 2.25s infinite;
-  filter: saturate(.62) contrast(1.13) brightness(.84);
-}
-.living-suspect-stage[data-reaction="flinch"] .living-suspect-portrait img {
-  animation: living-flinch .78s cubic-bezier(.2,.85,.25,1) both, living-tense 2.1s ease-in-out .78s both;
-}
-.living-suspect-stage[data-reaction="confess"] .living-suspect-portrait img {
-  animation: living-confess 4.2s ease-in-out both;
-  filter: saturate(.48) contrast(1.1) brightness(.75);
-}
-.living-suspect-stage[data-reaction="confess"] .living-face-light { opacity: .35; }
-.living-suspect-stage[data-reaction="confess"] .living-subject-readout {
-  border-color: rgba(229, 167, 91, .32);
-  background: rgba(45, 28, 13, .68);
-}
-
-@keyframes living-rec { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
-@keyframes living-idle {
-  0%,100% { transform: scale(1.045) translate3d(0, 0, 0) rotateZ(0); }
-  28% { transform: scale(1.052) translate3d(.2%, -.25%, 0) rotateZ(.15deg); }
-  62% { transform: scale(1.048) translate3d(-.25%, .15%, 0) rotateZ(-.12deg); }
-}
-@keyframes living-breath { 0%,100% { transform: scaleX(.55); opacity: .35; } 50% { transform: scaleX(1); opacity: .9; } }
-@keyframes living-blink {
-  0%, 44%, 47%, 100% { opacity: 0; transform: scaleY(.05); }
-  45%, 46% { opacity: .9; transform: scaleY(1); }
-  76%, 77% { opacity: .7; transform: scaleY(.8); }
-  75%, 78% { opacity: 0; transform: scaleY(.05); }
-}
-@keyframes living-wave { from { transform: scaleY(.45); } to { transform: scaleY(calc(.8 + (var(--wave) % 5) * .25)); } }
-@keyframes living-think {
-  0% { transform: scale(1.045); }
-  45% { transform: scale(1.055) translateX(-.7%) rotateY(2deg); }
-  100% { transform: scale(1.05) translateX(-.35%) rotateY(1deg); }
-}
-@keyframes living-speaking {
-  0%,100% { transform: scale(1.05) translateY(0) rotateZ(0); }
-  30% { transform: scale(1.053) translateY(-.16%) rotateZ(.12deg); }
-  67% { transform: scale(1.049) translateY(.12%) rotateZ(-.1deg); }
-}
-@keyframes living-deflect {
-  0% { transform: scale(1.05); }
-  35% { transform: scale(1.065) translateX(1.8%) rotateY(-4deg); }
-  72% { transform: scale(1.06) translateX(1.1%) rotateY(-2deg); }
-  100% { transform: scale(1.052) translateX(.35%); }
-}
-@keyframes living-skeptical {
-  0% { transform: scale(1.05); }
-  45% { transform: scale(1.07) translateY(-.5%) rotateZ(-.35deg); filter: contrast(1.16) brightness(.84); }
-  100% { transform: scale(1.055); }
-}
-@keyframes living-look-away {
-  0% { transform: scale(1.05); }
-  38% { transform: scale(1.075) translateX(-3.2%) rotateY(7deg); }
-  70% { transform: scale(1.07) translateX(-2.5%) rotateY(5deg); }
-  100% { transform: scale(1.055) translateX(-.4%); }
-}
-@keyframes living-tense {
-  0% { transform: scale(1.05); }
-  25% { transform: scale(1.075) translateY(-.7%); }
-  68% { transform: scale(1.068) translateY(-.35%) rotateZ(.2deg); }
-  100% { transform: scale(1.058); }
-}
-@keyframes living-flinch {
-  0% { transform: scale(1.05); }
-  22% { transform: scale(1.09) translateX(2.8%) translateY(-1.1%) rotateZ(.8deg); }
-  52% { transform: scale(1.07) translateX(-1.2%) rotateZ(-.35deg); }
-  100% { transform: scale(1.06); }
-}
-@keyframes living-confess {
-  0% { transform: scale(1.065) translateY(-.3%); }
-  28% { transform: scale(1.055) translateY(.7%) translateX(-1.2%) rotateZ(-.3deg); }
-  64% { transform: scale(1.05) translateY(1.2%) translateX(-1.7%) rotateZ(-.45deg); }
-  100% { transform: scale(1.045) translateY(1.5%) translateX(-1.4%) rotateZ(-.35deg); }
+@keyframes living-pause {
+  from { opacity: .2; }
+  to { opacity: .8; }
 }
 
 @media (max-width: 1260px) {
@@ -345,7 +235,11 @@
     grid-template-columns: 1fr;
     grid-template-areas: "subject" "dialogue" "control";
   }
-  .living-suspect-stage { min-height: min(640px, 78vh); border-right: 0; border-bottom: 1px solid rgba(123,232,225,.12); }
+  .living-suspect-stage {
+    min-height: min(640px, 78vh);
+    border-right: 0;
+    border-bottom: 1px solid rgba(123,232,225,.12);
+  }
   .living-suspect-frame { min-height: 420px; }
   .living-media-status { display: none; }
 }
@@ -358,12 +252,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .living-suspect-portrait img,
-  .living-eyelid,
-  .living-camera-bar i,
-  .living-breath-indicator span,
-  .living-breath-indicator i,
-  .living-voice-wave i {
+  .living-voice-wave i,
+  .living-suspect-stage.is-thinking .living-suspect-frame::after {
     animation: none !important;
   }
 }
