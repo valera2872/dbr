@@ -1,3 +1,4 @@
+import './performanceKernel';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
@@ -12,6 +13,7 @@ import './act2HiddenRoute.css';
 import './act3ArchiveIdentity.css';
 import './premiumPass.css';
 import './buildMarker.css';
+import './interactiveInterrogation.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -19,6 +21,7 @@ import './act2HiddenRouteV2';
 import './act2GatePreview';
 import './act3ArchiveIdentity';
 import './premiumPass';
+import './interactiveInterrogation';
 import './versionGuard';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
