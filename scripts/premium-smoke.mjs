@@ -29,12 +29,14 @@ const livingCss = read('src/livingSuspect.css');
 const freshStart = read('src/freshStart.ts');
 const actorStudio = read('src/actorStudio.ts');
 const actorStudioCss = read('src/actorStudio.css');
+const actorStudioGuide = read('src/actorStudioGuide.ts');
+const actorStudioGuideCss = read('src/actorStudioGuide.css');
 const videoContract = read('src/kirillVideoContract.ts');
 const videoRuntime = read('src/kirillVideoRuntime.ts');
 const videoManifest = JSON.parse(read('public/media/kirill/manifest.json'));
 
-check(packageJson.version === '0.6.6', 'package.json должен иметь версию 0.6.6');
-check(build.includes("APP_BUILD = 'v0.6.6'"), 'src/build.ts должен объявлять APP_BUILD v0.6.6');
+check(packageJson.version === '0.6.7', 'package.json должен иметь версию 0.6.7');
+check(build.includes("APP_BUILD = 'v0.6.7'"), 'src/build.ts должен объявлять APP_BUILD v0.6.7');
 check(build.includes('INTERROGATION_STORAGE_KEY'), 'src/build.ts должен объявлять ключ интерактивного допроса');
 check(build.includes('LIVING_SUSPECT_STORAGE_KEY'), 'src/build.ts должен объявлять ключ сцены допроса');
 check(versionGuard.includes("from './build'"), 'versionGuard должен получать версию из src/build.ts');
@@ -48,6 +50,7 @@ const requiredMainImports = [
   "./interactiveInterrogation.css",
   "./livingSuspect.css",
   "./actorStudio.css",
+  "./actorStudioGuide.css",
   "./premiumPass",
   "./interactiveInterrogation",
   "./livingSuspect",
@@ -56,6 +59,7 @@ const requiredMainImports = [
 ];
 requiredMainImports.forEach((entry) => check(main.includes(entry), `main.tsx не подключает ${entry}`));
 check(main.includes('mountActorStudio'), 'main.tsx не монтирует Actor Studio');
+check(main.includes('mountActorStudioGuide'), 'main.tsx не монтирует пошаговый гид Actor Studio');
 check(main.indexOf("./freshStart'") < main.indexOf("./performanceKernel'"), 'freshStart должен выполняться до восстановления состояния приложения');
 check(main.indexOf("./performanceKernel'") < main.indexOf("./cameraFrames'"), 'performanceKernel должен загружаться до legacy runtime-модулей');
 check(main.indexOf("./interactiveInterrogation'") < main.indexOf("./livingSuspect'"), 'Сцена Кирилла должна расширять уже подключённый допрос');
@@ -80,6 +84,8 @@ const evidenceIds = caseData.evidence.map((item) => item.id);
   'src/freshStart.ts',
   'src/actorStudio.ts',
   'src/actorStudio.css',
+  'src/actorStudioGuide.ts',
+  'src/actorStudioGuide.css',
   'src/kirillVideoContract.ts',
   'src/kirillVideoRuntime.ts',
   'public/media/kirill/manifest.json',
@@ -87,7 +93,7 @@ const evidenceIds = caseData.evidence.map((item) => item.id);
   'PREMIUM_PASS.md',
   'dist/index.html'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
-check(serviceWorker.includes('dbr-v0-6-6-actor-studio'), 'Service worker не использует cache key v0.6.6');
+check(serviceWorker.includes('dbr-v0-6-7-actor-studio-onboarding'), 'Service worker не использует cache key v0.6.7');
 
 check(performanceKernel.includes('CoalescedMutationObserver'), 'Performance kernel не объединяет MutationObserver');
 check(performanceKernel.includes('dbr:runtime-settled'), 'Performance kernel не отправляет событие синхронизации');
@@ -113,6 +119,16 @@ check(actorStudio.includes('new MediaRecorder'), 'Actor Studio не записы
 check(actorStudio.includes('manifestFromCaptures'), 'Actor Studio не генерирует manifest.json');
 check(actorStudio.includes('downloadAllButton'), 'Actor Studio не экспортирует комплект клипов');
 check(actorStudioCss.includes('.actor-camera-shell'), 'Actor Studio не имеет производственного интерфейса камеры');
+
+check(actorStudioGuide.includes('Это не функция игры и не тест веб-камеры'), 'Первый экран не объясняет назначение Actor Studio');
+check(actorStudioGuide.includes('Студия сама не превращает фотографию'), 'Нет честного предупреждения об ограничениях студии');
+check(actorStudioGuide.includes("script.id === 'alibi-initial'"), 'Гид не выбирает понятный тестовый дубль с речью');
+check(actorStudioGuide.includes('Начать отсчёт и записать реплику'), 'Гид не переводит кнопки в пошаговый сценарий');
+check(actorStudioGuide.includes('этот ролик затем появится в игре'), 'Гид не объясняет результат записи');
+check(actorStudioGuideCss.includes('.actor-onboarding-backdrop'), 'Нет визуального вводного экрана Actor Studio');
+check(actorStudioGuideCss.includes('.actor-guided-task'), 'Нет постоянной инструкции над камерой');
+check(!actorStudioGuide.includes('new MutationObserver'), 'Гид Actor Studio не должен добавлять MutationObserver');
+check(!actorStudioGuide.includes('setInterval'), 'Гид Actor Studio не должен использовать polling');
 
 check(videoContract.includes("id: 'idle'"), 'В контракте нет idle-сцены');
 check(videoContract.includes("id: 'confession'"), 'В контракте нет кульминационного признания');
@@ -149,4 +165,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nPremium smoke passed: ${evidenceIds.length + 9} evidence, Actor Studio and line-level video contracts, build ${packageJson.version}.`);
+console.log(`\nPremium smoke passed: ${evidenceIds.length + 9} evidence, guided Actor Studio and line-level video contracts, build ${packageJson.version}.`);

@@ -1,0 +1,206 @@
+.actor-onboarding-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(0, 5, 7, .88);
+  backdrop-filter: blur(12px);
+}
+
+.actor-onboarding-card {
+  width: min(860px, calc(100vw - 56px));
+  max-height: calc(100vh - 56px);
+  overflow: auto;
+  padding: 34px;
+  border: 1px solid rgba(112, 220, 211, .22);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(49, 139, 132, .18), transparent 34%),
+    #071517;
+  box-shadow: 0 34px 120px rgba(0, 0, 0, .65);
+}
+
+.actor-onboarding-card > small,
+.actor-guided-task-head > span {
+  color: #74bbb5;
+  font: 800 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .14em;
+}
+
+.actor-onboarding-card h1 {
+  margin: 10px 0 12px;
+  color: #f0faf8;
+  font-size: 31px;
+  line-height: 1.14;
+}
+
+.actor-onboarding-lead {
+  max-width: 760px;
+  margin: 0;
+  color: #afc9c6;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.actor-onboarding-flow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.actor-onboarding-flow article {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(112, 220, 211, .11);
+  border-radius: 13px;
+  background: rgba(10, 34, 36, .66);
+}
+
+.actor-onboarding-flow article > span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(112, 220, 211, .3);
+  border-radius: 50%;
+  color: #aee4df;
+  background: rgba(35, 98, 96, .35);
+  font: 800 12px/1 ui-monospace, monospace;
+}
+
+.actor-onboarding-flow strong {
+  display: block;
+  color: #e4f1ef;
+  font-size: 13px;
+}
+
+.actor-onboarding-flow p,
+.actor-onboarding-warning p {
+  margin: 5px 0 0;
+  color: #8da9a6;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.actor-onboarding-warning {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid rgba(224, 173, 88, .25);
+  border-radius: 13px;
+  background: rgba(73, 51, 18, .28);
+}
+
+.actor-onboarding-warning strong { color: #f0c982; }
+
+.actor-onboarding-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.actor-onboarding-actions button,
+.actor-onboarding-actions a,
+.actor-guided-task-head button {
+  min-height: 42px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font: 750 12px/1.2 inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.actor-onboarding-actions button.primary {
+  border: 1px solid rgba(118, 224, 216, .42);
+  color: #eefaf8;
+  background: linear-gradient(180deg, rgba(42, 132, 126, .95), rgba(24, 88, 86, .95));
+}
+
+.actor-onboarding-actions a {
+  display: inline-flex;
+  align-items: center;
+  color: #9ab8b5;
+  border: 1px solid rgba(112, 220, 211, .15);
+  background: rgba(16, 48, 50, .48);
+}
+
+.actor-guided-task {
+  margin-bottom: 18px;
+  padding: 20px;
+  border: 1px solid rgba(231, 190, 100, .25);
+  border-radius: 15px;
+  background:
+    linear-gradient(135deg, rgba(90, 62, 19, .27), transparent 55%),
+    rgba(10, 27, 29, .9);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, .18);
+}
+
+.actor-guided-task-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.actor-guided-task-head button {
+  min-height: 30px;
+  padding: 6px 10px;
+  border: 1px solid rgba(112, 220, 211, .17);
+  color: #9fc9c5;
+  background: rgba(15, 53, 54, .5);
+}
+
+.actor-guided-task h2 {
+  margin: 10px 0 7px;
+  color: #f3f8f7;
+  font-size: 20px;
+}
+
+.actor-guided-task > p {
+  margin: 0;
+  color: #98b0ad;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.actor-guided-task blockquote {
+  margin: 13px 0;
+  padding: 15px 17px;
+  border-left: 3px solid #e1b45d;
+  border-radius: 0 10px 10px 0;
+  color: #f0e5ce;
+  background: rgba(101, 72, 25, .24);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.actor-guided-task ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 18px;
+  margin: 14px 0;
+  padding-left: 22px;
+}
+
+.actor-guided-task li {
+  color: #8fa8a5;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.actor-guided-task li strong { color: #d6e6e3; }
+.actor-guided-result {
+  padding-top: 12px;
+  border-top: 1px solid rgba(112, 220, 211, .09);
+}
+.actor-guided-result strong { color: #e7c77e; }
+
+@media (max-width: 1100px) {
+  .actor-onboarding-flow,
+  .actor-guided-task ol { grid-template-columns: 1fr; }
+}

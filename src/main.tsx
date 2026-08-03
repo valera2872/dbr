@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
 import { mountActorStudio } from './actorStudio';
+import { mountActorStudioGuide } from './actorStudioGuide';
 import './premium.css';
 import './premium-fix.css';
 import './premium-runtime.css';
@@ -18,6 +19,7 @@ import './buildMarker.css';
 import './interactiveInterrogation.css';
 import './livingSuspect.css';
 import './actorStudio.css';
+import './actorStudioGuide.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -34,7 +36,9 @@ const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('DBR root element is missing');
 
 const actorStudio = mountActorStudio(rootElement);
-if (!actorStudio.mounted) {
+if (actorStudio.mounted) {
+  mountActorStudioGuide(rootElement);
+} else {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <PremiumApp />
