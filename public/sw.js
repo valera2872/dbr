@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-6-7-actor-studio-onboarding';
+const CACHE_NAME = 'dbr-v0-7-0-final-operation';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
