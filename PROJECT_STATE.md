@@ -2,11 +2,11 @@
 
 ## Current branch
 
-`agent/v0-2-locked-room`
+`agent/v0-5-act2-hidden-route`
 
 ## Current version
 
-`0.2.0`
+`0.5.0`
 
 ## Product
 
@@ -16,44 +16,45 @@ First case: **«Номер 314»**.
 
 ## Implemented
 
-- generic JSON-driven case shell;
-- four-screen prologue;
-- headquarters with five sections;
+- premium prologue and investigation headquarters;
 - persistent local progress;
-- evidence unlock conditions;
-- interactive room inspection hotspots;
-- camera timeline puzzle;
-- initial scripted interrogations;
-- dialogue topics unlocked by evidence;
-- first-act checkpoint and logical gate;
+- five first-act evidence items;
+- interactive room 314 inspection;
+- corridor-camera reconstruction;
+- scripted interrogations and evidence-gated questions;
+- first checkpoint: ordinary exits do not explain the disappearance;
+- Act II gate after the correct checkpoint conclusion;
+- E006: interactive archive plan of the third floor;
+- three plan discrepancies revealing the old passage between 312 and 314;
+- E007: interactive inspection of room 312;
+- four room findings confirming that the hidden route was recently used;
+- new Act II questions for Kirill and Marina;
+- separate persistence for Act II progress;
 - GitHub Pages deployment.
 
-## First-act completion condition
+## Current playable path
 
-The player must establish at least three of these facts:
-
-- Ilya did not leave through the main door;
-- the window was not used;
-- a physical conflict occurred in the room;
-- the phone was deliberately placed near the service elevator.
-
-The correct intermediate conclusion is that another person entered and removed Ilya through a route not recorded by the main lock and corridor camera.
+1. Complete Act I and prove that Ilya did not leave through the door or window.
+2. Submit the correct intermediate conclusion.
+3. Open the archive plan and inspect all three construction marks.
+4. Discover the hidden passage between rooms 312 and 314.
+5. Inspect all four zones in room 312.
+6. Return to Kirill and Marina with the newly unlocked questions.
 
 ## Next stage
 
-`v0.3 — old floor plan`
+`v0.6 — archive and identity branches`
 
-- current and archive floor plans;
-- hidden connection between rooms 312 and 314;
-- Vera identity branch;
 - Denis archive branch;
-- room 312 inspection;
-- second checkpoint.
+- original festival materials and missing memory card;
+- reveal Elena Vetrova's real connection to the old case;
+- second logical checkpoint;
+- transition from the hidden-route question to motive and responsibility.
 
 ## Known limitations
 
-- placeholder visual presentation only;
+- E004 camera presentation is temporary and should later be replaced by consistent generated CCTV stills;
+- Act II is currently implemented as an isolated runtime layer over the generic Act I shell;
 - no final media assets;
 - no AI dialogue;
-- only Act I is playable;
-- content state is stored only in localStorage.
+- progress remains localStorage-only.
