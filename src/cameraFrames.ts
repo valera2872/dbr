@@ -14,8 +14,8 @@ type CameraMoment = {
   empty?: boolean;
 };
 
-const BUILD = 'v0.4.3';
-const MASTER_CORRIDOR = 'https://images.unsplash.com/photo-1706801582308-d4eda88de11f?auto=format&fit=crop&w=2400&q=92';
+const BUILD = 'v0.4.4';
+const MASTER_CORRIDOR = 'https://images.unsplash.com/photo-1593908521791-b5b4993bf477?auto=format&fit=crop&w=2400&q=82';
 
 const MOMENTS: CameraMoment[] = [
   {
@@ -158,7 +158,7 @@ function enhanceCamera(root: HTMLElement): void {
       <small>Система анализа выделяет лицо и ближайшую дверь. Это отметка поверх исходного кадра, а не отдельная фотография.</small>
     </header>
     <div class="one-corridor-stage">
-      <img class="one-corridor-photo" src="${MASTER_CORRIDOR}" alt="Один и тот же коридор третьего этажа" loading="eager" referrerpolicy="no-referrer" />
+      <img class="one-corridor-photo" src="${MASTER_CORRIDOR}" alt="Гостиничный коридор третьего этажа" loading="eager" referrerpolicy="no-referrer" />
       <div class="one-corridor-grade"></div>
       <div class="one-corridor-topbar"><span><i></i> CAM 3F · REC</span><time>18.10.2026 · 22:48:00</time></div>
       <span class="one-door door-307">307</span>
