@@ -1,20 +1,45 @@
 # Kirill interrogation video contract
 
-`manifest.json` maps interrogation reactions to real WebM/MP4 clips.
+DBR v0.6.6 uses line-level video clips. A clip is tied to a specific canonical Kirill reply, so mouth movement and original audio can match the text instead of playing a generic reaction.
 
-Example:
+Open Actor Studio in the deployed application:
+
+```text
+/dbr/?actorStudio=kirill
+```
+
+The studio records the required scenes, downloads correctly named WebM files and generates `manifest.json`.
+
+Manifest schema:
 
 ```json
 {
-  "idle": { "src": "idle.webm", "loop": true, "hasAudio": false },
-  "answer": { "src": "answer-01.webm", "hasAudio": true },
-  "deflect": { "src": "deflect.webm", "hasAudio": true },
-  "skeptical": { "src": "skeptical.webm", "hasAudio": true },
-  "look-away": { "src": "look-away.webm", "hasAudio": true },
-  "tense": { "src": "tense.webm", "hasAudio": true },
-  "flinch": { "src": "flinch.webm", "hasAudio": true },
-  "confess": { "src": "confess.webm", "hasAudio": true }
+  "version": 2,
+  "actor": "Кирилл Бессонов",
+  "idle": {
+    "src": "idle.webm",
+    "loop": true,
+    "hasAudio": false
+  },
+  "lines": {
+    "alibi-initial": {
+      "src": "alibi-initial.webm",
+      "loop": false,
+      "hasAudio": true
+    },
+    "confession": {
+      "src": "confession.webm",
+      "loop": false,
+      "hasAudio": true
+    }
+  }
 }
 ```
 
-Until real clips are present, the application deliberately shows a static photo reference. It must not simulate human motion by translating or rotating the still image.
+Place downloaded files and the generated manifest in:
+
+```text
+public/media/kirill/
+```
+
+The runtime first looks for the exact line clip. When it ends, it returns to `idle.webm`. Missing clips fall back to the deliberately static photo reference. A still image must never be translated, rotated, blinked or presented as live video.
