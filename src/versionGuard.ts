@@ -1,6 +1,6 @@
 export {};
 
-const APP_BUILD = 'v0.5.2';
+const APP_BUILD = 'v0.5.3';
 
 function applyBuildVersion(): void {
   if (document.documentElement.dataset.dbrBuild !== APP_BUILD) {
