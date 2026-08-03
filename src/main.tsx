@@ -3,6 +3,7 @@ import './performanceKernel';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
+import { mountActorStudio } from './actorStudio';
 import './premium.css';
 import './premium-fix.css';
 import './premium-runtime.css';
@@ -16,6 +17,7 @@ import './premiumPass.css';
 import './buildMarker.css';
 import './interactiveInterrogation.css';
 import './livingSuspect.css';
+import './actorStudio.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -25,13 +27,20 @@ import './act3ArchiveIdentity';
 import './premiumPass';
 import './interactiveInterrogation';
 import './livingSuspect';
+import './kirillVideoRuntime';
 import './versionGuard';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <PremiumApp />
-  </React.StrictMode>
-);
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('DBR root element is missing');
+
+const actorStudio = mountActorStudio(rootElement);
+if (!actorStudio.mounted) {
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <PremiumApp />
+    </React.StrictMode>
+  );
+}
 
 if ('serviceWorker' in navigator) {
   let refreshing = false;
