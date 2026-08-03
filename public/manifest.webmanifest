@@ -1,11 +1,21 @@
 {
-  "name": "ДБР — Детективное бюро расследований",
+  "name": "ДБР — интерактивное дело «Номер 314»",
   "short_name": "ДБР",
-  "description": "Интерактивные детективные расследования",
+  "description": "Интерактивное детективное расследование: изучайте улики, проверяйте показания и раскройте исчезновение из запертого номера.",
   "start_url": "/dbr/",
   "scope": "/dbr/",
   "display": "standalone",
-  "background_color": "#111318",
-  "theme_color": "#17191f",
-  "lang": "ru"
+  "orientation": "any",
+  "background_color": "#041012",
+  "theme_color": "#061719",
+  "lang": "ru",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
