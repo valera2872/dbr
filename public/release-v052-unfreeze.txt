@@ -1,0 +1,3 @@
+DBR page unfreeze hotfix
+Build: v0.5.2
+Commit: 962a46b26f78f382db0acbc550ec6fbffc94efde
