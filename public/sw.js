@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-6-3-living-suspect';
+const CACHE_NAME = 'dbr-v0-6-4-living-hotfix';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
