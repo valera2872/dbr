@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-5-1-force-refresh';
+const CACHE_NAME = 'dbr-v0-5-2-version-guard';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
