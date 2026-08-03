@@ -12,7 +12,7 @@ import './act2HiddenRoute.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
-import './act2HiddenRoute';
+import './act2HiddenRouteV2';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
