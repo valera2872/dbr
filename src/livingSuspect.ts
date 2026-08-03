@@ -43,12 +43,12 @@ const PORTRAIT = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?a
 const MANIFEST_URL = `${import.meta.env.BASE_URL}media/kirill/manifest.json`;
 const VOICE_RATE = 0.91;
 const VOICE_PITCH = 0.88;
-const VERIFIED_MALE_VOICE = /\b(pavel|maxim|maksim|yuri|yury|alexander|aleksandr|mikhail|dmitry|nikolai|anatoly|igor|vladimir|sergey|artem|male|муж)\b/i;
+const VERIFIED_MALE_VOICE = /(pavel|maxim|maksim|yuri|yury|alexander|aleksandr|mikhail|dmitry|nikolai|anatoly|igor|vladimir|sergey|artem|male|павел|максим|юрий|александр|михаил|дмитрий|николай|анатолий|игорь|владимир|сергей|арт[её]м|муж)/i;
 
 let settings = loadSettings();
 let lastSeenKirillEntryId: string | null = null;
 let speechTimer = 0;
-let simulatedSpeechTimer = 0;
+let responseTimer = 0;
 let activationToken = 0;
 let videoManifest: VideoManifest = {};
 let manifestLoaded = false;
@@ -181,9 +181,9 @@ function getStage(): HTMLElement | null {
 
 function stopMedia(): void {
   window.clearTimeout(speechTimer);
-  window.clearTimeout(simulatedSpeechTimer);
+  window.clearTimeout(responseTimer);
   speechTimer = 0;
-  simulatedSpeechTimer = 0;
+  responseTimer = 0;
 
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 
@@ -191,6 +191,9 @@ function stopMedia(): void {
   const video = stage?.querySelector<HTMLVideoElement>('.living-suspect-video');
   if (video) {
     video.pause();
+    video.onerror = null;
+    video.oncanplay = null;
+    video.onended = null;
     video.removeAttribute('src');
     video.load();
     video.hidden = true;
@@ -240,20 +243,21 @@ async function playVideoReaction(reaction: Reaction): Promise<VideoClip | null> 
       settled = true;
       resolve(result);
     };
-
-    video.onerror = () => {
+    const fallback = (): void => {
       video.hidden = true;
       still.hidden = false;
       stage.dataset.media = 'still';
       finish(null);
     };
+
+    video.onerror = fallback;
     video.oncanplay = () => {
       video.hidden = false;
       still.hidden = true;
       stage.dataset.media = 'video';
       video.loop = clip.loop === true;
       video.muted = clip.hasAudio !== true;
-      void video.play().then(() => finish(clip)).catch(() => finish(null));
+      void video.play().then(() => finish(clip)).catch(fallback);
     };
     video.onended = () => {
       if (!video.loop) {
@@ -283,13 +287,9 @@ function finishPerformance(reaction: Reaction): void {
   );
 }
 
-function speakWithVerifiedMaleVoice(text: string, reaction: Reaction): void {
+function speakWithVerifiedMaleVoice(text: string, reaction: Reaction): boolean {
   const voice = selectVerifiedMaleRussianVoice();
-  if (!settings.voice || !voice || !('speechSynthesis' in window)) {
-    const duration = Math.max(1500, Math.min(7000, text.length * 48));
-    simulatedSpeechTimer = window.setTimeout(() => finishPerformance(reaction), duration);
-    return;
-  }
+  if (!settings.voice || !voice || !('speechSynthesis' in window)) return false;
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ru-RU';
@@ -300,6 +300,7 @@ function speakWithVerifiedMaleVoice(text: string, reaction: Reaction): void {
   utterance.onend = () => finishPerformance(reaction);
   utterance.onerror = () => finishPerformance(reaction);
   window.speechSynthesis.speak(utterance);
+  return true;
 }
 
 function presentReaction(text: string, reaction: Reaction): void {
@@ -323,16 +324,25 @@ function presentReaction(text: string, reaction: Reaction): void {
       if (!currentStage) return;
 
       currentStage.classList.remove('is-thinking');
-      currentStage.classList.add('is-speaking');
-      currentStage.dataset.speaking = 'true';
 
       if (clip?.hasAudio) {
+        currentStage.classList.add('is-speaking');
+        currentStage.dataset.speaking = 'true';
         const video = currentStage.querySelector<HTMLVideoElement>('.living-suspect-video');
         if (video) video.onended = () => finishPerformance(reaction);
         return;
       }
 
-      speakWithVerifiedMaleVoice(text, reaction);
+      if (speakWithVerifiedMaleVoice(text, reaction)) {
+        currentStage.classList.add('is-speaking');
+        currentStage.dataset.speaking = 'true';
+        return;
+      }
+
+      // Нет настоящего видео и нет подтверждённого мужского голоса:
+      // показываем текст без имитации речи и движения человека.
+      currentStage.dataset.speaking = 'false';
+      responseTimer = window.setTimeout(() => finishPerformance(reaction), 650);
     });
   }, pause);
 }
