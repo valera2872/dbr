@@ -17,14 +17,16 @@ const act4Css = read('src/act4FinalOperation.css');
 const interrogation = read('src/interactiveInterrogation.ts');
 const sw = read('public/sw.js');
 const caseData = JSON.parse(read('src/cases/room314.json'));
+const buildVersion = `APP_BUILD = 'v${pkg.version}'`;
+const cacheVersion = `dbr-v${pkg.version.replaceAll('.', '-')}`;
 
-check(pkg.version === '0.8.0', 'package.json должен иметь версию 0.8.0');
-check(build.includes("APP_BUILD = 'v0.8.0'"), 'APP_BUILD должен быть v0.8.0');
+check(/^0\.(?:[89]|[1-9]\d)\./.test(pkg.version), 'Версия должна быть не ниже завершённого маршрута 0.8.x');
+check(build.includes(buildVersion), `APP_BUILD должен совпадать с package.json: v${pkg.version}`);
 check(build.includes('ACT4_STORAGE_KEY'), 'В реестре отсутствует ACT4_STORAGE_KEY');
 check(main.includes("./act4FinalOperation.css"), 'main.tsx не подключает стили акта IV');
 check(main.includes("./act4FinalOperation'"), 'main.tsx не подключает акт IV');
 check(main.indexOf("./act4FinalOperation'") < main.indexOf("./versionGuard'"), 'Акт IV должен загружаться до versionGuard');
-check(sw.includes('dbr-v0-8-0-stability-state'), 'Service worker не использует cache key v0.8.0');
+check(sw.includes(cacheVersion), `Service worker не использует cache key ${cacheVersion}`);
 
 ['E001', 'E002', 'E003', 'E004', 'E005'].forEach((id) => {
   check(caseData.evidence.some((item) => item.id === id), `В базовом деле отсутствует ${id}`);
@@ -61,4 +63,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFinal operation smoke passed: E001–E011, rescue, card verification, accusation and epilogue remain present in build 0.8.0.');
+console.log(`\nFinal operation smoke passed: E001–E011, rescue, card verification, accusation and epilogue remain present in build ${pkg.version}.`);

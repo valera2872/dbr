@@ -1,12 +1,12 @@
 {
   "name": "dbr",
   "private": true,
-  "version": "0.8.0",
+  "version": "0.8.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/final-smoke.mjs && node scripts/stability-smoke.mjs",
-    "premium:check": "node scripts/final-smoke.mjs && node scripts/stability-smoke.mjs",
+    "build": "tsc -b && vite build && node scripts/final-smoke.mjs && node scripts/stability-smoke.mjs && node scripts/commercial-smoke.mjs",
+    "premium:check": "node scripts/final-smoke.mjs && node scripts/stability-smoke.mjs && node scripts/commercial-smoke.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

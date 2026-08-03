@@ -6,12 +6,13 @@ import {
   CORE_STORAGE_KEY,
   INTERROGATION_STORAGE_KEY
 } from './build';
+import { INTERNAL_MODE } from './internalMode';
 
 export {};
 
 const params = new URLSearchParams(window.location.search);
 const fixture = params.get('fixture');
-const qaEnabled = params.get('qa') === '1';
+const qaEnabled = INTERNAL_MODE && params.get('qa') === '1';
 
 const now = '2026-08-03T20:00:00.000Z';
 

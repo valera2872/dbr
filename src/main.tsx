@@ -1,12 +1,15 @@
 import './freshStart';
+import { INTERNAL_MODE } from './internalMode';
 import './routeFixtures';
 import './performanceKernel';
 import './investigationState';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
+import { AppErrorBoundary } from './AppErrorBoundary';
 import { mountActorStudio } from './actorStudio';
 import { mountActorStudioGuide } from './actorStudioGuide';
+import { mountCommercialLaunch } from './commercialLaunch';
 import './premium.css';
 import './premium-fix.css';
 import './premium-runtime.css';
@@ -24,6 +27,7 @@ import './actorStudio.css';
 import './actorStudioGuide.css';
 import './act4FinalOperation.css';
 import './stabilityPass.css';
+import './commercialShell.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -41,15 +45,21 @@ import './versionGuard';
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('DBR root element is missing');
 
-const actorStudio = mountActorStudio(rootElement);
+const actorStudio = INTERNAL_MODE
+  ? mountActorStudio(rootElement)
+  : { mounted: false };
+
 if (actorStudio.mounted) {
   mountActorStudioGuide(rootElement);
 } else {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <PremiumApp />
+      <AppErrorBoundary>
+        <PremiumApp />
+      </AppErrorBoundary>
     </React.StrictMode>
   );
+  mountCommercialLaunch();
 }
 
 if ('serviceWorker' in navigator) {

@@ -16,11 +16,13 @@ const pass = read('src/premiumPassV2.ts');
 const diagnostics = read('src/stabilityDiagnostics.ts');
 const css = read('src/stabilityPass.css');
 const sw = read('public/sw.js');
+const buildVersion = `APP_BUILD = 'v${pkg.version}'`;
+const cacheVersion = `dbr-v${pkg.version.replaceAll('.', '-')}`;
 
-check(pkg.version === '0.8.0', 'package.json должен иметь версию 0.8.0');
-check(build.includes("APP_BUILD = 'v0.8.0'"), 'APP_BUILD должен быть v0.8.0');
+check(/^0\.(?:[89]|[1-9]\d)\./.test(pkg.version), 'Версия должна быть не ниже stability pass 0.8.x');
+check(build.includes(buildVersion), `APP_BUILD должен совпадать с package.json: v${pkg.version}`);
 check(build.includes('STATE_SCHEMA_VERSION = 1'), 'Не объявлена версия единой схемы состояния');
-check(sw.includes('dbr-v0-8-0-stability-state'), 'Service worker не использует cache key v0.8.0');
+check(sw.includes(cacheVersion), `Service worker не использует cache key ${cacheVersion}`);
 
 [
   'src/investigationState.ts',
@@ -33,6 +35,7 @@ check(sw.includes('dbr-v0-8-0-stability-state'), 'Service worker не испол
 
 const orderedImports = [
   "./freshStart'",
+  "./internalMode'",
   "./routeFixtures'",
   "./performanceKernel'",
   "./investigationState'",
@@ -60,6 +63,7 @@ check(!state.includes('setInterval'), 'Единое состояние не до
 ['clean', 'act2', 'act3', 'interrogation', 'act4', 'card', 'report', 'complete'].forEach((fixture) => {
   check(fixtures.includes(`fixture === '${fixture}'`) || fixtures.includes("fixture === 'clean'"), `Нет QA-фикстуры ${fixture}`);
 });
+check(fixtures.includes('INTERNAL_MODE &&'), 'Фикстуры должны быть защищены внутренним режимом');
 check(fixtures.includes("params.get('qa') === '1'"), 'Фикстуры должны быть защищены параметром qa=1');
 check(fixtures.includes('clearCase()'), 'Фикстуры должны начинаться с детерминированного чистого состояния');
 
@@ -69,6 +73,7 @@ check(pass.includes("'act4-report'"), 'Premium Pass не ведёт к окон�
 check(!pass.includes('new MutationObserver'), 'Premium Pass v2 не должен создавать MutationObserver');
 check(!pass.includes('setInterval'), 'Premium Pass v2 не должен использовать polling');
 check(diagnostics.includes('exportInvestigationState'), 'Диагностика не умеет экспортировать технический снимок');
+check(diagnostics.includes('if (INTERNAL_MODE)'), 'Диагностика должна быть скрыта в коммерческом режиме');
 
 const requiredStages = [
   'act1-evidence', 'act1-report', 'act2-plan', 'act2-room', 'act3-archive',
@@ -83,4 +88,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nStability smoke passed: unified state schema, migration diagnostics, four-act navigation and deterministic fixtures are present in build 0.8.0.');
+console.log(`\nStability smoke passed: unified state schema, migration diagnostics, four-act navigation and deterministic fixtures are present in build ${pkg.version}.`);
