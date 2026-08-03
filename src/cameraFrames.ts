@@ -4,91 +4,90 @@ type CameraMoment = {
   time: string;
   subject: string;
   shortSubject: string;
+  badge: string;
   action: string;
   note: string;
-  portrait: string;
   x: string;
-  y: string;
   door: '307' | '312' | '314' | 'none';
   direction: 'left' | 'right' | 'still';
+  accent: string;
   empty?: boolean;
 };
 
-const BUILD = 'v0.4.4';
-const MASTER_CORRIDOR = 'https://images.unsplash.com/photo-1593908521791-b5b4993bf477?auto=format&fit=crop&w=2400&q=82';
+const BUILD = 'v0.4.6';
 
 const MOMENTS: CameraMoment[] = [
   {
     time: '22:48',
     subject: 'Елена Ветрова',
     shortSubject: 'Елена',
+    badge: 'Е',
     action: 'подходит к номеру 314',
     note: 'Елена останавливается у двери 314 и разговаривает с Ильёй.',
-    portrait: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=420&q=88',
     x: '76%',
-    y: '48%',
     door: '314',
-    direction: 'right'
+    direction: 'right',
+    accent: '#d8829b'
   },
   {
     time: '23:04',
     subject: 'Елена Ветрова',
     shortSubject: 'Елена',
-    action: 'уходит к номеру 307',
-    note: 'После разговора Елена возвращается по коридору к своему номеру.',
-    portrait: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=420&q=88',
-    x: '24%',
-    y: '52%',
+    badge: 'Е',
+    action: 'возвращается к номеру 307',
+    note: 'После разговора Елена идёт по коридору обратно к своему номеру.',
+    x: '27%',
     door: '307',
-    direction: 'left'
+    direction: 'left',
+    accent: '#d8829b'
   },
   {
     time: '23:41',
     subject: 'Кирилл Бессонов',
     shortSubject: 'Кирилл',
+    badge: 'К',
     action: 'входит в номер 312',
     note: 'Кирилл входит в соседний с 314-м номер и больше в коридоре не появляется.',
-    portrait: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=420&q=88',
-    x: '61%',
-    y: '45%',
+    x: '55%',
     door: '312',
-    direction: 'right'
+    direction: 'right',
+    accent: '#7fa9d8'
   },
   {
     time: '23:47',
     subject: 'Илья Соколов',
     shortSubject: 'Илья',
+    badge: 'И',
     action: 'выходит из номера 314',
-    note: 'Илья покидает номер и идёт за горячей водой.',
-    portrait: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=420&q=88',
-    x: '72%',
-    y: '50%',
+    note: 'Илья покидает номер и направляется по коридору за горячей водой.',
+    x: '74%',
     door: '314',
-    direction: 'left'
+    direction: 'left',
+    accent: '#a7ba77'
   },
   {
     time: '23:50',
     subject: 'Илья Соколов',
     shortSubject: 'Илья',
+    badge: 'И',
     action: 'возвращается в номер 314',
     note: 'Это последнее подтверждённое появление Ильи в гостевом коридоре.',
-    portrait: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=420&q=88',
     x: '79%',
-    y: '48%',
     door: '314',
-    direction: 'right'
+    direction: 'right',
+    accent: '#a7ba77'
   },
   {
     time: '00:17',
-    subject: 'Движение не обнаружено',
+    subject: 'Коридор пуст',
     shortSubject: 'Пусто',
-    action: 'коридор остаётся пустым',
+    badge: '',
+    action: 'людей в зоне камеры нет',
     note: 'Сообщение отправлено в 00:17, но камера не фиксирует ни Илью, ни другого человека.',
-    portrait: '',
     x: '50%',
-    y: '50%',
     door: 'none',
     direction: 'still',
+    accent: '#e58a82',
     empty: true
   }
 ];
@@ -106,7 +105,7 @@ function relabelQuestion(question: HTMLElement): void {
   const buttons = Array.from(question.querySelectorAll<HTMLButtonElement>('button'));
 
   if (kicker) kicker.textContent = 'ВЫВОД ПО КАМЕРЕ';
-  if (heading) heading.textContent = 'Что подтверждает последовательность кадров?';
+  if (heading) heading.textContent = 'Что подтверждает последовательность событий?';
 
   if (buttons[0]) buttons[0].textContent = 'Илья вышел из номера после 23:50';
   if (buttons[1]) buttons[1].textContent = 'Кирилл вошёл в 314 через главный вход';
@@ -128,7 +127,7 @@ function createTimelineButton(moment: CameraMoment): HTMLButtonElement {
 }
 
 function enhanceCamera(root: HTMLElement): void {
-  if (root.dataset.oneCorridor === BUILD) return;
+  if (root.dataset.reconstruction === BUILD) return;
 
   const frame = root.querySelector<HTMLElement>('.cctv-frame');
   const consoleElement = root.querySelector<HTMLElement>('.camera-console');
@@ -136,13 +135,13 @@ function enhanceCamera(root: HTMLElement): void {
   const taskbar = root.querySelector<HTMLElement>('.scene-taskbar');
   if (!frame || !question) return;
 
-  root.dataset.oneCorridor = BUILD;
+  root.dataset.reconstruction = BUILD;
 
   if (taskbar) {
     const title = taskbar.querySelector<HTMLElement>('strong');
     const helper = taskbar.querySelector<HTMLElement>('small');
-    if (title) title.textContent = 'Одна стационарная камера. Переключайте время и следите, кто появляется у дверей 307, 312 и 314';
-    if (helper) helper.textContent = 'Коридор и ракурс не меняются — меняются только участники события';
+    if (title) title.textContent = 'Переключайте время и сопоставляйте подтверждённые появления у дверей 307, 312 и 314';
+    if (helper) helper.textContent = 'Это реконструкция по журналу камеры, а не восстановленный видеокадр';
   }
 
   relabelQuestion(question);
@@ -154,66 +153,92 @@ function enhanceCamera(root: HTMLElement): void {
   main.className = 'one-corridor-main';
   main.innerHTML = `
     <header class="one-corridor-heading">
-      <div><span>CAM 3F · НЕПРЕРЫВНАЯ ЗАПИСЬ</span><h2>Коридор третьего этажа</h2></div>
-      <small>Система анализа выделяет лицо и ближайшую дверь. Это отметка поверх исходного кадра, а не отдельная фотография.</small>
+      <div>
+        <span>CAM 3F · РЕКОНСТРУКЦИЯ</span>
+        <h2>Перемещения в коридоре</h2>
+      </div>
+      <small>Схема показывает только подтверждённые события в зоне обзора стационарной камеры.</small>
     </header>
-    <div class="one-corridor-stage">
-      <img class="one-corridor-photo" src="${MASTER_CORRIDOR}" alt="Гостиничный коридор третьего этажа" loading="eager" referrerpolicy="no-referrer" />
-      <div class="one-corridor-grade"></div>
-      <div class="one-corridor-topbar"><span><i></i> CAM 3F · REC</span><time>18.10.2026 · 22:48:00</time></div>
-      <span class="one-door door-307">307</span>
-      <span class="one-door door-312">312</span>
-      <span class="one-door door-314">314</span>
-      <div class="one-corridor-target">
-        <span class="target-line"></span>
-        <div class="target-card">
-          <img alt="" />
-          <div><small>РАСПОЗНАНО</small><strong></strong><p></p></div>
+
+    <div class="reconstruction-stage" data-time="22:48" data-direction="right">
+      <div class="reconstruction-grid"></div>
+      <div class="camera-origin">
+        <span class="camera-origin-icon"></span>
+        <strong>CAM 3F</strong>
+        <small>главный коридор</small>
+      </div>
+      <div class="camera-view-cone"></div>
+
+      <div class="room-strip" aria-hidden="true">
+        <div class="room-cell room-307"><span>307</span><small>номер Елены</small></div>
+        <div class="room-cell room-312"><span>312</span><small>соседний номер</small></div>
+        <div class="room-cell room-314"><span>314</span><small>номер Ильи</small></div>
+      </div>
+
+      <div class="corridor-lane" aria-hidden="true">
+        <span class="lane-line lane-line-top"></span>
+        <span class="lane-line lane-line-bottom"></span>
+        <span class="lane-label">ГОСТЕВОЙ КОРИДОР · ЗОНА ОБЗОРА</span>
+      </div>
+
+      <div class="reconstruction-marker">
+        <span class="marker-pulse"></span>
+        <span class="marker-badge">Е</span>
+        <span class="marker-motion"><i></i></span>
+        <div class="marker-card">
+          <small>ПОДТВЕРЖДЕНО КАМЕРОЙ</small>
+          <strong>Елена Ветрова</strong>
+          <p>подходит к номеру 314</p>
         </div>
       </div>
-      <div class="one-corridor-empty" hidden>
-        <span>NO MOTION</span>
-        <strong>Движение не обнаружено</strong>
-        <small>Камера не фиксирует людей у дверей 307–314</small>
+
+      <div class="reconstruction-empty" hidden>
+        <span>00:17 · НЕТ ДВИЖЕНИЯ</span>
+        <strong>Коридор пуст</strong>
+        <p>В зоне дверей 307, 312 и 314 никто не появляется.</p>
       </div>
-      <div class="one-corridor-caption">
+
+      <div class="reconstruction-readout">
         <time>22:48</time>
-        <div><strong>Елена подходит к номеру 314</strong><p></p></div>
+        <div>
+          <strong>Елена Ветрова: подходит к номеру 314</strong>
+          <p>Елена останавливается у двери 314 и разговаривает с Ильёй.</p>
+        </div>
       </div>
     </div>
+
     <nav class="one-corridor-timeline" aria-label="События камеры"></nav>
   `;
 
   const timeline = main.querySelector<HTMLElement>('.one-corridor-timeline');
-  const stage = main.querySelector<HTMLElement>('.one-corridor-stage');
-  const topTime = main.querySelector<HTMLTimeElement>('.one-corridor-topbar time');
-  const target = main.querySelector<HTMLElement>('.one-corridor-target');
-  const targetImage = main.querySelector<HTMLImageElement>('.target-card img');
-  const targetName = main.querySelector<HTMLElement>('.target-card strong');
-  const targetAction = main.querySelector<HTMLElement>('.target-card p');
-  const empty = main.querySelector<HTMLElement>('.one-corridor-empty');
-  const captionTime = main.querySelector<HTMLTimeElement>('.one-corridor-caption time');
-  const captionTitle = main.querySelector<HTMLElement>('.one-corridor-caption strong');
-  const captionText = main.querySelector<HTMLElement>('.one-corridor-caption p');
-  const doors = {
-    '307': main.querySelector<HTMLElement>('.door-307'),
-    '312': main.querySelector<HTMLElement>('.door-312'),
-    '314': main.querySelector<HTMLElement>('.door-314')
+  const stage = main.querySelector<HTMLElement>('.reconstruction-stage');
+  const marker = main.querySelector<HTMLElement>('.reconstruction-marker');
+  const markerBadge = main.querySelector<HTMLElement>('.marker-badge');
+  const markerName = main.querySelector<HTMLElement>('.marker-card strong');
+  const markerAction = main.querySelector<HTMLElement>('.marker-card p');
+  const empty = main.querySelector<HTMLElement>('.reconstruction-empty');
+  const readoutTime = main.querySelector<HTMLTimeElement>('.reconstruction-readout time');
+  const readoutTitle = main.querySelector<HTMLElement>('.reconstruction-readout strong');
+  const readoutText = main.querySelector<HTMLElement>('.reconstruction-readout p');
+  const rooms = {
+    '307': main.querySelector<HTMLElement>('.room-307'),
+    '312': main.querySelector<HTMLElement>('.room-312'),
+    '314': main.querySelector<HTMLElement>('.room-314')
   };
 
-  if (!timeline || !stage || !topTime || !target || !targetImage || !targetName || !targetAction || !empty || !captionTime || !captionTitle || !captionText) return;
+  if (!timeline || !stage || !marker || !markerBadge || !markerName || !markerAction || !empty || !readoutTime || !readoutTitle || !readoutText) return;
 
   const aside = document.createElement('aside');
   aside.className = 'one-corridor-aside';
   aside.innerHTML = `
     <section class="one-corridor-task">
-      <span>ЧТО НУЖНО УВИДЕТЬ</span>
+      <span>ЧТО НУЖНО СОПОСТАВИТЬ</span>
       <ol>
         <li><b>1</b><p><strong>23:41</strong><small>Кирилл входит в соседний номер 312.</small></p></li>
         <li><b>2</b><p><strong>23:50</strong><small>Илья возвращается в номер 314.</small></p></li>
-        <li><b>3</b><p><strong>00:17</strong><small>Коридор пуст: выход Ильи не зафиксирован.</small></p></li>
+        <li><b>3</b><p><strong>00:17</strong><small>Коридор пуст: новый выход Ильи не зафиксирован.</small></p></li>
       </ol>
-      <p class="one-corridor-limit"><strong>Ограничение:</strong> камера видит гостевой коридор, но не скрытые или служебные пути.</p>
+      <p class="one-corridor-limit"><strong>Ограничение:</strong> камера видит основной гостевой коридор, но не служебные или скрытые пути.</p>
     </section>
   `;
   aside.append(question);
@@ -227,27 +252,26 @@ function enhanceCamera(root: HTMLElement): void {
 
     stage.dataset.time = moment.time;
     stage.dataset.direction = moment.direction;
-    topTime.textContent = `18.10.2026 · ${moment.time}:00`;
-    captionTime.textContent = moment.time;
-    captionTitle.textContent = `${moment.subject}: ${moment.action}`;
-    captionText.textContent = moment.note;
+    stage.style.setProperty('--event-accent', moment.accent);
+    readoutTime.textContent = moment.time;
+    readoutTitle.textContent = `${moment.subject}: ${moment.action}`;
+    readoutText.textContent = moment.note;
 
-    Object.entries(doors).forEach(([door, element]) => {
-      element?.classList.toggle('is-active', door === moment.door);
+    Object.entries(rooms).forEach(([room, element]) => {
+      element?.classList.toggle('is-active', room === moment.door);
     });
 
     if (moment.empty) {
-      target.hidden = true;
+      marker.hidden = true;
       empty.hidden = false;
     } else {
-      target.hidden = false;
+      marker.hidden = false;
       empty.hidden = true;
-      target.style.left = moment.x;
-      target.style.top = moment.y;
-      targetImage.src = moment.portrait;
-      targetImage.alt = moment.subject;
-      targetName.textContent = moment.subject;
-      targetAction.textContent = moment.action;
+      marker.style.left = moment.x;
+      marker.dataset.labelSide = Number.parseFloat(moment.x) > 60 ? 'left' : 'right';
+      markerBadge.textContent = moment.badge;
+      markerName.textContent = moment.subject;
+      markerAction.textContent = moment.action;
     }
 
     const taskItems = Array.from(aside.querySelectorAll<HTMLLIElement>('.one-corridor-task li'));
