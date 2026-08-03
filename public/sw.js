@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-5-0-act2-hidden-route';
+const CACHE_NAME = 'dbr-v0-5-1-force-refresh';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
