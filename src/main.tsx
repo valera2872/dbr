@@ -20,6 +20,7 @@ import './interactiveInterrogation.css';
 import './livingSuspect.css';
 import './actorStudio.css';
 import './actorStudioGuide.css';
+import './act4FinalOperation.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -30,6 +31,7 @@ import './premiumPass';
 import './interactiveInterrogation';
 import './livingSuspect';
 import './kirillVideoRuntime';
+import './act4FinalOperation';
 import './versionGuard';
 
 const rootElement = document.getElementById('root');
