@@ -25,12 +25,13 @@ const serviceWorker = read('public/sw.js');
 const performanceKernel = read('src/performanceKernel.ts');
 const interrogation = read('src/interactiveInterrogation.ts');
 const livingSuspect = read('src/livingSuspect.ts');
+const livingCss = read('src/livingSuspect.css');
 const freshStart = read('src/freshStart.ts');
 
-check(packageJson.version === '0.6.4', 'package.json должен иметь версию 0.6.4');
-check(build.includes("APP_BUILD = 'v0.6.4'"), 'src/build.ts должен объявлять APP_BUILD v0.6.4');
+check(packageJson.version === '0.6.5', 'package.json должен иметь версию 0.6.5');
+check(build.includes("APP_BUILD = 'v0.6.5'"), 'src/build.ts должен объявлять APP_BUILD v0.6.5');
 check(build.includes('INTERROGATION_STORAGE_KEY'), 'src/build.ts должен объявлять ключ интерактивного допроса');
-check(build.includes('LIVING_SUSPECT_STORAGE_KEY'), 'src/build.ts должен объявлять ключ живого подозреваемого');
+check(build.includes('LIVING_SUSPECT_STORAGE_KEY'), 'src/build.ts должен объявлять ключ сцены допроса');
 check(versionGuard.includes("from './build'"), 'versionGuard должен получать версию из src/build.ts');
 check(versionGuard.includes('premium-build-marker'), 'versionGuard должен защищать единую метку сборки');
 
@@ -49,7 +50,7 @@ const requiredMainImports = [
 requiredMainImports.forEach((entry) => check(main.includes(entry), `main.tsx не подключает ${entry}`));
 check(main.indexOf("./freshStart'") < main.indexOf("./performanceKernel'"), 'freshStart должен выполняться до восстановления состояния приложения');
 check(main.indexOf("./performanceKernel'") < main.indexOf("./cameraFrames'"), 'performanceKernel должен загружаться до legacy runtime-модулей');
-check(main.indexOf("./interactiveInterrogation'") < main.indexOf("./livingSuspect'"), 'Living Suspect должен расширять уже подключённый допрос');
+check(main.indexOf("./interactiveInterrogation'") < main.indexOf("./livingSuspect'"), 'Сцена Кирилла должна расширять уже подключённый допрос');
 check(main.indexOf("./livingSuspect'") < main.indexOf("./versionGuard'"), 'versionGuard должен загружаться последним');
 
 const evidenceIds = caseData.evidence.map((item) => item.id);
@@ -67,9 +68,11 @@ check(exists('src/interactiveInterrogation.css'), 'Отсутствует src/in
 check(exists('src/livingSuspect.ts'), 'Отсутствует src/livingSuspect.ts');
 check(exists('src/livingSuspect.css'), 'Отсутствует src/livingSuspect.css');
 check(exists('src/freshStart.ts'), 'Отсутствует src/freshStart.ts');
+check(exists('public/media/kirill/manifest.json'), 'Отсутствует манифест реальных видеоклипов Кирилла');
+check(exists('public/media/kirill/README.md'), 'Не документирован контракт видеоклипов Кирилла');
 check(exists('PREMIUM_PASS.md'), 'Отсутствует PREMIUM_PASS.md');
 check(exists('dist/index.html'), 'Vite не создал dist/index.html');
-check(serviceWorker.includes('dbr-v0-6-4-living-hotfix'), 'Service worker не использует cache key v0.6.4');
+check(serviceWorker.includes('dbr-v0-6-5-honest-interrogation'), 'Service worker не использует cache key v0.6.5');
 
 check(performanceKernel.includes('CoalescedMutationObserver'), 'Performance kernel не объединяет MutationObserver');
 check(performanceKernel.includes('dbr:runtime-settled'), 'Performance kernel не отправляет событие синхронизации');
@@ -77,14 +80,22 @@ check(interrogation.includes('data-present'), 'Допрос не поддерж�
 check(interrogation.includes('data-conclusion'), 'Допрос не поддерживает фиксацию противоречия');
 check(interrogation.includes('старая служебная комната'), 'Допрос не открывает следующее направление поиска');
 
-check(livingSuspect.includes('SpeechSynthesisUtterance'), 'Живой подозреваемый не поддерживает озвучку реплик');
-check(livingSuspect.includes("'look-away'"), 'Нет реакции отвода взгляда');
-check(livingSuspect.includes("'flinch'"), 'Нет непроизвольной реакции на улику');
-check(livingSuspect.includes("'confess'"), 'Нет кульминационной реакции признания');
-check(livingSuspect.includes('activateWhenReady'), 'Living Suspect не ждёт фактического появления окна допроса');
-check(livingSuspect.includes('requestAnimationFrame'), 'Living Suspect не использует ограниченную синхронизацию с отрисовкой');
-check(!livingSuspect.includes('new MutationObserver'), 'Living Suspect не должен добавлять новый MutationObserver');
-check(!livingSuspect.includes('setInterval'), 'Living Suspect не должен использовать polling');
+check(livingSuspect.includes('selectVerifiedMaleRussianVoice'), 'Нет строгой проверки мужского русского голоса');
+check(livingSuspect.includes('VERIFIED_MALE_VOICE'), 'Нет списка признаков мужского голоса');
+check(!livingSuspect.includes('?? russian[0]'), 'Запрещён fallback на первый русский голос: он может быть женским');
+check(livingSuspect.includes('stored.voice === true'), 'Озвучка должна быть выключена по умолчанию');
+check(livingSuspect.includes('VideoManifest'), 'Нет контракта реальных видеореакций');
+check(livingSuspect.includes('living-suspect-video'), 'Сцена не содержит слот настоящего видео');
+check(livingSuspect.includes('manifest.json'), 'Сцена не загружает манифест видеоклипов');
+check(livingSuspect.includes('activateWhenReady'), 'Сцена не ждёт фактического появления окна допроса');
+check(livingSuspect.includes('requestAnimationFrame'), 'Сцена не использует ограниченную синхронизацию с отрисовкой');
+check(!livingSuspect.includes('new MutationObserver'), 'Сцена не должна добавлять новый MutationObserver');
+check(!livingSuspect.includes('setInterval'), 'Сцена не должна использовать polling');
+
+check(!livingCss.includes('@keyframes living-idle'), 'Запрещено покачивание статичной фотографии');
+check(!livingCss.includes('@keyframes living-blink'), 'Запрещена нарисованная имитация моргания поверх фотографии');
+check(livingCss.includes('animation: none !important'), 'Статичная фотография должна быть явно защищена от анимации');
+check(livingCss.includes('A still image never pretends to move'), 'CSS должен документировать честный fallback');
 
 check(freshStart.includes("params.get('fresh') === '1'"), 'Нет явного fresh-start URL режима');
 check(freshStart.includes('localStorage.removeItem'), 'Fresh start не очищает локальный прогресс дела');
@@ -105,4 +116,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nPremium smoke passed: ${evidenceIds.length + 7} evidence, interrogation, living suspect and fresh-start contracts, build ${packageJson.version}.`);
+console.log(`\nPremium smoke passed: ${evidenceIds.length + 8} evidence, interrogation, honest media and fresh-start contracts, build ${packageJson.version}.`);
