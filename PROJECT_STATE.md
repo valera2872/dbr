@@ -2,11 +2,11 @@
 
 ## Current branch
 
-`agent/v0-7-final-operation` → target `main`
+`agent/v0-8-stability-state` → target `main`
 
 ## Current version
 
-`0.7.0 — Final Operation / complete case route`
+`0.8.0 — Stability & UX Pass 1`
 
 ## Product
 
@@ -16,72 +16,48 @@ First case: **«Номер 314»**.
 
 ## Complete playable story route
 
-- premium prologue and investigation headquarters;
-- persistent local progress;
-- Act I: E001–E005, room 314, corridor camera and intermediate report No. 1;
-- Act II: E006 archive plan, E007 room 312 and proof of the hidden route;
-- Act III: E008 archive provenance, E009 Vera Belova's identity and intermediate report No. 2;
-- interactive interrogation of Kirill with evidence presentation and contradiction fixing;
-- Act IV: E010 search of the old service room;
-- Ilya is found alive and the post-assault concealment is reconstructed;
-- E011 recovery and forensic verification of memory card 314-17;
-- final responsibility checkpoint separating assault, concealment and the 2015 motive;
-- end-of-case report, participant responsibility, epilogue and investigation rank.
+- Act I: E001–E005 and intermediate report No. 1;
+- Act II: E006 archive plan and E007 room 312;
+- Act III: E008 archive provenance, E009 identity check and intermediate report No. 2;
+- evidence-driven interrogation of Kirill;
+- Act IV: E010 rescue operation, E011 card verification, final accusation and epilogue.
 
-## Final operation
+## v0.8 Stability foundation
 
-The final act unlocks only when:
+- one typed investigation snapshot covers the core case, Acts II–IV and Kirill's interrogation;
+- old localStorage keys remain canonical, so existing progress is preserved;
+- arrays, booleans and nullable fields are normalized when read;
+- route stage is derived deterministically from evidence and report state;
+- four-act Premium Pass uses the unified snapshot instead of independently parsing storage;
+- exact next-step navigation now continues through interrogation, E010, E011 and the final report;
+- contradictory saves are detected: premature Act IV, incomplete final evidence, or reports completed without prerequisites;
+- diagnostics can export a technical state snapshot;
+- QA fixtures provide deterministic entry points: clean, act2, act3, interrogation, act4, card, report and complete;
+- new modules add no MutationObserver and no polling;
+- production build runs both the final-story contract and the v0.8 stability contract.
 
-1. Act III report is complete;
-2. Kirill's corridor alibi is broken in the interactive interrogation.
+## QA fixture contract
 
-Then the player:
+Fixtures only run with both parameters present:
 
-1. inspects four zones in E010;
-2. finds Ilya alive and establishes that the service room was locked from outside;
-3. recovers the hidden microSD card;
-4. verifies serial number, copy log, B-17 clip and file integrity in E011;
-5. submits the final accusation without overstating the evidence;
-6. receives the case report and performance rank.
+`?qa=1&fixture=<name>`
 
-## Canonical resolution
+Available names:
 
-- Kirill entered 314 through the hidden route to take card 314-17;
-- Ilya was injured during the struggle;
-- Kirill moved him into the old service room, provided minimal aid, locked the room and did not call medical services;
-- B-17 proves Kirill concealed the unsafe use of the service route in 2015 after Anton's death;
-- Denis concealed the archive original but did not perform the night assault;
-- Vera concealed her identity and acted as Ilya's source, not as the attacker;
-- Ilya survives and provides a statement after hospitalization.
+- `clean` — empty case;
+- `act2` — Act I complete;
+- `act3` — Acts I–II complete;
+- `interrogation` — Act III complete, Kirill not yet broken;
+- `act4` — final operation unlocked;
+- `card` — E010 complete;
+- `report` — E010–E011 complete;
+- `complete` — full epilogue state.
 
-## Premium and performance safeguards
+## Remaining stabilization work
 
-- one canonical version and storage-key registry;
-- protected version marker;
-- Acts I–IV investigation rail and explicit next action;
-- no new MutationObserver or polling in Act IV;
-- Act IV synchronizes through the shared performance kernel;
-- local progress remains compatible with previous act and interrogation keys;
-- `final-smoke.mjs` verifies E001–E011, rescue, card verification, accusation and epilogue after every production build;
-- v0.7.0 uses a new PWA cache key.
-
-## Current limitations before commercial release
-
-- Acts II–IV remain runtime layers over the typed Act I shell;
-- the real video performances for Kirill are not produced yet; Actor Studio is only an internal recording pipeline;
-- E004 camera presentation still uses temporary assets;
-- external usability, mobile-layout and long-session performance testing have not been completed;
-- progress remains localStorage-only;
-- final legal wording and age-rating review are still required before a paid release.
-
-## Next Premium Pass stage
-
-`v0.7.x — stabilization and commercial polish`
-
-- deterministic clean-save and migrated-save test fixtures;
-- full playthrough testing from fresh start to epilogue;
-- remove legacy version setters and remaining DOM scans;
-- improve E004 visual assets;
-- mobile and low-power performance pass;
-- external tester feedback and difficulty balancing;
-- decide whether the release uses filmed actors, generated video, or a premium static interrogation presentation.
+- migrate Acts II–IV themselves from DOM enhancers into React/typed case components;
+- remove legacy version setters and residual DOM scans;
+- run actual browser playthroughs against every deterministic fixture;
+- improve E004 assets and mobile layout;
+- conduct external usability and difficulty testing;
+- produce final sound, media and interrogation presentation.
