@@ -31,15 +31,27 @@ type LivingSettings = {
   voice: boolean;
 };
 
+type VideoClip = {
+  src: string;
+  loop?: boolean;
+  hasAudio?: boolean;
+};
+
+type VideoManifest = Partial<Record<Reaction, VideoClip>>;
+
 const PORTRAIT = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1100&q=90';
+const MANIFEST_URL = `${import.meta.env.BASE_URL}media/kirill/manifest.json`;
 const VOICE_RATE = 0.91;
-const VOICE_PITCH = 0.84;
+const VOICE_PITCH = 0.88;
+const VERIFIED_MALE_VOICE = /(pavel|maxim|maksim|yuri|yury|alexander|aleksandr|mikhail|dmitry|nikolai|anatoly|igor|vladimir|sergey|artem|male|павел|максим|юрий|александр|михаил|дмитрий|николай|анатолий|игорь|владимир|сергей|арт[её]м|муж)/i;
 
 let settings = loadSettings();
 let lastSeenKirillEntryId: string | null = null;
 let speechTimer = 0;
-let simulatedSpeechTimer = 0;
+let responseTimer = 0;
 let activationToken = 0;
+let videoManifest: VideoManifest = {};
+let manifestLoaded = false;
 
 function loadJson<T>(key: string): T {
   try {
@@ -51,7 +63,9 @@ function loadJson<T>(key: string): T {
 
 function loadSettings(): LivingSettings {
   const stored = loadJson<Partial<LivingSettings>>(LIVING_SUSPECT_STORAGE_KEY);
-  return { voice: stored.voice !== false };
+  // Озвучка выключена по умолчанию. Она доступна только при найденном
+  // русскоязычном голосе, явно распознанном как мужской.
+  return { voice: stored.voice === true };
 }
 
 function saveSettings(): void {
@@ -81,13 +95,13 @@ function inferReaction(text: string, state: InterrogationState): Reaction {
 
 function reactionLabel(reaction: Reaction): string {
   const labels: Record<Reaction, string> = {
-    idle: 'наблюдает за следователем',
+    idle: 'ожидает вопроса',
     answer: 'отвечает спокойно',
     deflect: 'уходит от прямого ответа',
-    skeptical: 'оценивает доказательство',
-    'look-away': 'отводит взгляд',
+    skeptical: 'оспаривает доказательство',
+    'look-away': 'избегает ответа',
     tense: 'напряжён',
-    flinch: 'непроизвольная реакция',
+    flinch: 'реакция на улику',
     confess: 'версия разрушена'
   };
   return labels[reaction];
@@ -102,26 +116,48 @@ function escapeHtml(value: string): string {
     .replaceAll("'", '&#039;');
 }
 
+function selectVerifiedMaleRussianVoice(): SpeechSynthesisVoice | null {
+  if (!('speechSynthesis' in window)) return null;
+
+  return window.speechSynthesis
+    .getVoices()
+    .filter((voice) => /^ru([-_]|$)/i.test(voice.lang))
+    .find((voice) => VERIFIED_MALE_VOICE.test(voice.name))
+    ?? null;
+}
+
+function voiceControlMarkup(): string {
+  const voice = selectVerifiedMaleRussianVoice();
+  if (!voice) {
+    return `
+      <button type="button" class="living-voice-toggle unavailable" disabled>
+        <span>○</span> Мужской голос недоступен
+      </button>`;
+  }
+
+  return `
+    <button type="button" class="living-voice-toggle" aria-pressed="${settings.voice}" title="${escapeHtml(voice.name)}">
+      <span>${settings.voice ? '◉' : '○'}</span>
+      ${settings.voice ? 'Мужской голос включён' : 'Включить мужской голос'}
+    </button>`;
+}
+
 function stageMarkup(state: InterrogationState, latest: TranscriptEntry | null): string {
   const text = latest?.text ?? 'Кирилл молча ждёт первого вопроса.';
   const reaction = latest ? inferReaction(text, state) : 'idle';
 
   return `
-    <section class="living-suspect-stage" data-reaction="${reaction}" data-speaking="false" aria-label="Живая сцена допроса Кирилла">
+    <section class="living-suspect-stage" data-reaction="${reaction}" data-speaking="false" data-media="still" aria-label="Сцена допроса Кирилла">
       <div class="living-camera-bar">
-        <span><i></i> INTERVIEW CAM / LIVE</span>
-        <small>ROOM 03 · SUBJECT K.B.</small>
+        <span><i></i> СЦЕНА ДОПРОСА</span>
+        <small>КОМНАТА 03 · К.Б.</small>
       </div>
       <div class="living-suspect-frame">
-        <div class="living-suspect-portrait">
-          <img src="${PORTRAIT}" alt="Кирилл Бессонов во время допроса" />
-          <div class="living-face-light"></div>
-          <span class="living-eyelid left"></span>
-          <span class="living-eyelid right"></span>
-          <div class="living-breath-indicator"><span></span><i></i></div>
-        </div>
+        <video class="living-suspect-video" playsinline preload="metadata" hidden></video>
+        <img class="living-suspect-still" src="${PORTRAIT}" alt="Кирилл Бессонов во время допроса" />
+        <div class="living-face-light"></div>
         <div class="living-subject-readout">
-          <span>KIRILL / 312</span>
+          <span>КИРИЛЛ / 312</span>
           <strong>${reactionLabel(reaction)}</strong>
         </div>
         <div class="living-voice-wave" aria-hidden="true">
@@ -133,11 +169,8 @@ function stageMarkup(state: InterrogationState, latest: TranscriptEntry | null):
         <p>${escapeHtml(text)}</p>
       </div>
       <footer class="living-suspect-controls">
-        <button type="button" class="living-voice-toggle" aria-pressed="${settings.voice}">
-          <span>${settings.voice ? '◉' : '○'}</span>
-          ${settings.voice ? 'Голос включён' : 'Голос выключен'}
-        </button>
-        <span class="living-media-status">REALTIME PORTRAIT · VIDEO-READY</span>
+        ${voiceControlMarkup()}
+        <span class="living-media-status">ФОТОРЕФЕРЕНС · ВИДЕОКЛИПЫ НЕ УСТАНОВЛЕНЫ</span>
       </footer>
     </section>`;
 }
@@ -146,31 +179,97 @@ function getStage(): HTMLElement | null {
   return document.querySelector<HTMLElement>('.living-suspect-stage');
 }
 
-function stopSpeech(): void {
+function stopMedia(): void {
   window.clearTimeout(speechTimer);
-  window.clearTimeout(simulatedSpeechTimer);
+  window.clearTimeout(responseTimer);
   speechTimer = 0;
-  simulatedSpeechTimer = 0;
+  responseTimer = 0;
 
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 
   const stage = getStage();
+  const video = stage?.querySelector<HTMLVideoElement>('.living-suspect-video');
+  if (video) {
+    video.pause();
+    video.onerror = null;
+    video.oncanplay = null;
+    video.onended = null;
+    video.removeAttribute('src');
+    video.load();
+    video.hidden = true;
+  }
+
+  const still = stage?.querySelector<HTMLImageElement>('.living-suspect-still');
+  if (still) still.hidden = false;
+
   if (stage) {
     stage.dataset.speaking = 'false';
+    stage.dataset.media = 'still';
     stage.classList.remove('is-thinking', 'is-speaking');
     stage.setAttribute('aria-busy', 'false');
   }
 }
 
-function selectRussianVoice(): SpeechSynthesisVoice | null {
-  if (!('speechSynthesis' in window)) return null;
-  const voices = window.speechSynthesis.getVoices();
-  const russian = voices.filter((voice) => /^ru([-_]|$)/i.test(voice.lang));
+async function loadVideoManifest(): Promise<void> {
+  if (manifestLoaded) return;
+  manifestLoaded = true;
 
-  return russian.find((voice) => /maxim|male|муж|yuri|alex/i.test(voice.name))
-    ?? russian.find((voice) => voice.localService)
-    ?? russian[0]
-    ?? null;
+  try {
+    const response = await fetch(MANIFEST_URL, { cache: 'no-store' });
+    if (!response.ok) return;
+    videoManifest = await response.json() as VideoManifest;
+  } catch {
+    videoManifest = {};
+  }
+}
+
+function resolveClipUrl(src: string): string {
+  if (/^https?:\/\//i.test(src) || src.startsWith('/')) return src;
+  return `${import.meta.env.BASE_URL}media/kirill/${src}`;
+}
+
+async function playVideoReaction(reaction: Reaction): Promise<VideoClip | null> {
+  await loadVideoManifest();
+  const clip = videoManifest[reaction];
+  const stage = getStage();
+  const video = stage?.querySelector<HTMLVideoElement>('.living-suspect-video');
+  const still = stage?.querySelector<HTMLImageElement>('.living-suspect-still');
+  if (!clip || !stage || !video || !still) return null;
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (result: VideoClip | null): void => {
+      if (settled) return;
+      settled = true;
+      resolve(result);
+    };
+    const fallback = (): void => {
+      video.hidden = true;
+      still.hidden = false;
+      stage.dataset.media = 'still';
+      finish(null);
+    };
+
+    video.onerror = fallback;
+    video.oncanplay = () => {
+      video.hidden = false;
+      still.hidden = true;
+      stage.dataset.media = 'video';
+      video.loop = clip.loop === true;
+      video.muted = clip.hasAudio !== true;
+      void video.play().then(() => finish(clip)).catch(fallback);
+    };
+    video.onended = () => {
+      if (!video.loop) {
+        video.hidden = true;
+        still.hidden = false;
+        stage.dataset.media = 'still';
+      }
+    };
+
+    video.src = resolveClipUrl(clip.src);
+    video.load();
+  });
 }
 
 function finishPerformance(reaction: Reaction): void {
@@ -184,17 +283,32 @@ function finishPerformance(reaction: Reaction): void {
 
   window.setTimeout(
     () => stage.classList.remove('is-after-reaction'),
-    reaction === 'confess' ? 2400 : 900
+    reaction === 'confess' ? 1800 : 700
   );
 }
 
-function speak(text: string, reaction: Reaction): void {
+function speakWithVerifiedMaleVoice(text: string, reaction: Reaction): boolean {
+  const voice = selectVerifiedMaleRussianVoice();
+  if (!settings.voice || !voice || !('speechSynthesis' in window)) return false;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ru-RU';
+  utterance.voice = voice;
+  utterance.rate = VOICE_RATE;
+  utterance.pitch = VOICE_PITCH;
+  utterance.volume = 0.92;
+  utterance.onend = () => finishPerformance(reaction);
+  utterance.onerror = () => finishPerformance(reaction);
+  window.speechSynthesis.speak(utterance);
+  return true;
+}
+
+function presentReaction(text: string, reaction: Reaction): void {
   const stage = getStage();
   if (!stage) return;
 
-  stopSpeech();
+  stopMedia();
   stage.dataset.reaction = reaction;
-  stage.dataset.speaking = 'false';
   stage.classList.add('is-thinking');
   stage.setAttribute('aria-busy', 'true');
 
@@ -203,46 +317,58 @@ function speak(text: string, reaction: Reaction): void {
   if (readout) readout.textContent = reactionLabel(reaction);
   if (subtitle) subtitle.textContent = text;
 
-  const pause = reaction === 'confess' ? 1150 : reaction === 'flinch' ? 780 : 560;
-
+  const pause = reaction === 'confess' ? 950 : reaction === 'flinch' ? 650 : 430;
   speechTimer = window.setTimeout(() => {
-    const currentStage = getStage();
-    if (!currentStage) return;
+    void playVideoReaction(reaction).then((clip) => {
+      const currentStage = getStage();
+      if (!currentStage) return;
 
-    currentStage.classList.remove('is-thinking');
-    currentStage.classList.add('is-speaking');
-    currentStage.dataset.speaking = 'true';
+      currentStage.classList.remove('is-thinking');
 
-    if (!settings.voice || !('speechSynthesis' in window)) {
-      const duration = Math.max(1800, Math.min(9000, text.length * 58));
-      simulatedSpeechTimer = window.setTimeout(() => finishPerformance(reaction), duration);
-      return;
-    }
+      if (clip?.hasAudio) {
+        currentStage.classList.add('is-speaking');
+        currentStage.dataset.speaking = 'true';
+        const video = currentStage.querySelector<HTMLVideoElement>('.living-suspect-video');
+        if (video) video.onended = () => finishPerformance(reaction);
+        return;
+      }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ru-RU';
-    utterance.rate = VOICE_RATE;
-    utterance.pitch = VOICE_PITCH;
-    utterance.volume = 0.92;
-    const voice = selectRussianVoice();
-    if (voice) utterance.voice = voice;
-    utterance.onend = () => finishPerformance(reaction);
-    utterance.onerror = () => finishPerformance(reaction);
-    window.speechSynthesis.speak(utterance);
+      if (speakWithVerifiedMaleVoice(text, reaction)) {
+        currentStage.classList.add('is-speaking');
+        currentStage.dataset.speaking = 'true';
+        return;
+      }
+
+      // Нет настоящего видео и нет подтверждённого мужского голоса:
+      // показываем текст без имитации речи и движения человека.
+      currentStage.dataset.speaking = 'false';
+      responseTimer = window.setTimeout(() => finishPerformance(reaction), 650);
+    });
   }, pause);
 }
 
-function bindControls(stage: HTMLElement): void {
-  stage.querySelector<HTMLButtonElement>('.living-voice-toggle')?.addEventListener('click', () => {
+function refreshVoiceControl(stage: HTMLElement): void {
+  const current = stage.querySelector<HTMLButtonElement>('.living-voice-toggle');
+  if (!current) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = voiceControlMarkup().trim();
+  const replacement = wrapper.firstElementChild as HTMLButtonElement | null;
+  if (!replacement) return;
+  current.replaceWith(replacement);
+  bindVoiceControl(stage);
+}
+
+function bindVoiceControl(stage: HTMLElement): void {
+  const button = stage.querySelector<HTMLButtonElement>('.living-voice-toggle');
+  if (!button || button.disabled || button.dataset.bound === 'true') return;
+  button.dataset.bound = 'true';
+
+  button.addEventListener('click', () => {
     settings.voice = !settings.voice;
     saveSettings();
-    stopSpeech();
-
-    const button = stage.querySelector<HTMLButtonElement>('.living-voice-toggle');
-    if (button) {
-      button.setAttribute('aria-pressed', String(settings.voice));
-      button.innerHTML = `<span>${settings.voice ? '◉' : '○'}</span>${settings.voice ? 'Голос включён' : 'Голос выключен'}`;
-    }
+    stopMedia();
+    refreshVoiceControl(stage);
   });
 }
 
@@ -258,7 +384,7 @@ function decorate(performLatest: boolean): boolean {
   if (!stage) {
     workspace.insertAdjacentHTML('afterbegin', stageMarkup(state, latest));
     stage = workspace.querySelector<HTMLElement>('.living-suspect-stage');
-    if (stage) bindControls(stage);
+    if (stage) bindVoiceControl(stage);
   }
 
   shell.classList.add('living-suspect-enabled');
@@ -271,7 +397,7 @@ function decorate(performLatest: boolean): boolean {
 
   if (latest && latestId && latestId !== lastSeenKirillEntryId) {
     lastSeenKirillEntryId = latestId;
-    speak(latest.text ?? '', inferReaction(latest.text ?? '', state));
+    presentReaction(latest.text ?? '', inferReaction(latest.text ?? '', state));
   }
 
   return true;
@@ -286,9 +412,7 @@ function activateWhenReady(performLatest: boolean): void {
     if (decorate(performLatest)) return;
 
     attempts += 1;
-    if (attempts < 45) {
-      window.requestAnimationFrame(probe);
-    }
+    if (attempts < 45) window.requestAnimationFrame(probe);
   };
 
   window.setTimeout(probe, 0);
@@ -304,14 +428,11 @@ function eventTargetsKirillCard(event: Event): boolean {
   });
 }
 
-// Карточка Кирилла открывает модальное окно на click. Запуск через setTimeout +
-// несколько animation-frame проверок гарантирует, что сцена подключится уже после
-// фактического появления окна и не зависит от скорости конкретного браузера.
 document.addEventListener('pointerdown', (event) => {
   if (eventTargetsKirillCard(event)) activateWhenReady(false);
 
   if (event.target instanceof Element && event.target.closest('.interrogation-close')) {
-    stopSpeech();
+    stopMedia();
   }
 }, true);
 
@@ -319,16 +440,18 @@ document.addEventListener('keydown', (event) => {
   if ((event.key === 'Enter' || event.key === ' ') && eventTargetsKirillCard(event)) {
     activateWhenReady(false);
   }
-  if (event.key === 'Escape') stopSpeech();
+  if (event.key === 'Escape') stopMedia();
 });
 
-// Основной модуль сначала сохраняет ответ и синхронно перерисовывает всё окно.
-// Отложенная активация выполняется после этой перерисовки, поэтому живая сцена
-// больше не исчезает при каждом новом вопросе или предъявлении улики.
 window.addEventListener('dbr:interrogation-updated', () => activateWhenReady(true));
-window.addEventListener('pagehide', stopSpeech);
-
-// Страховка для уже открытого окна при восстановлении вкладки браузером.
+window.addEventListener('pagehide', stopMedia);
 window.addEventListener('pageshow', () => {
   if (document.querySelector('.interrogation-shell')) activateWhenReady(false);
 });
+
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.addEventListener('voiceschanged', () => {
+    const stage = getStage();
+    if (stage) refreshVoiceControl(stage);
+  });
+}
