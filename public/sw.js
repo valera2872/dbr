@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-8-0-stability-state';
+const CACHE_NAME = 'dbr-v0-8-1-commercial-shell';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
