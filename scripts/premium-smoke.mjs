@@ -25,15 +25,17 @@ const serviceWorker = read('public/sw.js');
 const performanceKernel = read('src/performanceKernel.ts');
 const interrogation = read('src/interactiveInterrogation.ts');
 const livingSuspect = read('src/livingSuspect.ts');
+const freshStart = read('src/freshStart.ts');
 
-check(packageJson.version === '0.6.3', 'package.json должен иметь версию 0.6.3');
-check(build.includes("APP_BUILD = 'v0.6.3'"), 'src/build.ts должен объявлять APP_BUILD v0.6.3');
+check(packageJson.version === '0.6.4', 'package.json должен иметь версию 0.6.4');
+check(build.includes("APP_BUILD = 'v0.6.4'"), 'src/build.ts должен объявлять APP_BUILD v0.6.4');
 check(build.includes('INTERROGATION_STORAGE_KEY'), 'src/build.ts должен объявлять ключ интерактивного допроса');
 check(build.includes('LIVING_SUSPECT_STORAGE_KEY'), 'src/build.ts должен объявлять ключ живого подозреваемого');
 check(versionGuard.includes("from './build'"), 'versionGuard должен получать версию из src/build.ts');
 check(versionGuard.includes('premium-build-marker'), 'versionGuard должен защищать единую метку сборки');
 
 const requiredMainImports = [
+  "./freshStart",
   "./performanceKernel",
   "./premiumPass.css",
   "./buildMarker.css",
@@ -45,6 +47,7 @@ const requiredMainImports = [
   "./versionGuard"
 ];
 requiredMainImports.forEach((entry) => check(main.includes(entry), `main.tsx не подключает ${entry}`));
+check(main.indexOf("./freshStart'") < main.indexOf("./performanceKernel'"), 'freshStart должен выполняться до восстановления состояния приложения');
 check(main.indexOf("./performanceKernel'") < main.indexOf("./cameraFrames'"), 'performanceKernel должен загружаться до legacy runtime-модулей');
 check(main.indexOf("./interactiveInterrogation'") < main.indexOf("./livingSuspect'"), 'Living Suspect должен расширять уже подключённый допрос');
 check(main.indexOf("./livingSuspect'") < main.indexOf("./versionGuard'"), 'versionGuard должен загружаться последним');
@@ -63,9 +66,10 @@ check(exists('src/interactiveInterrogation.ts'), 'Отсутствует src/int
 check(exists('src/interactiveInterrogation.css'), 'Отсутствует src/interactiveInterrogation.css');
 check(exists('src/livingSuspect.ts'), 'Отсутствует src/livingSuspect.ts');
 check(exists('src/livingSuspect.css'), 'Отсутствует src/livingSuspect.css');
+check(exists('src/freshStart.ts'), 'Отсутствует src/freshStart.ts');
 check(exists('PREMIUM_PASS.md'), 'Отсутствует PREMIUM_PASS.md');
 check(exists('dist/index.html'), 'Vite не создал dist/index.html');
-check(serviceWorker.includes('dbr-v0-6-3-living-suspect'), 'Service worker не использует cache key v0.6.3');
+check(serviceWorker.includes('dbr-v0-6-4-living-hotfix'), 'Service worker не использует cache key v0.6.4');
 
 check(performanceKernel.includes('CoalescedMutationObserver'), 'Performance kernel не объединяет MutationObserver');
 check(performanceKernel.includes('dbr:runtime-settled'), 'Performance kernel не отправляет событие синхронизации');
@@ -77,9 +81,14 @@ check(livingSuspect.includes('SpeechSynthesisUtterance'), 'Живой подоз
 check(livingSuspect.includes("'look-away'"), 'Нет реакции отвода взгляда');
 check(livingSuspect.includes("'flinch'"), 'Нет непроизвольной реакции на улику');
 check(livingSuspect.includes("'confess'"), 'Нет кульминационной реакции признания');
-check(livingSuspect.includes('pointerdown'), 'Living Suspect должен подключаться без MutationObserver');
+check(livingSuspect.includes('activateWhenReady'), 'Living Suspect не ждёт фактического появления окна допроса');
+check(livingSuspect.includes('requestAnimationFrame'), 'Living Suspect не использует ограниченную синхронизацию с отрисовкой');
 check(!livingSuspect.includes('new MutationObserver'), 'Living Suspect не должен добавлять новый MutationObserver');
 check(!livingSuspect.includes('setInterval'), 'Living Suspect не должен использовать polling');
+
+check(freshStart.includes("params.get('fresh') === '1'"), 'Нет явного fresh-start URL режима');
+check(freshStart.includes('localStorage.removeItem'), 'Fresh start не очищает локальный прогресс дела');
+check(freshStart.includes('history.replaceState'), 'Fresh start должен удалять служебный параметр из URL');
 
 warn(!act2.includes('function setVersion'), 'Акт II всё ещё содержит legacy setVersion; защита выполняется versionGuard');
 warn(!act3.includes('function setVersion'), 'Акт III всё ещё содержит legacy setVersion; защита выполняется versionGuard');
@@ -96,4 +105,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nPremium smoke passed: ${evidenceIds.length + 6} evidence, interrogation and living suspect contracts, build ${packageJson.version}.`);
+console.log(`\nPremium smoke passed: ${evidenceIds.length + 7} evidence, interrogation, living suspect and fresh-start contracts, build ${packageJson.version}.`);

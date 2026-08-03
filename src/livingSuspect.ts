@@ -36,10 +36,10 @@ const VOICE_RATE = 0.91;
 const VOICE_PITCH = 0.84;
 
 let settings = loadSettings();
-let scheduled = false;
 let lastSeenKirillEntryId: string | null = null;
 let speechTimer = 0;
 let simulatedSpeechTimer = 0;
+let activationToken = 0;
 
 function loadJson<T>(key: string): T {
   try {
@@ -93,9 +93,19 @@ function reactionLabel(reaction: Reaction): string {
   return labels[reaction];
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
 function stageMarkup(state: InterrogationState, latest: TranscriptEntry | null): string {
   const text = latest?.text ?? 'Кирилл молча ждёт первого вопроса.';
   const reaction = latest ? inferReaction(text, state) : 'idle';
+
   return `
     <section class="living-suspect-stage" data-reaction="${reaction}" data-speaking="false" aria-label="Живая сцена допроса Кирилла">
       <div class="living-camera-bar">
@@ -114,7 +124,9 @@ function stageMarkup(state: InterrogationState, latest: TranscriptEntry | null):
           <span>KIRILL / 312</span>
           <strong>${reactionLabel(reaction)}</strong>
         </div>
-        <div class="living-voice-wave" aria-hidden="true">${Array.from({ length: 18 }, (_, index) => `<i style="--wave:${index}"></i>`).join('')}</div>
+        <div class="living-voice-wave" aria-hidden="true">
+          ${Array.from({ length: 18 }, (_, index) => `<i style="--wave:${index}"></i>`).join('')}
+        </div>
       </div>
       <div class="living-suspect-subtitle" aria-live="polite">
         <small>КИРИЛЛ</small>
@@ -130,15 +142,6 @@ function stageMarkup(state: InterrogationState, latest: TranscriptEntry | null):
     </section>`;
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
 function getStage(): HTMLElement | null {
   return document.querySelector<HTMLElement>('.living-suspect-stage');
 }
@@ -148,7 +151,9 @@ function stopSpeech(): void {
   window.clearTimeout(simulatedSpeechTimer);
   speechTimer = 0;
   simulatedSpeechTimer = 0;
+
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
   const stage = getStage();
   if (stage) {
     stage.dataset.speaking = 'false';
@@ -161,6 +166,7 @@ function selectRussianVoice(): SpeechSynthesisVoice | null {
   if (!('speechSynthesis' in window)) return null;
   const voices = window.speechSynthesis.getVoices();
   const russian = voices.filter((voice) => /^ru([-_]|$)/i.test(voice.lang));
+
   return russian.find((voice) => /maxim|male|муж|yuri|alex/i.test(voice.name))
     ?? russian.find((voice) => voice.localService)
     ?? russian[0]
@@ -170,18 +176,23 @@ function selectRussianVoice(): SpeechSynthesisVoice | null {
 function finishPerformance(reaction: Reaction): void {
   const stage = getStage();
   if (!stage) return;
+
   stage.dataset.speaking = 'false';
   stage.classList.remove('is-thinking', 'is-speaking');
   stage.classList.add('is-after-reaction');
   stage.setAttribute('aria-busy', 'false');
-  window.setTimeout(() => stage.classList.remove('is-after-reaction'), reaction === 'confess' ? 2400 : 900);
+
+  window.setTimeout(
+    () => stage.classList.remove('is-after-reaction'),
+    reaction === 'confess' ? 2400 : 900
+  );
 }
 
 function speak(text: string, reaction: Reaction): void {
   const stage = getStage();
   if (!stage) return;
-  stopSpeech();
 
+  stopSpeech();
   stage.dataset.reaction = reaction;
   stage.dataset.speaking = 'false';
   stage.classList.add('is-thinking');
@@ -193,9 +204,11 @@ function speak(text: string, reaction: Reaction): void {
   if (subtitle) subtitle.textContent = text;
 
   const pause = reaction === 'confess' ? 1150 : reaction === 'flinch' ? 780 : 560;
+
   speechTimer = window.setTimeout(() => {
     const currentStage = getStage();
     if (!currentStage) return;
+
     currentStage.classList.remove('is-thinking');
     currentStage.classList.add('is-speaking');
     currentStage.dataset.speaking = 'true';
@@ -224,6 +237,7 @@ function bindControls(stage: HTMLElement): void {
     settings.voice = !settings.voice;
     saveSettings();
     stopSpeech();
+
     const button = stage.querySelector<HTMLButtonElement>('.living-voice-toggle');
     if (button) {
       button.setAttribute('aria-pressed', String(settings.voice));
@@ -232,10 +246,10 @@ function bindControls(stage: HTMLElement): void {
   });
 }
 
-function decorate(performLatest: boolean): void {
+function decorate(performLatest: boolean): boolean {
   const shell = document.querySelector<HTMLElement>('.interrogation-shell');
   const workspace = shell?.querySelector<HTMLElement>('.interrogation-workspace');
-  if (!shell || !workspace) return;
+  if (!shell || !workspace) return false;
 
   const state = readInterrogation();
   const latest = latestKirillEntry(state);
@@ -244,46 +258,77 @@ function decorate(performLatest: boolean): void {
   if (!stage) {
     workspace.insertAdjacentHTML('afterbegin', stageMarkup(state, latest));
     stage = workspace.querySelector<HTMLElement>('.living-suspect-stage');
-    shell.classList.add('living-suspect-enabled');
     if (stage) bindControls(stage);
-  } else {
-    shell.classList.add('living-suspect-enabled');
   }
 
+  shell.classList.add('living-suspect-enabled');
   const latestId = latest?.id ?? null;
+
   if (!performLatest) {
     lastSeenKirillEntryId = latestId;
-    return;
+    return true;
   }
 
   if (latest && latestId && latestId !== lastSeenKirillEntryId) {
     lastSeenKirillEntryId = latestId;
     speak(latest.text ?? '', inferReaction(latest.text ?? '', state));
   }
+
+  return true;
 }
 
-function scheduleDecorate(performLatest: boolean, delay = 0): void {
-  if (scheduled) return;
-  scheduled = true;
-  window.setTimeout(() => {
-    scheduled = false;
-    decorate(performLatest);
-  }, delay);
+function activateWhenReady(performLatest: boolean): void {
+  const token = ++activationToken;
+  let attempts = 0;
+
+  const probe = (): void => {
+    if (token !== activationToken) return;
+    if (decorate(performLatest)) return;
+
+    attempts += 1;
+    if (attempts < 45) {
+      window.requestAnimationFrame(probe);
+    }
+  };
+
+  window.setTimeout(probe, 0);
 }
 
-// Открытие карточки Кирилла происходит на click в основном модуле. pointerdown
-// позволяет подготовить один отложенный проход без MutationObserver и polling.
+function eventTargetsKirillCard(event: Event): boolean {
+  return event.composedPath().some((node) => {
+    if (!(node instanceof Element)) return false;
+    const card = node.matches('.premium-person-card')
+      ? node
+      : node.closest('.premium-person-card');
+    return Boolean(card?.textContent?.includes('Кирилл Бессонов'));
+  });
+}
+
+// Карточка Кирилла открывает модальное окно на click. Запуск через setTimeout +
+// несколько animation-frame проверок гарантирует, что сцена подключится уже после
+// фактического появления окна и не зависит от скорости конкретного браузера.
 document.addEventListener('pointerdown', (event) => {
-  const target = event.target instanceof Element ? event.target.closest<HTMLElement>('.premium-person-card') : null;
-  if (target?.textContent?.includes('Кирилл Бессонов')) scheduleDecorate(false, 40);
+  if (eventTargetsKirillCard(event)) activateWhenReady(false);
 
   if (event.target instanceof Element && event.target.closest('.interrogation-close')) {
     stopSpeech();
   }
 }, true);
 
-window.addEventListener('dbr:interrogation-updated', () => scheduleDecorate(true, 0));
-window.addEventListener('pagehide', stopSpeech);
 document.addEventListener('keydown', (event) => {
+  if ((event.key === 'Enter' || event.key === ' ') && eventTargetsKirillCard(event)) {
+    activateWhenReady(false);
+  }
   if (event.key === 'Escape') stopSpeech();
+});
+
+// Основной модуль сначала сохраняет ответ и синхронно перерисовывает всё окно.
+// Отложенная активация выполняется после этой перерисовки, поэтому живая сцена
+// больше не исчезает при каждом новом вопросе или предъявлении улики.
+window.addEventListener('dbr:interrogation-updated', () => activateWhenReady(true));
+window.addEventListener('pagehide', stopSpeech);
+
+// Страховка для уже открытого окна при восстановлении вкладки браузером.
+window.addEventListener('pageshow', () => {
+  if (document.querySelector('.interrogation-shell')) activateWhenReady(false);
 });
