@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-6-0-archive-identity';
+const CACHE_NAME = 'dbr-v0-6-1-premium-pass';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {

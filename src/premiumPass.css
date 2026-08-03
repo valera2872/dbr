@@ -1,0 +1,466 @@
+/* Premium Pass 1 — navigation, act transitions, feedback and finish quality */
+
+.premium-pass-rail {
+  position: relative;
+  z-index: 48;
+  display: grid;
+  grid-template-columns: minmax(150px, .55fr) minmax(420px, 1.45fr) minmax(330px, 1fr);
+  gap: 18px;
+  align-items: stretch;
+  padding: 12px 22px;
+  border-bottom: 1px solid rgba(124, 232, 227, .13);
+  background:
+    linear-gradient(90deg, rgba(7, 24, 27, .97), rgba(8, 28, 31, .94)),
+    repeating-linear-gradient(90deg, transparent 0 45px, rgba(124, 232, 227, .025) 45px 46px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .14);
+}
+
+.premium-pass-progress {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.premium-pass-progress-copy {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.premium-pass-progress-copy span {
+  color: #718c8f;
+  font: 800 8px/1 Manrope, sans-serif;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.premium-pass-progress-copy strong {
+  color: #e8f5f4;
+  font: 900 15px/1 ui-monospace, monospace;
+}
+
+.premium-pass-progress-track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(123, 165, 169, .16);
+}
+
+.premium-pass-progress-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4ebbb5, #e2bd72);
+  box-shadow: 0 0 18px rgba(124, 232, 227, .32);
+  transition: width .45s cubic-bezier(.2, .7, .2, 1);
+}
+
+.premium-pass-acts {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  list-style: none;
+}
+
+.premium-pass-acts li {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 31px 1fr;
+  gap: 9px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(113, 150, 154, .12);
+  border-radius: 9px;
+  background: rgba(5, 18, 21, .42);
+}
+
+.premium-pass-acts li::after {
+  content: '';
+  position: absolute;
+  left: 42px;
+  right: 10px;
+  bottom: 0;
+  height: 1px;
+  opacity: 0;
+  background: linear-gradient(90deg, #7ce8e2, transparent);
+}
+
+.premium-pass-acts li > span {
+  width: 29px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(119, 159, 163, .28);
+  border-radius: 50%;
+  color: #728b8e;
+  font: 900 8px/1 ui-monospace, monospace;
+}
+
+.premium-pass-acts li > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.premium-pass-acts small {
+  color: #637e80;
+  font: 800 7px/1 Manrope, sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.premium-pass-acts strong {
+  overflow: hidden;
+  color: #8ca1a3;
+  font: 800 9px/1.2 Manrope, sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.premium-pass-acts li.complete {
+  border-color: rgba(124, 232, 227, .22);
+  background: rgba(31, 80, 78, .16);
+}
+
+.premium-pass-acts li.complete > span {
+  border-color: rgba(124, 232, 227, .58);
+  background: rgba(38, 105, 101, .38);
+  color: #92f1eb;
+}
+
+.premium-pass-acts li.complete strong { color: #c5dfdd; }
+.premium-pass-acts li.complete small { color: #72aaa7; }
+
+.premium-pass-acts li.current {
+  border-color: rgba(226, 189, 114, .42);
+  background: linear-gradient(120deg, rgba(75, 54, 24, .36), rgba(9, 27, 30, .58));
+  box-shadow: inset 0 0 22px rgba(226, 189, 114, .04), 0 8px 20px rgba(0, 0, 0, .13);
+}
+
+.premium-pass-acts li.current::after { opacity: .72; }
+.premium-pass-acts li.current > span { border-color: #e2bd72; color: #f2d491; }
+.premium-pass-acts li.current small { color: #d1aa65; }
+.premium-pass-acts li.current strong { color: #f3f7f6; }
+
+.premium-pass-next {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'eyebrow arrow'
+    'title arrow'
+    'description arrow';
+  gap: 3px 12px;
+  align-content: center;
+  padding: 9px 13px;
+  border: 1px solid rgba(124, 232, 227, .24);
+  border-radius: 10px;
+  background: linear-gradient(112deg, rgba(21, 61, 62, .46), rgba(7, 23, 26, .74));
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.premium-pass-next:hover,
+.premium-pass-next:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(124, 232, 227, .56);
+  background: linear-gradient(112deg, rgba(29, 79, 78, .54), rgba(8, 27, 30, .82));
+  outline: none;
+}
+
+.premium-pass-next > span {
+  grid-area: eyebrow;
+  color: #77aaa8;
+  font: 800 7px/1 Manrope, sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.premium-pass-next > strong {
+  grid-area: title;
+  overflow: hidden;
+  color: #edf8f7;
+  font: 800 11px/1.2 Manrope, sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.premium-pass-next > small {
+  grid-area: description;
+  overflow: hidden;
+  color: #7f9799;
+  font: 600 8px/1.25 Manrope, sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.premium-pass-next > b {
+  grid-area: arrow;
+  align-self: center;
+  color: #82e8e2;
+  font: 500 23px/1 Manrope, sans-serif;
+}
+
+.premium-pass-next[data-complete='true'] {
+  border-color: rgba(226, 189, 114, .34);
+  background: linear-gradient(112deg, rgba(73, 52, 22, .3), rgba(7, 23, 26, .72));
+}
+
+.premium-evidence-card.premium-pass-new:not(:disabled) {
+  box-shadow: 0 0 0 1px rgba(124, 232, 227, .13), 0 18px 46px rgba(0, 0, 0, .28);
+}
+
+.premium-evidence-card.premium-pass-new:not(:disabled)::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: 4;
+  border: 1px solid rgba(124, 232, 227, .34);
+  border-radius: inherit;
+  pointer-events: none;
+  animation: premium-pass-card-pulse 2.6s ease-in-out infinite;
+}
+
+.premium-evidence-card.premium-pass-complete {
+  filter: saturate(.88);
+}
+
+.premium-pass-announcement {
+  position: fixed;
+  inset: 0;
+  z-index: 250000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  overflow: hidden;
+  background: rgba(2, 9, 11, .86);
+  backdrop-filter: blur(12px);
+  animation: premium-pass-backdrop-in .32s ease both;
+}
+
+.premium-pass-announcement.leaving {
+  animation: premium-pass-backdrop-out .26s ease both;
+}
+
+.premium-pass-announcement-grid {
+  position: absolute;
+  inset: -20%;
+  opacity: .31;
+  background-image:
+    linear-gradient(rgba(124, 232, 227, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 232, 227, .055) 1px, transparent 1px);
+  background-size: 38px 38px;
+  transform: perspective(700px) rotateX(58deg) translateY(7%);
+  transform-origin: center bottom;
+  mask-image: radial-gradient(circle at center, #000 8%, transparent 70%);
+}
+
+.premium-pass-announcement > section {
+  position: relative;
+  width: min(650px, calc(100vw - 28px));
+  min-height: 420px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  padding: 54px 62px 48px;
+  overflow: hidden;
+  border: 1px solid rgba(124, 232, 227, .3);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(124, 232, 227, .11), transparent 31%),
+    linear-gradient(145deg, rgba(10, 36, 39, .98), rgba(4, 16, 19, .99));
+  box-shadow: 0 42px 110px rgba(0, 0, 0, .62), inset 0 0 70px rgba(124, 232, 227, .025);
+  text-align: center;
+  animation: premium-pass-panel-in .5s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.premium-pass-announcement > section::before,
+.premium-pass-announcement > section::after {
+  content: '';
+  position: absolute;
+  width: 160px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(226, 189, 114, .55), transparent);
+}
+
+.premium-pass-announcement > section::before { top: 31px; left: 50%; transform: translateX(-50%); }
+.premium-pass-announcement > section::after { bottom: 31px; left: 50%; transform: translateX(-50%); }
+
+.premium-pass-announcement-close {
+  position: absolute;
+  right: 16px;
+  top: 14px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(124, 232, 227, .18);
+  border-radius: 50%;
+  background: rgba(5, 18, 21, .66);
+  color: #89a4a5;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.premium-pass-announcement-close:hover,
+.premium-pass-announcement-close:focus-visible {
+  border-color: rgba(124, 232, 227, .48);
+  color: #dff6f4;
+  outline: none;
+}
+
+.premium-pass-act-number {
+  position: absolute;
+  left: 50%;
+  top: 16%;
+  transform: translateX(-50%);
+  color: rgba(124, 232, 227, .055);
+  font: 900 clamp(150px, 24vw, 230px)/.75 ui-monospace, monospace;
+  letter-spacing: -.1em;
+  pointer-events: none;
+}
+
+.premium-pass-announcement p {
+  position: relative;
+  margin: 0 0 14px;
+  color: #80b9b6;
+  font: 900 9px/1 Manrope, sans-serif;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.premium-pass-announcement h1 {
+  position: relative;
+  margin: 0;
+  color: #f3fbfa;
+  font: 900 clamp(38px, 7vw, 64px)/.95 Manrope, sans-serif;
+  letter-spacing: -.045em;
+}
+
+.premium-pass-announcement h2 {
+  position: relative;
+  margin: 11px 0 0;
+  color: #e4c27a;
+  font: 700 clamp(17px, 3vw, 23px)/1.2 Manrope, sans-serif;
+}
+
+.premium-pass-announcement-line {
+  position: relative;
+  width: 74px;
+  height: 2px;
+  margin: 24px 0 20px;
+  background: linear-gradient(90deg, transparent, #7ce8e2, transparent);
+}
+
+.premium-pass-announcement > section > span {
+  position: relative;
+  max-width: 500px;
+  color: #91a7a8;
+  font: 500 12px/1.65 Manrope, sans-serif;
+}
+
+.premium-pass-announcement-action {
+  position: relative;
+  margin-top: 28px;
+  padding: 13px 18px;
+  border: 1px solid rgba(124, 232, 227, .5);
+  border-radius: 9px;
+  background: linear-gradient(110deg, rgba(35, 95, 91, .64), rgba(17, 52, 55, .72));
+  color: #effaf9;
+  font: 800 11px/1.2 Manrope, sans-serif;
+  cursor: pointer;
+  box-shadow: 0 13px 30px rgba(0, 0, 0, .25);
+  transition: transform .18s ease, border-color .18s ease;
+}
+
+.premium-pass-announcement-action:hover,
+.premium-pass-announcement-action:focus-visible {
+  transform: translateY(-2px);
+  border-color: #8ef0ea;
+  outline: none;
+}
+
+.premium-pass-announcement-action b {
+  margin-left: 10px;
+  color: #91f3ed;
+  font-size: 16px;
+}
+
+@keyframes premium-pass-card-pulse {
+  0%, 100% { opacity: .32; box-shadow: 0 0 0 rgba(124, 232, 227, 0); }
+  50% { opacity: .76; box-shadow: 0 0 25px rgba(124, 232, 227, .12); }
+}
+
+@keyframes premium-pass-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes premium-pass-backdrop-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes premium-pass-panel-in {
+  from { opacity: 0; transform: translateY(22px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 1180px) {
+  .premium-pass-rail {
+    grid-template-columns: 120px minmax(360px, 1fr) minmax(270px, .85fr);
+    gap: 10px;
+    padding-inline: 14px;
+  }
+
+  .premium-pass-acts li { grid-template-columns: 26px 1fr; gap: 6px; padding-inline: 7px; }
+  .premium-pass-acts li > span { width: 25px; height: 25px; }
+  .premium-pass-next > small { display: none; }
+}
+
+@media (max-width: 900px) {
+  .premium-pass-rail {
+    grid-template-columns: 1fr;
+    gap: 9px;
+    padding: 10px 12px;
+  }
+
+  .premium-pass-progress { grid-template-columns: 130px 1fr; align-items: center; }
+  .premium-pass-progress-copy { display: contents; }
+  .premium-pass-progress-track { grid-column: 2; grid-row: 1; }
+  .premium-pass-acts { order: 2; }
+  .premium-pass-next { order: 3; }
+}
+
+@media (max-width: 620px) {
+  .premium-pass-rail { position: static; }
+  .premium-pass-progress { grid-template-columns: 110px 1fr; }
+  .premium-pass-progress-copy span { font-size: 7px; }
+  .premium-pass-acts li { grid-template-columns: 24px 1fr; }
+  .premium-pass-acts li > span { width: 23px; height: 23px; font-size: 7px; }
+  .premium-pass-acts strong { font-size: 7.5px; }
+  .premium-pass-acts small { font-size: 6px; }
+  .premium-pass-next { padding: 9px 11px; }
+  .premium-pass-next > strong { white-space: normal; }
+  .premium-pass-announcement > section { min-height: 390px; padding: 48px 24px 42px; }
+  .premium-pass-announcement > section > span { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-pass-progress-track i,
+  .premium-pass-next,
+  .premium-pass-announcement,
+  .premium-pass-announcement > section,
+  .premium-pass-announcement-action,
+  .premium-evidence-card.premium-pass-new:not(:disabled)::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

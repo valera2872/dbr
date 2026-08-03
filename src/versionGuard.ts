@@ -1,30 +1,55 @@
+import { APP_BUILD } from './build';
+
 export {};
 
-const APP_BUILD = 'v0.6.0';
+function normalizeTitle(value: string): string {
+  return /v\d+\.\d+\.\d+/.test(value)
+    ? value.replace(/v\d+\.\d+\.\d+/, APP_BUILD)
+    : `ДБР — Номер 314 · ${APP_BUILD}`;
+}
+
+function protectBuildMarkers(): void {
+  document.querySelectorAll<HTMLElement>(
+    '.dbr-build-marker, .build-marker, .premium-build-marker'
+  ).forEach((marker) => {
+    // Исторические runtime-модули ищут старые классы и переписывают версию.
+    // После первого появления переводим метку на единый защищённый класс.
+    marker.classList.remove('dbr-build-marker', 'build-marker');
+    marker.classList.add('premium-build-marker');
+    if (marker.textContent !== APP_BUILD) marker.textContent = APP_BUILD;
+    marker.setAttribute('aria-label', `Версия приложения ${APP_BUILD}`);
+  });
+}
 
 function applyBuildVersion(): void {
   if (document.documentElement.dataset.dbrBuild !== APP_BUILD) {
     document.documentElement.dataset.dbrBuild = APP_BUILD;
   }
 
-  const nextTitle = /v\d+\.\d+\.\d+/.test(document.title)
-    ? document.title.replace(/v\d+\.\d+\.\d+/, APP_BUILD)
-    : `ДБР — Номер 314 · ${APP_BUILD}`;
-
+  const nextTitle = normalizeTitle(document.title);
   if (document.title !== nextTitle) document.title = nextTitle;
-
-  document.querySelectorAll<HTMLElement>('.dbr-build-marker, .build-marker').forEach((marker) => {
-    if (marker.textContent !== APP_BUILD) marker.textContent = APP_BUILD;
-    const label = `Версия приложения ${APP_BUILD}`;
-    if (marker.getAttribute('aria-label') !== label) marker.setAttribute('aria-label', label);
-  });
+  protectBuildMarkers();
 }
 
-const observer = new MutationObserver(() => applyBuildVersion());
-observer.observe(document.documentElement, {
+// Отслеживаем только появление новых интерфейсных узлов. После защиты метки старые
+// модули больше не находят её по своим селекторам и не создают цикл перезаписи.
+const appObserver = new MutationObserver(applyBuildVersion);
+appObserver.observe(document.documentElement, {
   childList: true,
   subtree: true
 });
+
+// Заголовок вкладки защищается отдельно. Изменение текста title не запускает
+// runtime-наблюдатели приложения, следящие только за childList основного DOM.
+const titleElement = document.querySelector('title');
+if (titleElement) {
+  const titleObserver = new MutationObserver(applyBuildVersion);
+  titleObserver.observe(titleElement, {
+    childList: true,
+    characterData: true,
+    subtree: true
+  });
+}
 
 document.addEventListener('click', () => window.setTimeout(applyBuildVersion, 0), true);
 window.addEventListener('pageshow', applyBuildVersion);
@@ -35,6 +60,4 @@ if (document.readyState === 'loading') {
   applyBuildVersion();
 }
 
-[100, 500, 1500, 4000, 8000].forEach((delay) => {
-  window.setTimeout(applyBuildVersion, delay);
-});
+[80, 300, 900, 2200].forEach((delay) => window.setTimeout(applyBuildVersion, delay));
