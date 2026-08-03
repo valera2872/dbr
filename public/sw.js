@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-4-3-one-corridor-all-heroes';
+const CACHE_NAME = 'dbr-v0-4-4-real-corridor';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
