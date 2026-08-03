@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-5-3-act2-gate';
+const CACHE_NAME = 'dbr-v0-6-0-archive-identity';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
