@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-5-2-version-guard';
+const CACHE_NAME = 'dbr-v0-5-2-page-unfreeze';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
