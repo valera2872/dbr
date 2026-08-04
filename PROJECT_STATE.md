@@ -2,11 +2,11 @@
 
 ## Current branch
 
-`agent/v0-8-1-commercial-shell` → target `main`
+`agent/v0-8-2-playwright` → target `main`
 
 ## Current version
 
-`0.8.1 — Commercial Shell / product-facing launch`
+`0.8.2 — Browser-tested commercial beta foundation`
 
 ## Product
 
@@ -22,33 +22,36 @@ First case: **«Номер 314»**.
 - evidence-driven interrogation of Kirill;
 - Act IV: E010 rescue operation, E011 card verification, final accusation and epilogue.
 
-## v0.8 Stability foundation
+## Stability and commercial shell
 
 - one typed investigation snapshot covers the core case, Acts II–IV and Kirill's interrogation;
-- old localStorage keys remain canonical, so existing progress is preserved;
-- arrays, booleans and nullable fields are normalized when read;
-- route stage is derived deterministically from evidence and report state;
-- four-act Premium Pass uses the unified snapshot instead of independently parsing storage;
-- exact next-step navigation continues through interrogation, E010, E011 and the final report;
-- contradictory saves are detected;
-- QA fixtures provide deterministic entry points;
-- new state modules add no MutationObserver and no polling.
+- existing localStorage keys remain canonical, so upgrades preserve progress;
+- the customer cover supports start, resume, completed-report entry, restart and save repair;
+- internal QA, diagnostics, Actor Studio and build markers remain hidden from commercial mode;
+- React failures show a recovery screen instead of a blank page;
+- the PWA has product metadata, an icon, offline shell and mobile safe-area support.
 
-## v0.8.1 Commercial shell
+## v0.8.2 real browser contract
 
-- customer-facing launch cover explains the product before the investigation starts;
-- existing progress is shown as a real percentage and named route stage;
-- the player can continue, open the completed report or start a new investigation;
-- restart uses a two-step confirmation and clears only the current DBR case;
-- inconsistent old saves receive a customer-facing repair path instead of a technical diagnostic panel;
-- React failures show a recovery screen and preserve the last saved step;
-- Actor Studio, QA fixtures, diagnostics and build markers are hidden from commercial mode;
-- internal tools require explicit `internal=1` mode;
-- the headquarters has a Menu entry and a customer-friendly New Case action;
-- missing remote images receive a branded fallback instead of a broken-image icon;
-- mobile safe areas, compact topbar, full-height modals and reduced-motion are covered;
-- index metadata, PWA manifest and DBR icon are product-ready;
-- production builds run final-story, stability and commercial release contracts.
+- Playwright runs the production bundle in desktop Chromium and a Pixel 7 profile;
+- the suite verifies clean start, all four prologue screens and entry into headquarters;
+- saved progress resumes on the previous section;
+- restart uses explicit confirmation, clears the case and opens a clean prologue;
+- inconsistent legacy saves are repaired without a blank page or loss of valid progress;
+- mobile launch is checked with external Unsplash images deliberately blocked;
+- horizontal overflow is checked on the launch cover and prologue;
+- the mobile headquarters keeps an accessible Menu button;
+- failures retain screenshot, video and Playwright trace artifacts;
+- superseded browser runs are cancelled automatically;
+- current result: 11 passed, 1 intentionally skipped.
+
+## Performance defects removed in v0.8.2
+
+- the legacy build marker no longer creates hundreds of hidden duplicates;
+- premium enhancements use the canonical APP_BUILD instead of a hard-coded v0.3.5;
+- the enhancement module no longer creates its own MutationObserver;
+- the 12-second 250 ms startup polling loop was removed;
+- enhancement refreshes now use the shared runtime-settled event and one animation frame.
 
 ## Internal QA contract
 
@@ -60,20 +63,15 @@ Fixtures additionally require:
 
 Available names: `clean`, `act2`, `act3`, `interrogation`, `act4`, `card`, `report`, `complete`.
 
-Diagnostics:
+Diagnostics: `?internal=1&diagnostics=1`
 
-`?internal=1&diagnostics=1`
-
-Actor Studio:
-
-`?internal=1&actorStudio=kirill`
+Actor Studio: `?internal=1&actorStudio=kirill`
 
 ## Remaining work before paid release
 
+- replace externally hosted visual assets with an owned local media pack;
 - migrate Acts II–IV from DOM enhancers into typed React case components;
-- remove legacy version setters and residual DOM scans;
-- perform real browser playthroughs on desktop and Android against every route stage;
-- replace temporary E004 and remaining externally hosted visual assets with an owned local media pack;
+- extend browser playthroughs from the commercial shell to every E001–E011 interaction;
 - conduct external usability and difficulty testing;
 - finalize sound design, legal wording, age rating, payment and delivery flow;
-- decide on filmed, generated-video or premium-static presentation for suspect interrogations.
+- create the 3D/video suspect layer later with Kling while keeping the deterministic interrogation logic.
