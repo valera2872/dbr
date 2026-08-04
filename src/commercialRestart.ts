@@ -55,7 +55,8 @@ function restartFromCommercialConfirmation(event: MouseEvent): void {
   ['fresh', 'newCase', 'actorStudio', 'diagnostics', 'qa', 'fixture', 'debug'].forEach((key) => {
     url.searchParams.delete(key);
   });
-  window.location.replace(`${url.pathname}${url.search}${url.hash}`);
+  window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+  window.location.reload();
 }
 
 document.addEventListener('click', restartFromCommercialConfirmation, true);
