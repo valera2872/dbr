@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const CORE_KEY = 'dbr:dbr_001_room_314:0.2.0';
+const SEED_GUARD = '__dbr_e2e_seeded';
 
 function coreProgress(overrides: Record<string, unknown> = {}) {
   return {
@@ -22,10 +23,11 @@ function coreProgress(overrides: Record<string, unknown> = {}) {
 }
 
 async function seedCore(page: Page, value: Record<string, unknown>) {
-  await page.addInitScript(({ key, progress }) => {
+  await page.addInitScript(({ key, guard, progress }) => {
+    if (window.sessionStorage.getItem(guard) === '1') return;
     window.localStorage.setItem(key, JSON.stringify(progress));
-    window.sessionStorage.clear();
-  }, { key: CORE_KEY, progress: value });
+    window.sessionStorage.setItem(guard, '1');
+  }, { key: CORE_KEY, guard: SEED_GUARD, progress: value });
 }
 
 function trackRuntimeErrors(page: Page) {
