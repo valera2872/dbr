@@ -3,6 +3,7 @@ import { INTERNAL_MODE } from './internalMode';
 import './routeFixtures';
 import './performanceKernel';
 import './investigationState';
+import './commercialRestart';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
