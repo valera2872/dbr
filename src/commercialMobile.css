@@ -1,0 +1,25 @@
+@media (max-width: 620px) {
+  html[data-dbr-mode='commercial'] .premium-topbar .topbar-actions {
+    display: flex !important;
+    margin-left: auto;
+    gap: 0;
+  }
+
+  html[data-dbr-mode='commercial'] .premium-topbar .topbar-actions > :not([data-commercial-menu]) {
+    display: none !important;
+  }
+
+  html[data-dbr-mode='commercial'] .premium-topbar [data-commercial-menu] {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    min-height: 42px;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #f5f2ea;
+    font-weight: 800;
+  }
+}
