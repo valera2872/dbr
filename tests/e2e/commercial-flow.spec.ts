@@ -42,7 +42,8 @@ test('новый покупатель проходит обложку и поп�
   await expect(launch).toBeVisible();
   await expect(launch.getByRole('heading', { level: 1 })).toContainText('Все лгут');
   await expect(launch.getByRole('button', { name: 'Начать расследование' })).toBeVisible();
-  await expect(page.locator('.premium-build-marker, .stability-diagnostics, .actor-studio')).toHaveCount(0);
+  await expect(page.locator('.premium-build-marker')).toBeHidden();
+  await expect(page.locator('.stability-diagnostics, .actor-studio')).toHaveCount(0);
 
   await launch.getByRole('button', { name: 'Начать расследование' }).click();
   await expect(page.locator('.premium-prologue')).toBeVisible();
