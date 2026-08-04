@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-8-1-commercial-shell';
+const CACHE_NAME = 'dbr-v0-8-2-browser-playthrough';
 const APP_SHELL = ['/dbr/'];
 
 self.addEventListener('install', (event) => {
