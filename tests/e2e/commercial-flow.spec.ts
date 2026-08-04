@@ -109,10 +109,11 @@ test('противоречивое старое сохранение восст�
   await launch.getByRole('button', { name: 'Восстановить сохранение' }).click();
 
   await expect(page.locator('.commercial-launch')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Начать расследование' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Продолжить расследование' })).toBeVisible();
   const repaired = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), CORE_KEY);
   expect(repaired.act1Complete).toBe(false);
   expect(repaired.checkpointAnswerId).toBeNull();
+  expect(repaired.phase).toBe('hq');
   expect(errors).toEqual([]);
 });
 
