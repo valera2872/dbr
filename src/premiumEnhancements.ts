@@ -1,3 +1,5 @@
+import { APP_BUILD } from './build';
+
 export {};
 
 type CameraMoment = {
@@ -12,7 +14,7 @@ type CameraMoment = {
   portrait: string;
 };
 
-const BUILD = 'v0.3.5';
+const BUILD = APP_BUILD;
 const CORRIDOR_IMAGE = 'https://images.unsplash.com/photo-1725180333682-2746546519a4?auto=format&fit=crop&w=1800&q=82';
 
 const CAMERA_MOMENTS: Record<string, CameraMoment> = {
@@ -20,67 +22,42 @@ const CAMERA_MOMENTS: Record<string, CameraMoment> = {
     subject: 'Елена Ветрова',
     title: 'Елена подходит к номеру 314',
     note: 'Она останавливается у двери номера 314 и разговаривает с Ильёй.',
-    x: '78%',
-    y: '42%',
-    direction: 'движется к двери 314 →',
-    door: '314',
-    visible: true,
+    x: '78%', y: '42%', direction: 'движется к двери 314 →', door: '314', visible: true,
     portrait: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=320&q=82'
   },
   '23:04': {
     subject: 'Елена Ветрова',
     title: 'Елена уходит в сторону номера 307',
     note: 'После разговора она возвращается по коридору к своему номеру.',
-    x: '25%',
-    y: '45%',
-    direction: '← уходит к номеру 307',
-    door: '307',
-    visible: true,
+    x: '25%', y: '45%', direction: '← уходит к номеру 307', door: '307', visible: true,
     portrait: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=320&q=82'
   },
   '23:41': {
     subject: 'Кирилл Бессонов',
     title: 'Кирилл входит в номер 312',
     note: 'Он входит в соседний номер 312. После этого камера его в коридоре не фиксирует.',
-    x: '66%',
-    y: '39%',
-    direction: 'направляется к двери 312 →',
-    door: '312',
-    visible: true,
+    x: '66%', y: '39%', direction: 'направляется к двери 312 →', door: '312', visible: true,
     portrait: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=82'
   },
   '23:47': {
     subject: 'Илья Соколов',
     title: 'Илья выходит из номера 314',
     note: 'Он покидает комнату и идёт за горячей водой.',
-    x: '73%',
-    y: '43%',
-    direction: '← уходит от двери 314',
-    door: '314',
-    visible: true,
+    x: '73%', y: '43%', direction: '← уходит от двери 314', door: '314', visible: true,
     portrait: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=320&q=82'
   },
   '23:50': {
     subject: 'Илья Соколов',
     title: 'Илья возвращается в номер 314',
     note: 'Это последнее подтверждённое появление Ильи в гостевом коридоре.',
-    x: '81%',
-    y: '42%',
-    direction: 'входит в дверь 314 →',
-    door: '314',
-    visible: true,
+    x: '81%', y: '42%', direction: 'входит в дверь 314 →', door: '314', visible: true,
     portrait: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=320&q=82'
   },
   '00:17': {
     subject: 'Движение не обнаружено',
     title: 'Коридор пуст',
     note: 'Сообщение отправлено в 00:17, но камера не фиксирует движения у дверей 312–314.',
-    x: '50%',
-    y: '50%',
-    direction: '',
-    door: '—',
-    visible: false,
-    portrait: ''
+    x: '50%', y: '50%', direction: '', door: '—', visible: false, portrait: ''
   }
 };
 
@@ -95,13 +72,21 @@ function installBuildMarker(): void {
   document.documentElement.dataset.dbrBuild = BUILD;
   document.title = `ДБР — Номер 314 · ${BUILD}`;
 
-  let marker = document.querySelector<HTMLElement>('.dbr-build-marker');
+  const markers = Array.from(document.querySelectorAll<HTMLElement>(
+    '.premium-build-marker, .dbr-build-marker, .build-marker'
+  ));
+  let marker = markers[0];
+
   if (!marker) {
-    marker = createElement('div', 'dbr-build-marker');
-    marker.setAttribute('aria-label', `Версия приложения ${BUILD}`);
+    marker = createElement('div', 'premium-build-marker');
     document.body.appendChild(marker);
   }
+
+  markers.slice(1).forEach((duplicate) => duplicate.remove());
+  marker.classList.remove('dbr-build-marker', 'build-marker');
+  marker.classList.add('premium-build-marker');
   marker.textContent = BUILD;
+  marker.setAttribute('aria-label', `Версия приложения ${BUILD}`);
 }
 
 function explainLockedCamera(): void {
@@ -109,7 +94,9 @@ function explainLockedCamera(): void {
     const title = card.querySelector('h2')?.textContent?.trim();
     if (title !== 'Коридорная камера' || !card.disabled) return;
     const description = card.querySelector<HTMLParagraphElement>('.evidence-card-copy p');
-    if (description) description.textContent = 'Сначала изучите «Журнал замка номера 314». После закрытия журнала камера откроется автоматически.';
+    if (description) {
+      description.textContent = 'Сначала изучите «Журнал замка номера 314». После закрытия журнала камера откроется автоматически.';
+    }
   });
 }
 
@@ -254,17 +241,12 @@ function scheduleScan(): void {
   });
 }
 
-const observer = new MutationObserver(scheduleScan);
-observer.observe(document.documentElement, { childList: true, subtree: true });
+document.addEventListener('click', () => window.setTimeout(scheduleScan, 0), true);
+window.addEventListener('dbr:runtime-settled', scheduleScan);
+window.addEventListener('pageshow', scheduleScan);
 
-document.addEventListener('click', () => {
-  window.setTimeout(scan, 0);
-  window.setTimeout(scan, 100);
-  window.setTimeout(scan, 350);
-}, true);
-
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan, { once: true });
-else scan();
-
-const startupPoll = window.setInterval(scan, 250);
-window.setTimeout(() => window.clearInterval(startupPoll), 12000);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', scheduleScan, { once: true });
+} else {
+  scheduleScan();
+}
