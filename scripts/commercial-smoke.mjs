@@ -20,9 +20,9 @@ const sw = read('public/sw.js');
 const index = read('index.html');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.8.1', 'package.json должен иметь версию 0.8.1');
-check(build.includes("APP_BUILD = 'v0.8.1'"), 'APP_BUILD должен быть v0.8.1');
-check(sw.includes('dbr-v0-8-1-commercial-shell'), 'Service worker не использует cache key v0.8.1');
+check(pkg.version === '0.8.2', 'package.json должен иметь версию 0.8.2');
+check(build.includes("APP_BUILD = 'v0.8.2'"), 'APP_BUILD должен быть v0.8.2');
+check(sw.includes('dbr-v0-8-2-browser-playthrough'), 'Service worker не использует cache key v0.8.2');
 
 [
   'src/internalMode.ts',
@@ -30,6 +30,9 @@ check(sw.includes('dbr-v0-8-1-commercial-shell'), 'Service worker не испо�
   'src/commercialShell.css',
   'src/AppErrorBoundary.tsx',
   'public/icon.svg',
+  'playwright.config.ts',
+  'tests/e2e/commercial-flow.spec.ts',
+  '.github/workflows/browser-e2e.yml',
   'dist/index.html'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
 
@@ -71,6 +74,8 @@ check(boundary.includes('Начать дело заново'), 'Аварийны
 check(index.includes('og:title'), 'В index.html отсутствуют метаданные публикации');
 check(index.includes('viewport-fit=cover'), 'Не включены safe-area мобильных устройств');
 check(Array.isArray(manifest.icons) && manifest.icons.some((item) => item.src === './icon.svg'), 'PWA manifest не содержит иконку продукта');
+check(pkg.scripts?.['test:e2e'] === 'playwright test', 'Не объявлен браузерный e2e-скрипт');
+check(pkg.devDependencies?.['@playwright/test'], 'Playwright отсутствует в devDependencies');
 
 if (failures.length) {
   console.error('\nCommercial release smoke failed:');
@@ -78,4 +83,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: launch, resume, restart, recovery, internal-tool gating, install identity, mobile and media fallbacks are present in build 0.8.1.');
+console.log('\nCommercial release smoke passed: launch, resume, restart, recovery, internal-tool gating, install identity and real browser playthrough contract are present in build 0.8.2.');
