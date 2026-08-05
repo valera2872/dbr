@@ -15,6 +15,45 @@ test('обложка, улики и персонажи используют то
   );
   expect(homeBackground).toContain('/media/case-001/scenes/room-314.svg');
 
+  const finalMediaBackgrounds = await page.evaluate(() => {
+    const classes = [
+      'archive-plan-sheet',
+      'archive-worktable',
+      'act4-room-scene',
+      'act4-card-lab',
+      'act4-report'
+    ];
+    return classes.map((className) => {
+      const element = document.createElement('div');
+      element.className = className;
+      element.style.position = 'fixed';
+      element.style.left = '-10000px';
+      document.body.append(element);
+      const background = getComputedStyle(element).backgroundImage;
+      element.remove();
+      return background;
+    });
+  });
+
+  [
+    'e006-archive-plan.svg',
+    'e008-archive-table.svg',
+    'e010-service-room.svg',
+    'e011-card-lab.svg',
+    'final-case-report.svg'
+  ].forEach((file, index) => expect(finalMediaBackgrounds[index]).toContain(file));
+
+  for (const file of [
+    'e006-archive-plan.svg',
+    'e008-archive-table.svg',
+    'e010-service-room.svg',
+    'e011-card-lab.svg',
+    'final-case-report.svg'
+  ]) {
+    const response = await page.request.get(`./media/case-001/evidence/${file}`);
+    expect(response.ok(), `${file} должен загружаться из production bundle`).toBe(true);
+  }
+
   await page.locator('.commercial-launch').getByRole('button', { name: 'Начать расследование' }).click();
   await expect(page.locator('.premium-prologue')).toBeVisible();
 

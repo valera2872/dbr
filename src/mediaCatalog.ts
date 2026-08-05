@@ -12,10 +12,18 @@ export const CASE_MEDIA = {
     vera: `${BASE}/portraits/vera.svg`,
     ilya: `${BASE}/portraits/ilya.svg`,
     elena: `${BASE}/portraits/elena.svg`
+  },
+  evidence: {
+    e006ArchivePlan: `${BASE}/evidence/e006-archive-plan.svg`,
+    e008ArchiveTable: `${BASE}/evidence/e008-archive-table.svg`,
+    e010ServiceRoom: `${BASE}/evidence/e010-service-room.svg`,
+    e011CardLab: `${BASE}/evidence/e011-card-lab.svg`,
+    finalCaseReport: `${BASE}/evidence/final-case-report.svg`
   }
 } as const;
 
 export type CharacterMediaId = keyof typeof CASE_MEDIA.portraits;
+export type EvidenceMediaId = keyof typeof CASE_MEDIA.evidence;
 
 export function getPortrait(id: string): string {
   return CASE_MEDIA.portraits[id as CharacterMediaId] ?? CASE_MEDIA.portraits.ilya;
