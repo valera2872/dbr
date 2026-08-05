@@ -1,0 +1,92 @@
+/* v0.8.4 — owned visual pack for E006, E008, E010, E011 and the final report */
+
+.act2-card-blueprint {
+  background:
+    linear-gradient(180deg, rgba(4, 16, 19, .12), rgba(4, 16, 19, .78)),
+    url('/dbr/media/case-001/evidence/e006-archive-plan.svg') center/cover no-repeat !important;
+}
+.act2-card-blueprint::before,
+.act2-card-blueprint::after { display: none !important; }
+
+.archive-plan-sheet {
+  background:
+    linear-gradient(120deg, rgba(5, 20, 23, .08), rgba(5, 20, 23, .28)),
+    url('/dbr/media/case-001/evidence/e006-archive-plan.svg') center/cover no-repeat !important;
+}
+.archive-plan-sheet .plan-paper-grid { opacity: .14; }
+.archive-plan-sheet .plan-room,
+.archive-plan-sheet .plan-corridor { background-color: rgba(5, 23, 26, .18); }
+
+.archive-worktable {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(90deg, rgba(2, 10, 12, .38), rgba(2, 10, 12, .14)),
+    url('/dbr/media/case-001/evidence/e008-archive-table.svg') center/cover no-repeat !important;
+}
+.archive-worktable::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(3, 12, 14, .1), rgba(3, 12, 14, .58));
+  pointer-events: none;
+}
+.archive-folder-stack,
+.archive-card-slot { backdrop-filter: blur(4px); }
+
+.act4-room-scene {
+  background:
+    linear-gradient(180deg, rgba(3, 10, 11, .08), rgba(2, 7, 8, .44)),
+    url('/dbr/media/case-001/evidence/e010-service-room.svg') center/cover no-repeat !important;
+}
+.act4-room-scene::before,
+.act4-room-scene::after { display: none !important; }
+.act4-room-noise { opacity: .07 !important; }
+.act4-hotspot.person { left: 45%; top: 58%; }
+.act4-hotspot.cabinet { right: 10%; top: 34%; }
+.act4-hotspot.lamp { right: 28%; top: 12%; }
+
+.act4-card-lab {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(90deg, rgba(2, 9, 10, .7), rgba(2, 9, 10, .45)),
+    url('/dbr/media/case-001/evidence/e011-card-lab.svg') center/cover no-repeat !important;
+}
+.act4-card-lab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(1, 7, 8, .46);
+  pointer-events: none;
+}
+.act4-reader::before,
+.act4-terminal { backdrop-filter: blur(7px); }
+
+.act4-report {
+  isolation: isolate;
+  background:
+    linear-gradient(145deg, rgba(7, 23, 26, .94), rgba(2, 8, 9, .96)),
+    url('/dbr/media/case-001/evidence/final-case-report.svg') center/cover no-repeat !important;
+}
+.act4-report::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: .12;
+  background: url('/dbr/media/case-001/evidence/final-case-report.svg') center/cover no-repeat;
+  pointer-events: none;
+}
+.act4-report-grid { opacity: .1 !important; }
+
+@media (max-width: 760px) {
+  .archive-plan-sheet,
+  .archive-worktable,
+  .act4-room-scene,
+  .act4-card-lab { background-position: center; }
+  .act4-hotspot.person { left: 42%; top: 60%; }
+  .act4-hotspot.cabinet { right: 4%; top: 36%; }
+}
