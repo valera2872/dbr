@@ -13,6 +13,7 @@ const main = read('src/main.tsx');
 const internalMode = read('src/internalMode.ts');
 const launch = read('src/commercialLaunch.ts');
 const shellCss = read('src/commercialShell.css');
+const finalMediaCss = read('src/finalMedia.css');
 const boundary = read('src/AppErrorBoundary.tsx');
 const fixtures = read('src/routeFixtures.ts');
 const diagnostics = read('src/stabilityDiagnostics.ts');
@@ -22,9 +23,9 @@ const sw = read('public/sw.js');
 const index = read('index.html');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.8.3', 'package.json должен иметь версию 0.8.3');
-check(build.includes("APP_BUILD = 'v0.8.3'"), 'APP_BUILD должен быть v0.8.3');
-check(sw.includes('dbr-v0-8-3-local-media-pack'), 'Service worker не использует cache key v0.8.3');
+check(pkg.version === '0.8.4', 'package.json должен иметь версию 0.8.4');
+check(build.includes("APP_BUILD = 'v0.8.4'"), 'APP_BUILD должен быть v0.8.4');
+check(sw.includes('dbr-v0-8-4-final-media-pack'), 'Service worker не использует cache key v0.8.4');
 
 [
   'src/internalMode.ts',
@@ -33,6 +34,7 @@ check(sw.includes('dbr-v0-8-3-local-media-pack'), 'Service worker не испо�
   'src/AppErrorBoundary.tsx',
   'src/mediaCatalog.ts',
   'src/localMediaRuntime.ts',
+  'src/finalMedia.css',
   'public/icon.svg',
   'playwright.config.ts',
   'tests/e2e/commercial-flow.spec.ts',
@@ -49,7 +51,12 @@ const mediaFiles = [
   'media/case-001/portraits/denis.svg',
   'media/case-001/portraits/vera.svg',
   'media/case-001/portraits/ilya.svg',
-  'media/case-001/portraits/elena.svg'
+  'media/case-001/portraits/elena.svg',
+  'media/case-001/evidence/e006-archive-plan.svg',
+  'media/case-001/evidence/e008-archive-table.svg',
+  'media/case-001/evidence/e010-service-room.svg',
+  'media/case-001/evidence/e011-card-lab.svg',
+  'media/case-001/evidence/final-case-report.svg'
 ];
 
 mediaFiles.forEach((file) => {
@@ -63,6 +70,7 @@ check(main.includes('AppErrorBoundary'), 'main.tsx не защищён авар�
 check(main.includes('mountCommercialLaunch'), 'main.tsx не монтирует коммерческий экран запуска');
 check(main.includes("./commercialShell.css"), 'main.tsx не подключает коммерческие стили');
 check(main.includes("./localMediaRuntime"), 'main.tsx не подключает локальный медиапакет');
+check(main.includes("./finalMedia.css"), 'main.tsx не подключает финальный медиапакет');
 check(main.includes('INTERNAL_MODE\n  ? mountActorStudio'), 'Actor Studio не ограничен внутренним режимом');
 
 check(internalMode.includes('dataset.dbrMode'), 'internalMode не маркирует режим интерфейса');
@@ -88,6 +96,16 @@ check(launch.includes('requestAnimationFrame'), 'Запуск нового де�
 check(mediaCatalog.includes('room-314.svg'), 'Каталог не содержит локальную сцену номера 314');
 check(mediaCatalog.includes('corridor-3f.svg'), 'Каталог не содержит локальный коридор');
 check(mediaCatalog.includes('portraits/kirill.svg'), 'Каталог не содержит портрет Кирилла');
+check(mediaCatalog.includes('e006-archive-plan.svg'), 'Каталог не содержит E006');
+check(mediaCatalog.includes('e008-archive-table.svg'), 'Каталог не содержит E008');
+check(mediaCatalog.includes('e010-service-room.svg'), 'Каталог не содержит E010');
+check(mediaCatalog.includes('e011-card-lab.svg'), 'Каталог не содержит E011');
+check(mediaCatalog.includes('final-case-report.svg'), 'Каталог не содержит финальный отчёт');
+check(finalMediaCss.includes('.archive-plan-sheet'), 'E006 не подключён к интерфейсу');
+check(finalMediaCss.includes('.archive-worktable'), 'E008 не подключён к интерфейсу');
+check(finalMediaCss.includes('.act4-room-scene'), 'E010 не подключён к интерфейсу');
+check(finalMediaCss.includes('.act4-card-lab'), 'E011 не подключён к интерфейсу');
+check(finalMediaCss.includes('.act4-report'), 'Финальный отчёт не подключён к интерфейсу');
 check(mediaRuntime.includes('installSynchronousMediaRewrite'), 'Старые URL не подменяются до первого рендера');
 check(mediaRuntime.includes('HTMLImageElement.prototype'), 'Медиаслой не перехватывает установку src изображений');
 check(mediaRuntime.includes("dataset.dbrMediaPack = 'case-001-v1'"), 'Медиапакет не маркирует активную версию');
@@ -115,4 +133,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: launch, recovery, owned local media, offline cache and real browser playthrough contracts are present in build 0.8.3.');
+console.log('\nCommercial release smoke passed: commercial shell, recovery, complete owned media pack, offline cache and browser contracts are present in build 0.8.4.');
