@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-8-3-local-media-pack';
+const CACHE_NAME = 'dbr-v0-8-4-final-media-pack';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',
@@ -10,7 +10,12 @@ const APP_SHELL = [
   '/dbr/media/case-001/portraits/denis.svg',
   '/dbr/media/case-001/portraits/vera.svg',
   '/dbr/media/case-001/portraits/ilya.svg',
-  '/dbr/media/case-001/portraits/elena.svg'
+  '/dbr/media/case-001/portraits/elena.svg',
+  '/dbr/media/case-001/evidence/e006-archive-plan.svg',
+  '/dbr/media/case-001/evidence/e008-archive-table.svg',
+  '/dbr/media/case-001/evidence/e010-service-room.svg',
+  '/dbr/media/case-001/evidence/e011-card-lab.svg',
+  '/dbr/media/case-001/evidence/final-case-report.svg'
 ];
 
 self.addEventListener('install', (event) => {
