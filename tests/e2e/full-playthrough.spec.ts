@@ -32,12 +32,13 @@ async function clickEvery(locator: ReturnType<Page['locator']>) {
   }
 }
 
-test('чистое расследование проходит весь маршрут E001–E011 и сохраняет эпилог', async ({ page }, testInfo) => {
+test('чистое расследование проходит весь маршрут E001–E011 и сохраняет эпилог', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Полный маршрут выполняется один раз в desktop Chromium');
   test.setTimeout(90_000);
 
   const runtimeErrors: string[] = [];
-  page.on('pageerror', (error) => runtimeErrors.push(error.message));
+  const trackErrors = (target: Page) => target.on('pageerror', (error) => runtimeErrors.push(error.message));
+  trackErrors(page);
 
   await page.goto('./?fresh=1&release=e2e-full-playthrough');
   const launch = page.locator('.commercial-launch');
@@ -177,11 +178,16 @@ test('чистое расследование проходит весь марш
 
   await page.screenshot({ path: testInfo.outputPath('completed-case-report.png'), fullPage: true });
   await page.getByRole('button', { name: 'Закрыть', exact: true }).click();
-  await page.reload();
 
-  const completedLaunch = page.locator('.commercial-launch');
+  // A new top-level browsing context has fresh sessionStorage but shares the saved case.
+  await page.close();
+  const returningPage = await context.newPage();
+  trackErrors(returningPage);
+  await returningPage.goto('./?release=e2e-return-to-completed-case');
+
+  const completedLaunch = returningPage.locator('.commercial-launch');
   await expect(completedLaunch.getByRole('button', { name: 'Открыть итог дела' })).toBeVisible();
   await completedLaunch.getByRole('button', { name: 'Открыть итог дела' }).click();
-  await expect(page.locator('.act4-report-overlay')).toBeVisible();
+  await expect(returningPage.locator('.act4-report-overlay')).toBeVisible();
   expect(runtimeErrors).toEqual([]);
 });
