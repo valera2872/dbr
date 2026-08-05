@@ -25,6 +25,9 @@ for (let index = 1; index <= 11; index += 1) {
 
 [
   'Начать расследование',
+  'one-corridor-event[data-time="23:50"]',
+  'one-corridor-event[data-time="00:17"]',
+  'cameraAnswers.nth(2)',
   'Другой человек проник в номер и вывел Илью',
   'Денис скрывал оригинал, Вера — личность',
   'data-conclusion="route"',
@@ -51,4 +54,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFull playthrough smoke passed: a clean browser route covers E001–E011, both reports, interrogation, rescue, accusation, epilogue and persisted reopen.');
+console.log('\nFull playthrough smoke passed: a clean browser route covers E001–E011, current E004 reconstruction, both reports, interrogation, rescue, accusation, epilogue and persisted reopen.');
