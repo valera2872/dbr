@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Кирилл Бессонов</title><desc id="desc">Мужчина около сорока лет в тёмной куртке, снятый в комнате для допросов.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17232c"/><stop offset=".55" stop-color="#0d141b"/><stop offset="1" stop-color="#05080c"/></linearGradient>
+    <radialGradient id="skin"><stop stop-color="#d0a17f"/><stop offset=".72" stop-color="#9d6e52"/><stop offset="1" stop-color="#6d4939"/></radialGradient>
+    <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#26323b"/><stop offset="1" stop-color="#080c10"/></linearGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" seed="7"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 .055"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="800" height="1000" fill="url(#bg)"/>
+  <ellipse cx="450" cy="372" rx="330" ry="370" fill="#1f303a" opacity=".42"/>
+  <path d="M75 1000c30-245 140-353 323-365 194 4 304 118 335 365z" fill="url(#coat)"/>
+  <path d="M287 662 398 789 512 662l74 337H207z" fill="#171e24"/>
+  <path d="M332 585h139v131c-33 45-102 44-139 0z" fill="#9d7056"/>
+  <path d="M247 262c8-128 93-199 189-199 121 0 195 88 187 239l-23 192c-13 104-79 164-176 170-96-2-166-59-184-160z" fill="url(#skin)"/>
+  <path d="M239 283c-1-154 85-239 204-239 127 0 203 80 192 229-37-20-82-63-101-111-55 55-153 82-295 121z" fill="#15191c"/>
+  <path d="M259 280c17-57 63-99 121-120-15 54-64 99-121 120z" fill="#23282c"/>
+  <path d="M597 299c42 12 55 67 37 117-12 33-34 53-59 48zM245 302c-38 9-52 60-36 107 10 31 31 51 55 47z" fill="#8f614a"/>
+  <path d="M285 325c48-38 96-34 133-5M462 319c45-31 93-26 128 10" fill="none" stroke="#35251f" stroke-width="18" stroke-linecap="round"/>
+  <path d="M305 361c30-18 68-16 97 2-31 26-69 25-97-2zM478 359c30-17 67-15 95 5-31 24-67 22-95-5z" fill="#f3eee7"/>
+  <circle cx="360" cy="364" r="15" fill="#33444a"/><circle cx="532" cy="363" r="15" fill="#33444a"/><circle cx="363" cy="365" r="6"/><circle cx="535" cy="364" r="6"/>
+  <path d="M438 360c-9 56-18 103-11 122 16 10 36 12 58 3" fill="none" stroke="#7c5141" stroke-width="12" stroke-linecap="round"/>
+  <path d="M332 526c66 31 134 30 198-5-27 59-145 72-198 5z" fill="#56372f"/>
+  <path d="M343 535c48 13 108 12 157-3" stroke="#d6b09c" stroke-width="8" opacity=".45"/>
+  <path d="M275 447c12 113 74 185 160 194 96-3 156-80 166-191-25 70-83 113-168 117-74-2-126-41-158-120z" fill="#302521" opacity=".35"/>
+  <path d="M280 572c44 51 89 72 151 72 65 0 112-26 158-83-6 66-30 111-71 137-69 44-176 22-218-49-13-22-20-48-20-77z" fill="#24201e" opacity=".5"/>
+  <path d="M195 984c18-152 75-247 168-292l37 96-93 211zM604 984c-17-152-74-247-168-292l-37 96 94 211z" fill="#303b44"/>
+  <path d="M399 788v211" stroke="#06090c" stroke-width="8"/>
+  <path d="M0 0h800v1000H0z" filter="url(#grain)" opacity=".6"/>
+  <path d="M20 20h760v960H20z" fill="none" stroke="#4b5c66" stroke-width="4" opacity=".5"/>
+</svg>
