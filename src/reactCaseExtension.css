@@ -1,0 +1,342 @@
+/* v0.8.5 — React-owned acts II–IV. Existing visual classes remain reusable. */
+
+.react-evidence-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.react-case-dashboard {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.react-next-action {
+  width: 100%;
+  border-color: rgba(124, 232, 227, .34) !important;
+  background: linear-gradient(110deg, rgba(17, 65, 67, .86), rgba(8, 27, 31, .96)) !important;
+}
+
+.react-action-arrow {
+  margin-left: auto;
+  color: #7ce8e2;
+  font-size: 27px;
+}
+
+.react-final-panel {
+  padding: 20px;
+}
+
+.react-case-modal-backdrop {
+  z-index: 120000 !important;
+}
+
+.react-case-modal {
+  width: min(1480px, calc(100vw - 24px)) !important;
+  height: min(900px, calc(100dvh - 24px)) !important;
+  max-height: calc(100dvh - 24px) !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  overflow: hidden !important;
+}
+
+.react-case-modal-body {
+  min-height: 0;
+  overflow: hidden;
+  padding: 16px 24px 18px !important;
+}
+
+.react-scene {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(124, 232, 227, .18);
+  border-radius: 14px;
+  background-position: center !important;
+  background-size: cover !important;
+}
+
+.react-scene-label {
+  position: absolute;
+  z-index: 4;
+  top: 20px;
+  left: 22px;
+  padding: 8px 10px;
+  border: 1px solid rgba(124, 232, 227, .22);
+  border-radius: 7px;
+  color: #98c9c5;
+  background: rgba(2, 14, 16, .78);
+  font: 800 9px/1 ui-monospace, monospace;
+  letter-spacing: .12em;
+}
+
+.react-investigation-panel {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow: auto;
+  border: 1px solid rgba(124, 232, 227, .16);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(7, 25, 28, .98), rgba(3, 13, 15, .98));
+}
+
+.react-point-list {
+  display: grid;
+  gap: 8px;
+}
+
+.react-point-list button,
+.react-question-block button,
+.react-checkpoint button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border: 1px solid rgba(124, 232, 227, .12);
+  border-radius: 10px;
+  color: inherit;
+  background: rgba(5, 20, 22, .7);
+  text-align: left;
+  cursor: pointer;
+}
+
+.react-point-list button:hover,
+.react-question-block button:hover:not(:disabled),
+.react-checkpoint button:hover:not(:disabled) {
+  border-color: rgba(124, 232, 227, .42);
+}
+
+.react-point-list button > span,
+.react-checkpoint button > span {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(124, 232, 227, .25);
+  border-radius: 50%;
+  color: #7ce8e2;
+  font: 900 9px/1 ui-monospace, monospace;
+}
+
+.react-point-list button > div {
+  min-width: 0;
+}
+
+.react-point-list strong,
+.react-question-block strong,
+.react-checkpoint strong {
+  display: block;
+  color: #e1efed;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.react-point-list small,
+.react-question-block span {
+  display: block;
+  margin-top: 3px;
+  color: #728d8a;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.react-point-list button.done,
+.react-question-block button.done {
+  border-color: rgba(94, 209, 147, .34);
+  background: rgba(13, 59, 41, .34);
+}
+
+.react-point-list button.done > span {
+  border-color: rgba(94, 209, 147, .55);
+  color: #96ecb6;
+}
+
+.react-finding {
+  margin-top: auto;
+  min-height: 135px;
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  padding: 17px;
+  border: 1px solid rgba(226, 189, 114, .18);
+  border-radius: 12px;
+  background: rgba(58, 42, 19, .18);
+}
+
+.react-finding.success {
+  border-color: rgba(94, 209, 147, .32);
+  background: rgba(13, 55, 39, .27);
+}
+
+.react-finding > span {
+  color: #d7b66d;
+  font-size: 28px;
+}
+
+.react-finding strong,
+.react-finding h3 {
+  margin: 0;
+  color: #edf7f5;
+  font-size: 15px;
+}
+
+.react-finding p {
+  margin: 0;
+  color: #839c99;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.react-finding button {
+  justify-self: start;
+  margin-top: 5px;
+  padding: 10px 13px;
+  border: 1px solid rgba(124, 232, 227, .28);
+  border-radius: 9px;
+  color: #dff7f4;
+  background: rgba(27, 77, 77, .52);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.react-identity-layout {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(360px, .8fr);
+  gap: 16px;
+}
+
+.react-identity-layout .identity-comparison {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid rgba(124, 232, 227, .16);
+  border-radius: 14px;
+  background: rgba(4, 16, 19, .9);
+}
+
+.react-identity-layout .react-point-list {
+  grid-column: 1 / -1;
+  margin-top: 16px;
+}
+
+.react-question-block,
+.react-checkpoint {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(124, 232, 227, .13);
+  border-radius: 12px;
+  background: rgba(4, 17, 20, .55);
+}
+
+.react-question-block button {
+  grid-template-columns: 1fr;
+}
+
+.react-question-block button:disabled,
+.react-checkpoint button:disabled {
+  opacity: .42;
+  cursor: default;
+}
+
+.react-checkpoint button.correct {
+  border-color: rgba(94, 209, 147, .48);
+  background: rgba(13, 64, 43, .35);
+}
+
+.react-checkpoint button.wrong {
+  border-color: rgba(225, 122, 91, .42);
+  background: rgba(74, 31, 20, .28);
+}
+
+.react-checkpoint > p:last-child {
+  margin: 3px 0 0;
+  color: #91aaa6;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+/* The final media pack remains the visual source. React owns interaction and state. */
+.react-case-modal .archive-plan-sheet {
+  background-image: linear-gradient(rgba(2, 12, 14, .12), rgba(2, 12, 14, .36)), url('/dbr/media/case-001/evidence/e006-archive-plan.svg') !important;
+}
+
+.react-case-modal .act2-room-photo {
+  background-image: linear-gradient(rgba(2, 12, 14, .08), rgba(2, 12, 14, .45)), url('/dbr/media/case-001/scenes/room-314.svg') !important;
+}
+
+.react-case-modal .archive-worktable {
+  background-image: linear-gradient(rgba(2, 12, 14, .12), rgba(2, 12, 14, .46)), url('/dbr/media/case-001/evidence/e008-archive-table.svg') !important;
+}
+
+.react-case-modal .act4-room-scene {
+  background-image: linear-gradient(rgba(2, 9, 11, .16), rgba(1, 6, 7, .5)), url('/dbr/media/case-001/evidence/e010-service-room.svg') !important;
+}
+
+.react-case-modal .act4-card-lab {
+  background-image: linear-gradient(rgba(2, 9, 11, .08), rgba(1, 6, 7, .32)), url('/dbr/media/case-001/evidence/e011-card-lab.svg') !important;
+}
+
+@media (max-width: 980px) {
+  .act2-plan-layout,
+  .act2-room-layout,
+  .act3-archive-layout,
+  .act4-search-layout,
+  .act4-card-layout,
+  .react-identity-layout {
+    grid-template-columns: 1fr !important;
+    overflow: auto;
+  }
+
+  .react-scene,
+  .act4-room-scene,
+  .act4-card-lab {
+    min-height: 480px !important;
+  }
+
+  .react-investigation-panel {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 620px) {
+  .react-case-modal {
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+  }
+
+  .react-case-modal-body {
+    padding: 10px 12px 14px !important;
+    overflow: auto;
+  }
+
+  .react-scene,
+  .act4-room-scene,
+  .act4-card-lab {
+    min-height: 400px !important;
+  }
+
+  .react-final-panel {
+    padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .react-case-modal *,
+  .react-case-dashboard * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
