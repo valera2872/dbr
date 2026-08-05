@@ -12,6 +12,7 @@ import { AppErrorBoundary } from './AppErrorBoundary';
 import { mountActorStudio } from './actorStudio';
 import { mountActorStudioGuide } from './actorStudioGuide';
 import { mountCommercialLaunch } from './commercialLaunch';
+import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
 import './premium-runtime.css';
@@ -63,6 +64,7 @@ if (actorStudio.mounted) {
       </AppErrorBoundary>
     </React.StrictMode>
   );
+  installCompletedCaseReturn();
   mountCommercialLaunch();
 }
 
