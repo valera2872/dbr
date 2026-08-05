@@ -7,6 +7,7 @@ import './commercialRestart';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
+import { ReactCaseExtension } from './ReactCaseExtension';
 import { AppErrorBoundary } from './AppErrorBoundary';
 import { mountActorStudio } from './actorStudio';
 import { mountActorStudioGuide } from './actorStudioGuide';
@@ -32,17 +33,14 @@ import './commercialShell.css';
 import './commercialMobile.css';
 import './localMedia.css';
 import './finalMedia.css';
+import './reactCaseExtension.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
-import './act2HiddenRouteV2';
-import './act2GatePreview';
-import './act3ArchiveIdentity';
 import './premiumPassV2';
 import './interactiveInterrogation';
 import './livingSuspect';
 import './kirillVideoRuntime';
-import './act4FinalOperation';
 import './stabilityDiagnostics';
 import './localMediaRuntime';
 import './versionGuard';
@@ -61,6 +59,7 @@ if (actorStudio.mounted) {
     <React.StrictMode>
       <AppErrorBoundary>
         <PremiumApp />
+        <ReactCaseExtension />
       </AppErrorBoundary>
     </React.StrictMode>
   );

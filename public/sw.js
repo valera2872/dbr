@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-8-4-final-media-pack';
+const CACHE_NAME = 'dbr-v0-8-5-react-core';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',

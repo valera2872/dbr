@@ -13,6 +13,7 @@ const main = read('src/main.tsx');
 const state = read('src/investigationState.ts');
 const fixtures = read('src/routeFixtures.ts');
 const pass = read('src/premiumPassV2.ts');
+const reactCore = read('src/ReactCaseExtension.tsx');
 const diagnostics = read('src/stabilityDiagnostics.ts');
 const css = read('src/stabilityPass.css');
 const sw = read('public/sw.js');
@@ -28,6 +29,8 @@ check(sw.includes(cacheVersion), `Service worker не использует cache
   'src/investigationState.ts',
   'src/routeFixtures.ts',
   'src/premiumPassV2.ts',
+  'src/ReactCaseExtension.tsx',
+  'src/reactCaseExtension.css',
   'src/stabilityDiagnostics.ts',
   'src/stabilityPass.css',
   'dist/index.html'
@@ -40,7 +43,7 @@ const orderedImports = [
   "./performanceKernel'",
   "./investigationState'",
   "./premiumPassV2'",
-  "./act4FinalOperation'",
+  "./interactiveInterrogation'",
   "./stabilityDiagnostics'",
   "./versionGuard'"
 ];
@@ -48,6 +51,10 @@ orderedImports.forEach((entry) => check(main.includes(entry), `main.tsx не п�
 for (let index = 1; index < orderedImports.length; index += 1) {
   check(main.indexOf(orderedImports[index - 1]) < main.indexOf(orderedImports[index]), `Нарушен порядок загрузки ${orderedImports[index - 1]} → ${orderedImports[index]}`);
 }
+check(main.includes('ReactCaseExtension'), 'React Core актов II–IV не смонтирован');
+check(!main.includes("import './act2HiddenRouteV2'"), 'Legacy акт II загружается вместе с React Core');
+check(!main.includes("import './act3ArchiveIdentity'"), 'Legacy акт III загружается вместе с React Core');
+check(!main.includes("import './act4FinalOperation'"), 'Legacy акт IV загружается вместе с React Core');
 check(!main.includes("./premiumPass';"), 'Legacy premiumPass не должен загружаться одновременно с v2');
 
 check(state.includes('type RouteStage'), 'Единое состояние не описывает этапы маршрута');
@@ -72,6 +79,9 @@ check(pass.includes('repeat(4') || css.includes('repeat(4'), 'Шкала не п
 check(pass.includes("'act4-report'"), 'Premium Pass не ведёт к окончательному отчёту');
 check(!pass.includes('new MutationObserver'), 'Premium Pass v2 не должен создавать MutationObserver');
 check(!pass.includes('setInterval'), 'Premium Pass v2 не должен использовать polling');
+check(reactCore.includes('ACT2_STORAGE_KEY') && reactCore.includes('ACT3_STORAGE_KEY') && reactCore.includes('ACT4_STORAGE_KEY'), 'React Core не сохраняет совместимость с каноническими ключами актов');
+check(!reactCore.includes('new MutationObserver'), 'React Core не должен создавать MutationObserver');
+check(!reactCore.includes('setInterval'), 'React Core не должен использовать polling');
 check(diagnostics.includes('exportInvestigationState'), 'Диагностика не умеет экспортировать технический снимок');
 check(diagnostics.includes('if (INTERNAL_MODE)'), 'Диагностика должна быть скрыта в коммерческом режиме');
 
@@ -88,4 +98,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nStability smoke passed: unified state schema, migration diagnostics, four-act navigation and deterministic fixtures are present in build ${pkg.version}.`);
+console.log(`\nStability smoke passed: unified state schema, React-owned acts II–IV, migration diagnostics and deterministic fixtures are present in build ${pkg.version}.`);
