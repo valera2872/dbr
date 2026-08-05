@@ -14,6 +14,8 @@ const internalMode = read('src/internalMode.ts');
 const launch = read('src/commercialLaunch.ts');
 const shellCss = read('src/commercialShell.css');
 const finalMediaCss = read('src/finalMedia.css');
+const reactCss = read('src/reactCaseExtension.css');
+const reactCore = read('src/ReactCaseExtension.tsx');
 const boundary = read('src/AppErrorBoundary.tsx');
 const fixtures = read('src/routeFixtures.ts');
 const diagnostics = read('src/stabilityDiagnostics.ts');
@@ -23,9 +25,9 @@ const sw = read('public/sw.js');
 const index = read('index.html');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.8.4', 'package.json должен иметь версию 0.8.4');
-check(build.includes("APP_BUILD = 'v0.8.4'"), 'APP_BUILD должен быть v0.8.4');
-check(sw.includes('dbr-v0-8-4-final-media-pack'), 'Service worker не использует cache key v0.8.4');
+check(pkg.version === '0.8.5', 'package.json должен иметь версию 0.8.5');
+check(build.includes("APP_BUILD = 'v0.8.5'"), 'APP_BUILD должен быть v0.8.5');
+check(sw.includes('dbr-v0-8-5-react-core'), 'Service worker не использует cache key v0.8.5');
 
 [
   'src/internalMode.ts',
@@ -35,10 +37,13 @@ check(sw.includes('dbr-v0-8-4-final-media-pack'), 'Service worker не испо�
   'src/mediaCatalog.ts',
   'src/localMediaRuntime.ts',
   'src/finalMedia.css',
+  'src/ReactCaseExtension.tsx',
+  'src/reactCaseExtension.css',
   'public/icon.svg',
   'playwright.config.ts',
   'tests/e2e/commercial-flow.spec.ts',
   'tests/e2e/local-media.spec.ts',
+  'tests/e2e/react-core.spec.ts',
   '.github/workflows/browser-e2e.yml',
   'dist/index.html'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
@@ -68,9 +73,11 @@ mediaFiles.forEach((file) => {
 check(main.includes("from './internalMode'"), 'main.tsx не подключает режим коммерческого релиза');
 check(main.includes('AppErrorBoundary'), 'main.tsx не защищён аварийной границей React');
 check(main.includes('mountCommercialLaunch'), 'main.tsx не монтирует коммерческий экран запуска');
+check(main.includes('ReactCaseExtension'), 'main.tsx не монтирует React Core');
 check(main.includes("./commercialShell.css"), 'main.tsx не подключает коммерческие стили');
 check(main.includes("./localMediaRuntime"), 'main.tsx не подключает локальный медиапакет');
 check(main.includes("./finalMedia.css"), 'main.tsx не подключает финальный медиапакет');
+check(main.includes("./reactCaseExtension.css"), 'main.tsx не подключает стили React Core');
 check(main.includes('INTERNAL_MODE\n  ? mountActorStudio'), 'Actor Studio не ограничен внутренним режимом');
 
 check(internalMode.includes('dataset.dbrMode'), 'internalMode не маркирует режим интерфейса');
@@ -106,6 +113,11 @@ check(finalMediaCss.includes('.archive-worktable'), 'E008 не подключё�
 check(finalMediaCss.includes('.act4-room-scene'), 'E010 не подключён к интерфейсу');
 check(finalMediaCss.includes('.act4-card-lab'), 'E011 не подключён к интерфейсу');
 check(finalMediaCss.includes('.act4-report'), 'Финальный отчёт не подключён к интерфейсу');
+check(reactCss.includes('.react-case-modal'), 'Нет коммерческого layout React Core');
+check(reactCore.includes('createPortal'), 'React Core не использует React portals');
+check(reactCore.includes('Прогресс сохраняется автоматически'), 'React-модали не объясняют автосохранение');
+check(!reactCore.includes('new MutationObserver'), 'React Core не должен создавать MutationObserver');
+check(!reactCore.includes('setInterval'), 'React Core не должен использовать polling');
 check(mediaRuntime.includes('installSynchronousMediaRewrite'), 'Старые URL не подменяются до первого рендера');
 check(mediaRuntime.includes('HTMLImageElement.prototype'), 'Медиаслой не перехватывает установку src изображений');
 check(mediaRuntime.includes("dataset.dbrMediaPack = 'case-001-v1'"), 'Медиапакет не маркирует активную версию');
@@ -133,4 +145,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: commercial shell, recovery, complete owned media pack, offline cache and browser contracts are present in build 0.8.4.');
+console.log('\nCommercial release smoke passed: commercial shell, React-owned acts II–IV, complete local media, offline cache and browser contracts are present in build 0.8.5.');
