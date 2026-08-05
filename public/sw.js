@@ -1,5 +1,17 @@
-const CACHE_NAME = 'dbr-v0-8-2-browser-playthrough';
-const APP_SHELL = ['/dbr/'];
+const CACHE_NAME = 'dbr-v0-8-3-local-media-pack';
+const APP_SHELL = [
+  '/dbr/',
+  '/dbr/manifest.webmanifest',
+  '/dbr/icon.svg',
+  '/dbr/media/case-001/scenes/room-314.svg',
+  '/dbr/media/case-001/scenes/corridor-3f.svg',
+  '/dbr/media/case-001/portraits/kirill.svg',
+  '/dbr/media/case-001/portraits/marina.svg',
+  '/dbr/media/case-001/portraits/denis.svg',
+  '/dbr/media/case-001/portraits/vera.svg',
+  '/dbr/media/case-001/portraits/ilya.svg',
+  '/dbr/media/case-001/portraits/elena.svg'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
