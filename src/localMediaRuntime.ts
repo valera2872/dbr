@@ -24,6 +24,56 @@ function portraitFromLabel(label: string): string | null {
   return null;
 }
 
+function rewriteRemoteSource(source: string, image?: HTMLImageElement): string {
+  if (!source.includes(REMOTE_HOST)) return source;
+  if (ROOM_PATTERN.test(source)) return CASE_MEDIA.room314;
+  if (CORRIDOR_PATTERN.test(source)) return CASE_MEDIA.corridor3f;
+  if (KIRILL_PATTERN.test(source)) return CASE_MEDIA.portraits.kirill;
+  if (MARINA_PATTERN.test(source)) return CASE_MEDIA.portraits.marina;
+  if (DENIS_PATTERN.test(source)) return CASE_MEDIA.portraits.denis;
+  if (VERA_PATTERN.test(source)) {
+    return image?.classList.contains('track-portrait')
+      ? CASE_MEDIA.portraits.elena
+      : CASE_MEDIA.portraits.vera;
+  }
+  if (ILYA_PATTERN.test(source)) return CASE_MEDIA.portraits.ilya;
+  return source;
+}
+
+function installSynchronousMediaRewrite(): void {
+  const imagePrototype = HTMLImageElement.prototype;
+  const nativeSetAttribute = imagePrototype.setAttribute;
+  imagePrototype.setAttribute = function setOwnedImageAttribute(name: string, value: string): void {
+    nativeSetAttribute.call(
+      this,
+      name,
+      name.toLowerCase() === 'src' ? rewriteRemoteSource(value, this) : value
+    );
+  };
+
+  const sourceDescriptor = Object.getOwnPropertyDescriptor(imagePrototype, 'src');
+  if (sourceDescriptor?.get && sourceDescriptor.set) {
+    Object.defineProperty(imagePrototype, 'src', {
+      configurable: sourceDescriptor.configurable,
+      enumerable: sourceDescriptor.enumerable,
+      get: sourceDescriptor.get,
+      set(value: string) {
+        sourceDescriptor.set?.call(this, rewriteRemoteSource(String(value), this));
+      }
+    });
+  }
+
+  const style = document.createElement('style');
+  style.dataset.dbrOwnedMedia = 'hero';
+  style.textContent = `
+    .premium-home,
+    .premium-prologue {
+      --hero-image: url("${CASE_MEDIA.hero}") !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 function localSourceFor(image: HTMLImageElement): string | null {
   const label = [
     image.alt,
@@ -34,24 +84,12 @@ function localSourceFor(image: HTMLImageElement): string | null {
 
   const labelledPortrait = portraitFromLabel(label);
   if (labelledPortrait) return labelledPortrait;
-
   if (image.classList.contains('living-suspect-still')) return CASE_MEDIA.portraits.kirill;
   if (image.classList.contains('cctv-photo')) return CASE_MEDIA.corridor3f;
 
   const source = image.currentSrc || image.src;
-  if (!source.includes(REMOTE_HOST)) return null;
-  if (ROOM_PATTERN.test(source)) return CASE_MEDIA.room314;
-  if (CORRIDOR_PATTERN.test(source)) return CASE_MEDIA.corridor3f;
-  if (KIRILL_PATTERN.test(source)) return CASE_MEDIA.portraits.kirill;
-  if (MARINA_PATTERN.test(source)) return CASE_MEDIA.portraits.marina;
-  if (DENIS_PATTERN.test(source)) return CASE_MEDIA.portraits.denis;
-  if (VERA_PATTERN.test(source)) {
-    return image.classList.contains('track-portrait')
-      ? CASE_MEDIA.portraits.elena
-      : CASE_MEDIA.portraits.vera;
-  }
-  if (ILYA_PATTERN.test(source)) return CASE_MEDIA.portraits.ilya;
-  return null;
+  const rewritten = rewriteRemoteSource(source, image);
+  return rewritten === source ? null : rewritten;
 }
 
 function replaceImage(image: HTMLImageElement): void {
@@ -92,6 +130,7 @@ function preloadCriticalMedia(): void {
   });
 }
 
+installSynchronousMediaRewrite();
 preloadCriticalMedia();
 
 document.addEventListener('click', () => window.setTimeout(scheduleOwnedMedia, 0), true);
