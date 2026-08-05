@@ -35,7 +35,8 @@ for (let index = 1; index <= 11; index += 1) {
   'Кирилл пришёл за картой через скрытый проход',
   'РАССЛЕДОВАНИЕ ЗАВЕРШЕНО',
   'Открыть итог дела',
-  'page.reload()',
+  'page.close()',
+  'context.newPage()',
   'runtimeErrors'
 ].forEach((token) => check(test.includes(token), `Полный маршрут не содержит контроль: ${token}`));
 
@@ -54,4 +55,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFull playthrough smoke passed: a clean browser route covers E001–E011, current E004 reconstruction, both reports, interrogation, rescue, accusation, epilogue and persisted reopen.');
+console.log('\nFull playthrough smoke passed: a clean browser route covers E001–E011, current E004 reconstruction, both reports, interrogation, rescue, accusation, epilogue and return from a fresh tab.');
