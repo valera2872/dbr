@@ -1,5 +1,13 @@
 const BASE = `${import.meta.env.BASE_URL}media/case-001`;
 
+const evidence = {
+  e006ArchivePlan: `${BASE}/evidence/e006-archive-plan.svg`,
+  e008ArchiveTable: `${BASE}/evidence/e008-archive-table.svg`,
+  e010ServiceRoom: `${BASE}/evidence/e010-service-room.svg`,
+  e011CardLab: `${BASE}/evidence/e011-card-lab.svg`,
+  finalCaseReport: `${BASE}/evidence/final-case-report.svg`
+} as const;
+
 export const CASE_MEDIA = {
   room314: `${BASE}/scenes/room-314.svg`,
   hero: `${BASE}/scenes/room-314.svg`,
@@ -14,11 +22,12 @@ export const CASE_MEDIA = {
     elena: `${BASE}/portraits/elena.svg`
   },
   evidence: {
-    e006ArchivePlan: `${BASE}/evidence/e006-archive-plan.svg`,
-    e008ArchiveTable: `${BASE}/evidence/e008-archive-table.svg`,
-    e010ServiceRoom: `${BASE}/evidence/e010-service-room.svg`,
-    e011CardLab: `${BASE}/evidence/e011-card-lab.svg`,
-    finalCaseReport: `${BASE}/evidence/final-case-report.svg`
+    ...evidence,
+    archivePlan: evidence.e006ArchivePlan,
+    archiveTable: evidence.e008ArchiveTable,
+    serviceRoom: evidence.e010ServiceRoom,
+    cardLab: evidence.e011CardLab,
+    finalReport: evidence.finalCaseReport
   }
 } as const;
 
