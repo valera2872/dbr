@@ -24,10 +24,12 @@ const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const index = read('index.html');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
+const buildVersion = `APP_BUILD = 'v${pkg.version}'`;
+const cacheVersion = `dbr-v${pkg.version.replaceAll('.', '-')}`;
 
-check(pkg.version === '0.8.5', 'package.json должен иметь версию 0.8.5');
-check(build.includes("APP_BUILD = 'v0.8.5'"), 'APP_BUILD должен быть v0.8.5');
-check(sw.includes('dbr-v0-8-5-react-core'), 'Service worker не использует cache key v0.8.5');
+check(pkg.version === '0.8.6', 'package.json должен иметь версию 0.8.6');
+check(build.includes(buildVersion), `APP_BUILD должен совпадать с package.json: v${pkg.version}`);
+check(sw.includes(cacheVersion), `Service worker не использует cache key ${cacheVersion}`);
 
 [
   'src/internalMode.ts',
@@ -44,6 +46,7 @@ check(sw.includes('dbr-v0-8-5-react-core'), 'Service worker не использ�
   'tests/e2e/commercial-flow.spec.ts',
   'tests/e2e/local-media.spec.ts',
   'tests/e2e/react-core.spec.ts',
+  'tests/e2e/full-playthrough.spec.ts',
   '.github/workflows/browser-e2e.yml',
   'dist/index.html'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
@@ -90,6 +93,7 @@ check(diagnostics.includes('if (INTERNAL_MODE)'), 'Техническая диа
   'Начать расследование',
   'Начать заново',
   'Восстановить сохранение',
+  'Открыть итог дела',
   'Прогресс сохраняется автоматически',
   'После первой загрузки дело доступно офлайн',
   'repairSave',
@@ -145,4 +149,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: commercial shell, React-owned acts II–IV, complete local media, offline cache and browser contracts are present in build 0.8.5.');
+console.log(`\nCommercial release smoke passed: shell, React Core, owned media, offline cache and full browser route are present in build ${pkg.version}.`);

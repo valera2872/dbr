@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-8-5-react-core';
+const CACHE_NAME = 'dbr-v0-8-6-full-playthrough';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',
