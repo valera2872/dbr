@@ -69,7 +69,13 @@ test('чистое расследование проходит весь марш
 
   await baseEvidenceCard(page, 'E004').click();
   await expect(page.locator('.evidence-e004')).toBeVisible();
-  await page.locator('.evidence-e004 .camera-question').getByRole('button', { name: '23:50', exact: true }).click();
+  const cameraEvents = page.locator('.evidence-e004 .one-corridor-event');
+  await expect(cameraEvents).toHaveCount(6);
+  await page.locator('.evidence-e004 .one-corridor-event[data-time="23:50"]').click();
+  await page.locator('.evidence-e004 .one-corridor-event[data-time="00:17"]').click();
+  const cameraAnswers = page.locator('.evidence-e004 .camera-question > div > button');
+  await expect(cameraAnswers).toHaveCount(4);
+  await cameraAnswers.nth(2).click();
   await expect(page.locator('.evidence-e004 .camera-feedback.success')).toBeVisible();
   await closeEvidence(page);
 
