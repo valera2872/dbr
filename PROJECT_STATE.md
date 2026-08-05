@@ -2,11 +2,11 @@
 
 ## Current branch
 
-`agent/v0-8-2-playwright` → target `main`
+`agent/v0-8-3-local-media-pack` → target `main`
 
 ## Current version
 
-`0.8.2 — Browser-tested commercial beta foundation`
+`0.8.3 — Owned local media pack / offline visual foundation`
 
 ## Product
 
@@ -38,14 +38,25 @@ First case: **«Номер 314»**.
 - saved progress resumes on the previous section;
 - restart uses explicit confirmation, clears the case and opens a clean prologue;
 - inconsistent legacy saves are repaired without a blank page or loss of valid progress;
-- mobile launch is checked with external Unsplash images deliberately blocked;
 - horizontal overflow is checked on the launch cover and prologue;
 - the mobile headquarters keeps an accessible Menu button;
 - failures retain screenshot, video and Playwright trace artifacts;
-- superseded browser runs are cancelled automatically;
-- current result: 11 passed, 1 intentionally skipped.
+- superseded browser runs are cancelled automatically.
 
-## Performance defects removed in v0.8.2
+## v0.8.3 owned media pack
+
+- room 314 and the third-floor corridor are owned local SVG scenes;
+- Kirill, Marina, Denis, Vera, Ilya and Elena have a consistent owned portrait set;
+- one typed media catalog provides all scene and portrait URLs;
+- a synchronous compatibility layer rewrites legacy Unsplash image assignments before the browser requests them;
+- the home and prologue background are overridden before React renders;
+- existing DOM enhancers and the Living Suspect fallback receive the same local assets without changing save keys;
+- the media runtime adds no MutationObserver and no polling;
+- the service worker precaches all owned scene and portrait files for offline use;
+- the production smoke contract checks both public sources and copied dist assets;
+- a Playwright test records any Unsplash request and verifies that evidence and character images resolve to the local pack.
+
+## Performance defects removed
 
 - the legacy build marker no longer creates hundreds of hidden duplicates;
 - premium enhancements use the canonical APP_BUILD instead of a hard-coded v0.3.5;
@@ -69,7 +80,7 @@ Actor Studio: `?internal=1&actorStudio=kirill`
 
 ## Remaining work before paid release
 
-- replace externally hosted visual assets with an owned local media pack;
+- extend the owned media pack to E006, E008, E010, E011 and final report visuals;
 - migrate Acts II–IV from DOM enhancers into typed React case components;
 - extend browser playthroughs from the commercial shell to every E001–E011 interaction;
 - conduct external usability and difficulty testing;

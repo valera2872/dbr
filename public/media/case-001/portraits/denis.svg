@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Денис Орлов</title><desc id="desc">Технический специалист в очках, заметно напряжённый.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1b2731"/><stop offset=".6" stop-color="#0d141b"/><stop offset="1" stop-color="#05080b"/></linearGradient>
+    <radialGradient id="skin"><stop stop-color="#d7a47f"/><stop offset=".72" stop-color="#a77355"/><stop offset="1" stop-color="#704838"/></radialGradient>
+    <linearGradient id="hoodie" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#324754"/><stop offset="1" stop-color="#10171d"/></linearGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".78" numOctaves="3" seed="17"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 .055"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="800" height="1000" fill="url(#bg)"/>
+  <ellipse cx="410" cy="366" rx="315" ry="370" fill="#426273" opacity=".14"/>
+  <path d="M72 1000c26-224 137-341 328-355 193 12 305 128 329 355z" fill="url(#hoodie)"/>
+  <path d="M330 594h142v125c-34 42-104 41-142 0z" fill="#a87659"/>
+  <path d="M247 266c8-125 88-200 181-200 116 0 187 84 185 222l-20 211c-12 105-78 166-174 169-94-2-162-61-176-164z" fill="url(#skin)"/>
+  <path d="M232 287c-2-161 91-245 201-245 128 0 205 91 190 253-24-16-51-44-72-78-66 32-171 54-319 70z" fill="#27221f"/>
+  <path d="M268 135c48-76 149-115 236-66-77 5-135 42-178 111z" fill="#35302b"/>
+  <path d="M251 303c-37 9-50 62-33 109 11 31 32 49 55 46zM588 302c36 11 48 64 30 111-12 32-34 49-56 45z" fill="#976149"/>
+  <path d="M286 328c43-31 88-30 126-3M463 325c43-29 89-26 126 7" fill="none" stroke="#3b2a24" stroke-width="15" stroke-linecap="round"/>
+  <g fill="none" stroke="#22333c" stroke-width="9"><rect x="286" y="343" width="128" height="76" rx="25"/><rect x="458" y="342" width="128" height="76" rx="25"/><path d="M414 374h44"/></g>
+  <path d="M304 371c29-17 65-16 93 1-29 23-65 22-93-1zM476 370c29-16 65-14 93 4-30 22-65 20-93-4z" fill="#f2eee8"/>
+  <circle cx="359" cy="373" r="14" fill="#394b51"/><circle cx="531" cy="373" r="14" fill="#394b51"/><circle cx="360" cy="374" r="5"/><circle cx="532" cy="374" r="5"/>
+  <path d="M440 375c-8 46-14 86-8 109 15 9 34 11 52 5" fill="none" stroke="#7b5040" stroke-width="11" stroke-linecap="round"/>
+  <path d="M340 532c62 20 122 19 180-4-31 47-139 57-180 4z" fill="#5c3730"/>
+  <path d="M355 538c46 8 98 6 144-5" stroke="#d5ae98" stroke-width="7" opacity=".42"/>
+  <path d="M286 575c40 48 84 69 139 68 59 0 106-24 146-74-11 73-62 119-146 121-81-3-131-47-139-115z" fill="#332a26" opacity=".32"/>
+  <path d="M201 998c27-153 84-247 176-292l27 88-87 206zM599 998c-28-153-85-247-177-292l-25 88 86 206z" fill="#3c5564"/>
+  <path d="M403 794v206" stroke="#0e151a" stroke-width="7"/>
+  <path d="M0 0h800v1000H0z" filter="url(#grain)" opacity=".6"/>
+  <path d="M20 20h760v960H20z" fill="none" stroke="#58707d" stroke-width="4" opacity=".46"/>
+</svg>

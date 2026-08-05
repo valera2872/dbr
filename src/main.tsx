@@ -30,6 +30,7 @@ import './act4FinalOperation.css';
 import './stabilityPass.css';
 import './commercialShell.css';
 import './commercialMobile.css';
+import './localMedia.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -42,6 +43,7 @@ import './livingSuspect';
 import './kirillVideoRuntime';
 import './act4FinalOperation';
 import './stabilityDiagnostics';
+import './localMediaRuntime';
 import './versionGuard';
 
 const rootElement = document.getElementById('root');
