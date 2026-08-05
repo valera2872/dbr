@@ -42,6 +42,7 @@ import './livingSuspect';
 import './kirillVideoRuntime';
 import './act4FinalOperation';
 import './stabilityDiagnostics';
+import './localMediaRuntime';
 import './versionGuard';
 
 const rootElement = document.getElementById('root');
