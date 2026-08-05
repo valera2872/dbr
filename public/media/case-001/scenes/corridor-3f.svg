@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Коридор третьего этажа</title>
+  <desc id="desc">Ночной гостиничный коридор с дверями 307, 312 и 314.</desc>
+  <defs>
+    <linearGradient id="ceiling" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#26333d"/><stop offset="1" stop-color="#121920"/></linearGradient>
+    <linearGradient id="leftWall" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#0a1117"/><stop offset="1" stop-color="#33414d"/></linearGradient>
+    <linearGradient id="rightWall" x1="1" y1="0" x2="0" y2="0"><stop stop-color="#080d12"/><stop offset="1" stop-color="#2c3944"/></linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#202a31"/><stop offset="1" stop-color="#06090d"/></linearGradient>
+    <radialGradient id="light"><stop stop-color="#ffe8bd" stop-opacity=".88"/><stop offset=".4" stop-color="#dfad61" stop-opacity=".26"/><stop offset="1" stop-color="#cf8b31" stop-opacity="0"/></radialGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="3" seed="31"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 .06"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="1600" height="900" fill="#05080b"/>
+  <path d="M0 0h1600L995 244H605z" fill="url(#ceiling)"/>
+  <path d="M0 0v900l605-656h390L1600 900V0z" fill="#151d24"/>
+  <path d="M0 0v900l605-656V0z" fill="url(#leftWall)"/>
+  <path d="M1600 0v900L995 244V0z" fill="url(#rightWall)"/>
+  <path d="M0 900h1600L995 244H605z" fill="url(#floor)"/>
+
+  <g opacity=".88">
+    <path d="M610 244h380" stroke="#7e8d97" stroke-width="5"/>
+    <path d="M605 244 0 900M995 244l605 656" stroke="#4c5b64" stroke-width="5"/>
+    <path d="M711 244 430 900M889 244l281 656" stroke="#43515a" stroke-width="3" opacity=".6"/>
+    <path d="M800 244v656" stroke="#7e3033" stroke-width="90" opacity=".38"/>
+    <path d="M800 244v656" stroke="#b24c4e" stroke-width="3" opacity=".45"/>
+  </g>
+
+  <g>
+    <ellipse cx="800" cy="225" rx="250" ry="100" fill="url(#light)" filter="url(#blur)"/>
+    <ellipse cx="800" cy="225" rx="70" ry="24" fill="#e5c28b" opacity=".82"/>
+    <rect x="758" y="214" width="84" height="18" rx="9" fill="#f5dfb7"/>
+  </g>
+
+  <g>
+    <path d="M90 250 410 178v460L90 810z" fill="#131b22" stroke="#495761" stroke-width="8"/>
+    <path d="M115 269 384 207v405l-269 145z" fill="#202b34"/>
+    <circle cx="348" cy="428" r="10" fill="#c49a5c"/>
+    <rect x="218" y="308" width="110" height="46" rx="5" fill="#0d141a" stroke="#60707a" stroke-width="3"/>
+    <text x="273" y="340" text-anchor="middle" fill="#d6e0e5" font-family="Arial, sans-serif" font-size="29" letter-spacing="8">307</text>
+  </g>
+
+  <g>
+    <path d="M1120 198 1450 267v505l-330-151z" fill="#10171e" stroke="#46545e" stroke-width="8"/>
+    <path d="M1147 224 1425 282v441l-278-128z" fill="#1e2932"/>
+    <circle cx="1192" cy="431" r="10" fill="#c59b5e"/>
+    <rect x="1214" y="307" width="112" height="46" rx="5" fill="#0c1319" stroke="#61717b" stroke-width="3"/>
+    <text x="1270" y="339" text-anchor="middle" fill="#d7e1e6" font-family="Arial, sans-serif" font-size="29" letter-spacing="8">314</text>
+  </g>
+
+  <g>
+    <path d="M965 245 1115 210v383L965 538z" fill="#10181f" stroke="#46545e" stroke-width="6"/>
+    <path d="M982 259 1097 232v331l-115-41z" fill="#1c2730"/>
+    <circle cx="1006" cy="414" r="7" fill="#bc9259"/>
+    <rect x="995" y="296" width="74" height="34" rx="4" fill="#0c1319" stroke="#5f707a" stroke-width="2"/>
+    <text x="1032" y="319" text-anchor="middle" fill="#d7e1e6" font-family="Arial, sans-serif" font-size="20" letter-spacing="5">312</text>
+  </g>
+
+  <g opacity=".55">
+    <path d="M410 178v460M1120 198v423" stroke="#66737c" stroke-width="4"/>
+    <path d="M0 658 605 383M1600 660 995 382" stroke="#5b6972" stroke-width="5"/>
+    <rect x="520" y="383" width="72" height="115" rx="6" fill="#11181f" stroke="#56646d" stroke-width="4"/>
+    <rect x="1008" y="374" width="67" height="106" rx="6" fill="#11181f" stroke="#56646d" stroke-width="4"/>
+  </g>
+
+  <g opacity=".75">
+    <path d="M800 255c-8 0-16 9-16 20v142c0 18 32 18 32 0V275c0-11-8-20-16-20z" fill="#8f989d"/>
+    <circle cx="800" cy="239" r="18" fill="#9ba5aa"/>
+    <path d="M782 315 746 390M818 315l36 75" stroke="#879196" stroke-width="13" stroke-linecap="round"/>
+    <path d="M792 416 766 495M808 416l27 79" stroke="#879196" stroke-width="14" stroke-linecap="round"/>
+  </g>
+
+  <g fill="#9a252a" opacity=".76">
+    <circle cx="61" cy="61" r="13"/><rect x="88" y="48" width="122" height="26" rx="13"/>
+  </g>
+  <text x="232" y="70" fill="#c8d2d8" font-family="Arial, sans-serif" font-size="25" letter-spacing="5">CAM 3F</text>
+
+  <rect width="1600" height="900" filter="url(#grain)" opacity=".6"/>
+  <path d="M0 0h1600v900H0z" fill="none" stroke="#020406" stroke-width="34" opacity=".72"/>
+</svg>
