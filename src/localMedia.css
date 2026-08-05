@@ -1,0 +1,10 @@
+.dashboard-hero {
+  background:
+    linear-gradient(125deg, rgba(13, 35, 41, .95), rgba(8, 20, 24, .88)),
+    url('/dbr/media/case-001/scenes/room-314.svg') center / cover no-repeat;
+}
+
+.premium-home,
+.premium-prologue {
+  --hero-image: url('/dbr/media/case-001/scenes/room-314.svg') !important;
+}
