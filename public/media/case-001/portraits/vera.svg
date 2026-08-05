@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Вера Ветрова</title><desc id="desc">Женщина с длинными тёмными волосами и настороженным взглядом.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#241d2b"/><stop offset=".62" stop-color="#111018"/><stop offset="1" stop-color="#050508"/></linearGradient>
+    <radialGradient id="skin"><stop stop-color="#ddb18f"/><stop offset=".72" stop-color="#aa765c"/><stop offset="1" stop-color="#70483a"/></radialGradient>
+    <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#493b50"/><stop offset="1" stop-color="#17121c"/></linearGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" seed="22"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 .052"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="800" height="1000" fill="url(#bg)"/>
+  <ellipse cx="385" cy="365" rx="315" ry="370" fill="#7b597f" opacity=".12"/>
+  <path d="M67 1000c26-231 138-348 334-355 190 10 301 127 329 355z" fill="url(#coat)"/>
+  <path d="M327 590h146v132c-36 42-107 41-146 0z" fill="#aa795f"/>
+  <path d="M242 257c8-127 87-199 183-199 114 0 187 84 185 222l-21 218c-12 103-78 165-173 168-94-3-160-62-174-164z" fill="url(#skin)"/>
+  <path d="M219 277c3-164 95-244 207-244 128 0 208 91 194 249-39-18-84-53-115-99-52 54-145 81-286 94z" fill="#1a171c"/>
+  <path d="M211 260c-20 141-4 279 45 409l70-49-54-372zM620 260c22 146 4 286-49 412l-68-52 58-374z" fill="#201b22"/>
+  <path d="M248 301c-35 12-46 66-27 112 13 31 34 49 57 45zM586 301c36 11 48 65 29 112-12 31-34 49-56 44z" fill="#9b674f"/>
+  <path d="M286 327c43-32 87-31 126-4M461 325c44-29 89-27 126 6" fill="none" stroke="#412d2a" stroke-width="15" stroke-linecap="round"/>
+  <path d="M303 361c29-17 64-16 92 1-29 23-65 23-92-1zM477 360c29-16 64-14 92 3-30 22-65 21-92-3z" fill="#f5f0eb"/>
+  <circle cx="357" cy="363" r="14" fill="#4b4559"/><circle cx="531" cy="363" r="14" fill="#4b4559"/><circle cx="358" cy="364" r="5"/><circle cx="532" cy="364" r="5"/>
+  <path d="M437 365c-8 47-14 87-8 109 15 10 34 11 52 5" fill="none" stroke="#815344" stroke-width="11" stroke-linecap="round"/>
+  <path d="M337 526c61 18 120 17 178-4-31 46-137 54-178 4z" fill="#704248"/>
+  <path d="M352 531c45 8 98 6 143-4" stroke="#e1b5ae" stroke-width="7" opacity=".45"/>
+  <path d="M286 573c39 48 84 69 139 68 59 0 106-25 145-75-10 72-60 119-145 121-81-4-130-47-139-114z" fill="#633f3b" opacity=".18"/>
+  <path d="M198 999c29-154 84-247 179-294l27 89-88 205zM602 999c-29-154-85-248-179-294l-25 89 87 205z" fill="#584760"/>
+  <path d="M404 794v205" stroke="#17121b" stroke-width="7"/>
+  <path d="M0 0h800v1000H0z" filter="url(#grain)" opacity=".6"/>
+  <path d="M20 20h760v960H20z" fill="none" stroke="#6d5874" stroke-width="4" opacity=".46"/>
+</svg>
