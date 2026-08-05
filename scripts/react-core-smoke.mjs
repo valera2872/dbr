@@ -12,9 +12,10 @@ const main = read('src/main.tsx');
 const core = read('src/ReactCaseExtension.tsx');
 const css = read('src/reactCaseExtension.css');
 const build = read('src/build.ts');
+const buildVersion = `APP_BUILD = 'v${pkg.version}'`;
 
-check(pkg.version === '0.8.5', 'React Core release должен иметь версию 0.8.5');
-check(build.includes("APP_BUILD = 'v0.8.5'"), 'APP_BUILD должен быть v0.8.5');
+check(/^0\.(?:8\.[5-9]|8\.[1-9]\d|9\.|[1-9]\d\.)/.test(pkg.version), 'Версия должна быть не ниже React Core release 0.8.5');
+check(build.includes(buildVersion), `APP_BUILD должен совпадать с package.json: v${pkg.version}`);
 check(exists('dist/index.html'), 'Production bundle не создан');
 check(exists('src/ReactCaseExtension.tsx'), 'Отсутствует ReactCaseExtension.tsx');
 check(exists('src/reactCaseExtension.css'), 'Отсутствуют стили React Core');
@@ -36,7 +37,7 @@ check(!main.includes("import './act4FinalOperation'"), 'Legacy act4 enhancer в�
 });
 
 check(core.includes('createPortal'), 'Игровые карточки и модали не перенесены в React portals');
-check(core.includes('data-react-case-core="v0.8.5"'), 'React Core не маркирует собственную контрольную точку');
+check(core.includes('data-react-case-core="v0.8.5"'), 'React Core не маркирует собственную архитектурную контрольную точку');
 check(core.includes('dbr:act2-updated'), 'React Core не уведомляет об обновлении акта II');
 check(core.includes('dbr:act3-updated'), 'React Core не уведомляет об обновлении акта III');
 check(core.includes('dbr:act4-updated'), 'React Core не уведомляет об обновлении акта IV');
@@ -54,4 +55,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nReact Core migration smoke passed: acts II–IV are React-owned, storage-compatible and free of legacy DOM construction.');
+console.log(`\nReact Core migration smoke passed in build ${pkg.version}: acts II–IV remain React-owned, storage-compatible and free of legacy DOM construction.`);
