@@ -31,12 +31,13 @@ check(main.indexOf("./interrogationGuidance';") < main.indexOf("./interactiveInt
   'Закрыть допрос и открыть отчёт №1',
   'Найти в ${source}',
   'план → панель → физический след → запись Антона',
-  'Закрыть допрос и открыть E010'
+  'Перейти к спасательной операции E010'
 ].forEach((token) => check(guide.includes(token), `Guidance runtime не содержит: ${token}`));
 
 check(!guide.includes('new MutationObserver'), 'Guidance runtime не должен создавать MutationObserver');
 check(!guide.includes('setInterval'), 'Guidance runtime не должен использовать polling');
 check(guide.includes('requestAnimationFrame'), 'Guidance runtime не синхронизируется с перерисовкой допроса');
+check(guide.includes('guide.dataset.guideSignature !== signature'), 'Guidance пересоздаёт кнопку без изменения состояния');
 check(css.includes('.interrogation-guide-steps'), 'Нет визуальной шкалы этапов');
 check(css.includes('.next-guided-evidence'), 'Следующая улика не подсвечивается');
 check(css.includes('@media (max-width: 980px)'), 'Маршрут допроса не адаптирован под телефон');
@@ -54,4 +55,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nInterrogation guidance smoke passed: the early Kirill interview now explains the three-stage route and exits directly to report No. 1.');
+console.log('\nInterrogation guidance smoke passed: the early Kirill interview now explains the three-stage route, keeps its action stable and exits directly to report No. 1.');
