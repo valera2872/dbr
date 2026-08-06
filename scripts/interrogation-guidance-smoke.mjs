@@ -44,7 +44,8 @@ check(css.includes('@media (max-width: 980px)'), 'Маршрут допроса 
 
 [
   'Вопросы закончены',
-  'Открыть отчёт №1',
+  'открыть отчёт №1',
+  'data-interrogation-guide-route="case"',
   'После отчёта №1',
   'checkpoint-panel'
 ].forEach((token) => check(test.includes(token), `Браузерный тест не проверяет: ${token}`));
