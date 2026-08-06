@@ -2,11 +2,11 @@
 
 ## Current branch
 
-`agent/v0-8-6-full-playthrough` → target `main`
+`agent/v0-8-7-first-player-fixes` → target `main`
 
 ## Current version
 
-`0.8.6 — full clean-browser playthrough and completed-case return`
+`0.8.7 — first-player fixes, explicit Act I routing and hybrid realistic media`
 
 ## Product
 
@@ -22,6 +22,35 @@ First case: **«Номер 314»**.
 - evidence-driven interrogation of Kirill;
 - Act IV: E010 rescue operation, E011 card verification, final accusation and epilogue.
 
+## v0.8.7 findings from a real first-player review
+
+The user's meticulous manual playthrough exposed four defects that previous end-to-end automation did not identify as usability problems:
+
+- E001 displayed the last item in static hotspot order instead of the point most recently selected by the player;
+- `Отметить как ключевое` stored a flag but gave no useful explanation or visible destination;
+- after E005 the game did not visibly tell the player that interviews were the next required step;
+- the owned local SVG room and portraits were technically stable but visibly weaker than the realistic photography used in early builds.
+
+## v0.8.7 fixes
+
+- E001 now keeps an explicit current visual selection independent of the set of already inspected points;
+- clicking carpet and then window changes the right panel from `Следы перемещения` to `Закрытое окно` and highlights the current hotspot;
+- key-material marking is explicitly described as a personal bookmark that does not affect the plot or score;
+- bookmark actions show immediate feedback and marked evidence appears in a dedicated `Закладки следователя` panel on the Case tab;
+- E005 contains a prominent next-required-step card and a direct `Перейти к людям` action;
+- interview modals show how many required answers remain and expose `Открыть отчёт №1` when the interview threshold is met;
+- route controls update only when their semantic state changes, so buttons are not recreated during a click;
+- desktop and mobile navigation select the currently visible tab control.
+
+## Media policy after v0.8.7
+
+- primary room scenes, evidence cards and character portraits again use the realistic Unsplash photography that appeared in early builds;
+- E006, E008, E010, E011 and the final report retain owned local SVG visuals;
+- the active media marker is `case-001-hybrid-realistic-v1`;
+- this restores visual quality immediately but reintroduces an external-network dependency for primary photographs;
+- therefore the realistic photographs are a temporary production reference, not the final owned commercial media pack;
+- a later release must replace them with owned local realistic images of comparable quality before fully offline paid distribution.
+
 ## React Core
 
 - evidence cards and interactive modals E006–E011 are rendered by React portals;
@@ -33,7 +62,7 @@ First case: **«Номер 314»**.
 - React Core does not use `document.createElement`, `innerHTML`, `MutationObserver` or polling;
 - the specialized Kirill interrogation and Living Suspect/video adapter remain separate compatible modules.
 
-## v0.8.6 full browser route
+## Full browser route
 
 - one Playwright test begins from an empty commercial browser state with no QA fixture or storage pre-seeding;
 - it clicks through the cover and all four prologue screens;
@@ -45,20 +74,15 @@ First case: **«Номер 314»**.
 - it closes the original page, opens a fresh browser tab with shared localStorage and confirms that `Открыть итог дела` opens the React report;
 - the route contains no `addInitScript` and does not write progress before gameplay.
 
-## Defects found by the full route
-
-- the initial test still targeted the retired E004 question instead of the current six-frame reconstruction; the route now tests the actual player interface;
-- the completed-case cover displayed `Открыть итог дела`, but clicking it only removed the cover and did not open the report;
-- `completedCaseReturn.ts` now bridges the commercial cover to the React report, returns to the Case tab when needed and uses a bounded 90-frame wait with no observer or polling.
-
 ## Browser verification
 
 - production build and all static contracts pass;
-- Playwright result: **18 passed, 2 skipped**;
-- desktop Chromium performs the entire E001–E011 route;
-- Pixel 7 regression checks remain active for launch, recovery, local media, performance and React Core;
+- Playwright result: **20 passed, 2 skipped**;
+- the new first-player regression repeats carpet → window → bookmark → E005 → People on desktop Chromium and Pixel 7;
+- desktop Chromium still performs the entire E001–E011 route;
+- Pixel 7 checks remain active for launch, recovery, first-player flow, hybrid media, performance and React Core;
 - failures retain screenshot, video and trace artifacts;
-- the production JavaScript bundle is about 311 KB / 102.7 KB gzip.
+- the production JavaScript bundle is about 318 KB / 105.1 KB gzip.
 
 ## Stability and commercial shell
 
@@ -66,16 +90,8 @@ First case: **«Номер 314»**.
 - the customer cover supports start, resume, completed-report entry, restart and save repair;
 - internal QA, diagnostics, Actor Studio and build markers remain hidden from commercial mode;
 - React failures show a recovery screen instead of a blank page;
-- the PWA has product metadata, an icon, offline shell and mobile safe-area support.
-
-## Owned media pack
-
-- room 314 and the third-floor corridor are owned local SVG scenes;
-- Kirill, Marina, Denis, Vera, Ilya and Elena have a consistent owned portrait set;
-- E006, E008, E010, E011 and the epilogue have owned local visuals;
-- one typed media catalog provides all scene, portrait and evidence URLs;
-- all owned visuals are precached for offline use;
-- browser tests verify local production loading without Unsplash requests.
+- the PWA has product metadata, an icon, offline shell and mobile safe-area support;
+- the shell and owned final evidence remain available offline, while temporary realistic remote photographs require network access on first load.
 
 ## Internal QA contract
 
@@ -93,8 +109,10 @@ Actor Studio: `?internal=1&actorStudio=kirill`
 
 ## Remaining work before paid release
 
+- continue the user's meticulous manual walkthrough and fix each ambiguity before recruiting external testers;
 - conduct external usability, pacing and difficulty testing with 5–10 independent players;
 - add structured tester feedback and measure where players stop or hesitate;
+- replace temporary remote realistic photographs with owned local realistic media;
 - finalize sound design, legal wording, privacy notice and age-rating wording;
 - choose and implement payment, access delivery and purchase recovery;
 - later create the 3D/video suspect layer with Kling while keeping deterministic interrogation logic;
