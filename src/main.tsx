@@ -44,6 +44,7 @@ import './interactiveInterrogation';
 import './livingSuspect';
 import './kirillVideoRuntime';
 import './stabilityDiagnostics';
+import './localMediaRuntime';
 import './firstPlayerFixes';
 import './versionGuard';
 
