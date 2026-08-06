@@ -35,6 +35,7 @@ import './commercialMobile.css';
 import './localMedia.css';
 import './finalMedia.css';
 import './reactCaseExtension.css';
+import './firstPlayerFixes.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -43,7 +44,7 @@ import './interactiveInterrogation';
 import './livingSuspect';
 import './kirillVideoRuntime';
 import './stabilityDiagnostics';
-import './localMediaRuntime';
+import './firstPlayerFixes';
 import './versionGuard';
 
 const rootElement = document.getElementById('root');
