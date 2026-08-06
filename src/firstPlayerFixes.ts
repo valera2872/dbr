@@ -60,9 +60,17 @@ function afterReact(callback: () => void): void {
   window.requestAnimationFrame(() => window.requestAnimationFrame(callback));
 }
 
+function isVisible(element: HTMLElement): boolean {
+  const style = getComputedStyle(element);
+  const rect = element.getBoundingClientRect();
+  return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+}
+
 function clickTab(label: string): void {
   const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.premium-sidebar button, .premium-mobile-nav button'));
-  buttons.find((button) => button.textContent?.includes(label))?.click();
+  const target = buttons.find((button) => isVisible(button) && button.textContent?.includes(label))
+    ?? buttons.find((button) => button.textContent?.includes(label));
+  target?.click();
 }
 
 function closeVisibleModal(): void {
@@ -113,7 +121,10 @@ function renderSelectedHotspot(id: string): void {
     else panel.append(result);
   }
 
-  result.innerHTML = `<p class="premium-kicker">Выбрано сейчас</p><h3>${copy.title}</h3><p>${copy.description}</p>`;
+  if (result.dataset.selectedHotspot !== id) {
+    result.dataset.selectedHotspot = id;
+    result.innerHTML = `<p class="premium-kicker">Выбрано сейчас</p><h3>${copy.title}</h3><p>${copy.description}</p>`;
+  }
 
   modal.querySelectorAll<HTMLButtonElement>('.room-marker, .inspection-list button').forEach((button) => {
     button.classList.toggle('current', hotspotIdFromButton(button) === id);
@@ -141,6 +152,9 @@ function enhanceBookmarkButton(): void {
   }
 
   const flagged = readCoreProgress().flaggedEvidenceIds?.includes(evidenceId) ?? false;
+  const state = flagged ? 'flagged' : 'unflagged';
+  if (help.dataset.bookmarkState === state) return;
+  help.dataset.bookmarkState = state;
   help.textContent = flagged
     ? 'Материал добавлен в ваши закладки на вкладке «Дело». На сюжет это не влияет.'
     : 'Это личная закладка для важных материалов; на правильность решения она не влияет.';
@@ -151,11 +165,18 @@ function renderBookmarksPanel(): void {
   if (!dashboard) return;
 
   const flagged = readCoreProgress().flaggedEvidenceIds ?? [];
-  dashboard.querySelector('.first-player-bookmarks')?.remove();
-  if (!flagged.length) return;
+  const signature = flagged.join('|');
+  const existing = dashboard.querySelector<HTMLElement>('.first-player-bookmarks');
 
-  const panel = document.createElement('article');
+  if (!flagged.length) {
+    existing?.remove();
+    return;
+  }
+  if (existing?.dataset.bookmarkSignature === signature) return;
+
+  const panel = existing ?? document.createElement('article');
   panel.className = 'first-player-bookmarks';
+  panel.dataset.bookmarkSignature = signature;
   panel.innerHTML = `
     <div>
       <p class="premium-kicker">Закладки следователя</p>
@@ -166,7 +187,7 @@ function renderBookmarksPanel(): void {
       ${flagged.map((id) => `<button type="button" data-first-player-evidence="${id}"><span>${id}</span><strong>${EVIDENCE_TITLES[id] ?? id}</strong></button>`).join('')}
     </div>`;
 
-  dashboard.querySelector('.dashboard-grid')?.before(panel);
+  if (!existing) dashboard.querySelector('.dashboard-grid')?.before(panel);
 }
 
 function renderE005Route(): void {
@@ -176,6 +197,7 @@ function renderE005Route(): void {
   const progress = readCoreProgress();
   const asked = progress.seenDialogueTopicIds?.length ?? 0;
   const remaining = Math.max(0, REQUIRED_DIALOGUE_COUNT - asked);
+  const routeState = remaining > 0 ? `people:${remaining}` : 'report';
 
   let banner = modal.querySelector<HTMLElement>('.first-player-route-banner');
   if (!banner) {
@@ -183,6 +205,8 @@ function renderE005Route(): void {
     banner.className = 'first-player-route-banner';
     modal.querySelector('.premium-modal-body')?.append(banner);
   }
+  if (banner.dataset.routeState === routeState) return;
+  banner.dataset.routeState = routeState;
 
   if (remaining > 0) {
     banner.innerHTML = `
@@ -201,6 +225,7 @@ function renderInterviewRoute(): void {
 
   const asked = readCoreProgress().seenDialogueTopicIds?.length ?? 0;
   const remaining = Math.max(0, REQUIRED_DIALOGUE_COUNT - asked);
+  const routeState = remaining > 0 ? `remaining:${remaining}` : 'report';
 
   let banner = modal.querySelector<HTMLElement>('.first-player-interview-route');
   if (!banner) {
@@ -208,6 +233,8 @@ function renderInterviewRoute(): void {
     banner.className = 'first-player-interview-route';
     modal.append(banner);
   }
+  if (banner.dataset.routeState === routeState) return;
+  banner.dataset.routeState = routeState;
 
   if (remaining > 0) {
     banner.innerHTML = `<strong>До промежуточного отчёта №1 осталось получить ответов: ${remaining}</strong><span>Можно перейти к другим участникам через вкладку «Люди».</span>`;
