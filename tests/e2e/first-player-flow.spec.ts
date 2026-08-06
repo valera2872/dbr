@@ -4,6 +4,12 @@ function evidenceCard(page: Page, id: string) {
   return page.locator('.premium-evidence-card').filter({ hasText: id }).first();
 }
 
+async function openTab(page: Page, label: string) {
+  const button = page.locator('.premium-sidebar button:visible, .premium-mobile-nav button:visible').filter({ hasText: label }).first();
+  await expect(button).toBeVisible();
+  await button.click();
+}
+
 async function openHeadquarters(page: Page) {
   await page.goto('./?fresh=1&release=e2e-first-player');
   const launch = page.locator('.commercial-launch');
@@ -17,7 +23,7 @@ async function openHeadquarters(page: Page) {
 
 test('E001 показывает последнюю выбранную зону, а E005 ведёт к следующему шагу', async ({ page }) => {
   await openHeadquarters(page);
-  await page.locator('.premium-sidebar button').filter({ hasText: 'Материалы' }).click();
+  await openTab(page, 'Материалы');
 
   await evidenceCard(page, 'E001').click();
   await expect(page.locator('.evidence-e001')).toBeVisible();
@@ -34,13 +40,14 @@ test('E001 показывает последнюю выбранную зону, 
   await expect(page.locator('.evidence-e001 .first-player-bookmark-help')).toContainText('вкладке «Дело»');
 
   await page.getByRole('button', { name: /Вернуться в штаб/ }).click();
-  await page.locator('.premium-sidebar button').filter({ hasText: 'Дело' }).click();
+  await openTab(page, 'Дело');
   await expect(page.locator('.first-player-bookmarks')).toContainText('Осмотр номера 314');
 
-  await page.locator('.premium-sidebar button').filter({ hasText: 'Материалы' }).click();
+  await openTab(page, 'Материалы');
   await evidenceCard(page, 'E005').click();
-  await expect(page.locator('.evidence-e005 .first-player-route-banner')).toContainText('Следующий обязательный шаг');
-  await page.getByRole('button', { name: /Перейти к людям/ }).click();
+  const route = page.locator('.evidence-e005 .first-player-route-banner');
+  await expect(route).toContainText('Следующий обязательный шаг');
+  await route.getByRole('button', { name: /Перейти к людям/ }).click();
 
   await expect(page.locator('.premium-people-grid')).toBeVisible();
   await expect(page.locator('.premium-section-header')).toContainText('Все что-то скрывают');
