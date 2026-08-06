@@ -115,8 +115,7 @@ function guidanceCopy(
   interrogation: InterrogationState
 ): { kicker: string; title: string; body: string; route?: GuideRoute; button?: string; targetEvidence?: string } {
   const presented = interrogation.presented ?? [];
-  const ready = QUESTION_IDS.includes('alibi')
-    && (interrogation.asked ?? []).includes('alibi')
+  const ready = (interrogation.asked ?? []).includes('alibi')
     && presented.includes('plan')
     && presented.includes('panel')
     && (presented.includes('tracks') || presented.includes('fibres'))
@@ -128,7 +127,7 @@ function guidanceCopy(
       title: 'Кирилл указал новое место поиска',
       body: 'Закройте протокол и переходите к материалам: теперь открывается спасательная операция E010.',
       route: 'materials',
-      button: 'Закрыть допрос и открыть E010 →'
+      button: 'Перейти к спасательной операции E010 →'
     };
   }
 
@@ -237,12 +236,30 @@ function renderGuidance(): void {
   }
 
   shell.classList.add('has-interrogation-guide');
-  guide.innerHTML = `
-    ${phaseMarkup(questionsDone, evidence.found, ready, interrogation.complete === true)}
-    <div class="interrogation-guide-action">
-      <div><small>${copy.kicker}</small><strong>${copy.title}</strong><p>${copy.body}</p></div>
-      ${copy.route && copy.button ? `<button type="button" data-interrogation-guide-route="${copy.route}" ${copy.targetEvidence ? `data-target-evidence="${copy.targetEvidence}"` : ''}>${copy.button}</button>` : ''}
-    </div>`;
+  const signature = JSON.stringify({
+    act1Complete: core.act1Complete === true,
+    questionsDone,
+    foundEvidence: evidence.found,
+    presented: [...presented].sort(),
+    ready,
+    complete: interrogation.complete === true,
+    kicker: copy.kicker,
+    title: copy.title,
+    body: copy.body,
+    route: copy.route ?? '',
+    button: copy.button ?? '',
+    targetEvidence: copy.targetEvidence ?? ''
+  });
+
+  if (guide.dataset.guideSignature !== signature) {
+    guide.innerHTML = `
+      ${phaseMarkup(questionsDone, evidence.found, ready, interrogation.complete === true)}
+      <div class="interrogation-guide-action">
+        <div><small>${copy.kicker}</small><strong>${copy.title}</strong><p>${copy.body}</p></div>
+        ${copy.route && copy.button ? `<button type="button" data-interrogation-guide-route="${copy.route}" ${copy.targetEvidence ? `data-target-evidence="${copy.targetEvidence}"` : ''}>${copy.button}</button>` : ''}
+      </div>`;
+    guide.dataset.guideSignature = signature;
+  }
 
   annotateEvidence(core);
 
