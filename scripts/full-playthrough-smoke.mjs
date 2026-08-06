@@ -14,9 +14,9 @@ const main = read('src/main.tsx');
 const returnBridge = read('src/completedCaseReturn.ts');
 const test = read('tests/e2e/full-playthrough.spec.ts');
 
-check(pkg.version === '0.8.7', 'Полный playthrough release должен иметь версию 0.8.7');
-check(build.includes("APP_BUILD = 'v0.8.7'"), 'APP_BUILD должен быть v0.8.7');
-check(sw.includes('dbr-v0-8-7-first-player-fixes'), 'Service worker не использует cache key v0.8.7');
+check(pkg.version === '0.8.8', 'Полный playthrough release должен иметь версию 0.8.8');
+check(build.includes("APP_BUILD = 'v0.8.8'"), 'APP_BUILD должен быть v0.8.8');
+check(sw.includes('dbr-v0-8-8-interrogation-guidance'), 'Service worker не использует cache key v0.8.8');
 check(exists('dist/index.html'), 'Production bundle не создан');
 check(exists('tests/e2e/full-playthrough.spec.ts'), 'Отсутствует полный браузерный маршрут');
 check(exists('src/completedCaseReturn.ts'), 'Отсутствует механизм возврата к итоговому отчёту');
@@ -58,7 +58,7 @@ check(!returnBridge.includes('setInterval'), 'Мост возврата не д�
 check(!test.includes('addInitScript'), 'Полный маршрут не должен подменять исходное состояние через addInitScript');
 check(!test.includes('localStorage.setItem'), 'Полный маршрут не должен предварительно записывать прогресс');
 check(test.includes('test.setTimeout(90_000)'), 'Полный маршрут не имеет собственного лимита времени');
-check(test.includes("desktop-chromium"), 'Полный маршрут не закреплён за детерминированным desktop-профилем');
+check(test.includes('desktop-chromium'), 'Полный маршрут не закреплён за детерминированным desktop-профилем');
 
 if (failures.length) {
   console.error('\nFull playthrough smoke failed:');
