@@ -1,0 +1,199 @@
+.evidence-e001 .room-marker.current,
+.evidence-e001 .inspection-list button.current {
+  outline: 2px solid #79f4eb;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(121, 244, 235, .14), 0 0 28px rgba(121, 244, 235, .28);
+}
+
+.evidence-e001 .inspection-result {
+  animation: first-player-result-in .22s ease-out;
+}
+
+.first-player-bookmark-help {
+  max-width: 390px;
+  color: rgba(213, 231, 232, .7);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.first-player-toast {
+  position: fixed;
+  z-index: 10020;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 13px 18px;
+  border: 1px solid rgba(121, 244, 235, .45);
+  border-radius: 14px;
+  background: rgba(5, 20, 23, .96);
+  color: #eafffd;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .38);
+  font-weight: 700;
+  text-align: center;
+  animation: first-player-toast-in .18s ease-out;
+}
+
+.first-player-bookmarks {
+  display: grid;
+  grid-template-columns: minmax(220px, .8fr) minmax(0, 1.2fr);
+  gap: 22px;
+  align-items: center;
+  margin: 0 0 22px;
+  padding: 20px 22px;
+  border: 1px solid rgba(237, 186, 86, .22);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(46, 36, 17, .72), rgba(12, 28, 31, .92));
+}
+
+.first-player-bookmarks h2 {
+  margin: 2px 0 6px;
+  color: #f4f8f8;
+  font-size: 22px;
+}
+
+.first-player-bookmarks small {
+  color: rgba(226, 236, 236, .62);
+  line-height: 1.45;
+}
+
+.first-player-bookmark-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.first-player-bookmark-list button {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  min-height: 44px;
+  padding: 9px 13px;
+  border: 1px solid rgba(237, 186, 86, .28);
+  border-radius: 12px;
+  background: rgba(10, 22, 24, .72);
+  color: #eef7f6;
+  cursor: pointer;
+  text-align: left;
+}
+
+.first-player-bookmark-list button:hover {
+  border-color: rgba(237, 186, 86, .65);
+  transform: translateY(-1px);
+}
+
+.first-player-bookmark-list span {
+  color: #edba56;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.first-player-route-banner {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  margin: 22px 0 0;
+  padding: 22px 24px;
+  border: 1px solid rgba(121, 244, 235, .28);
+  border-radius: 18px;
+  background: linear-gradient(125deg, rgba(16, 56, 60, .84), rgba(9, 30, 34, .96));
+}
+
+.first-player-route-banner h2 {
+  margin: 3px 0 7px;
+  color: #f3ffff;
+  font-size: 24px;
+}
+
+.first-player-route-banner p:not(.premium-kicker) {
+  max-width: 760px;
+  margin: 0;
+  color: rgba(224, 239, 239, .74);
+  line-height: 1.55;
+}
+
+.first-player-route-banner button,
+.first-player-interview-route button {
+  flex: 0 0 auto;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 13px;
+  background: #79f4eb;
+  color: #062326;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.first-player-interview-route {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin: 0 22px 22px;
+  padding: 14px 16px;
+  border: 1px solid rgba(121, 244, 235, .22);
+  border-radius: 14px;
+  background: rgba(7, 28, 31, .94);
+  color: #ecffff;
+}
+
+.first-player-interview-route > div,
+.first-player-interview-route:not(:has(button)) {
+  line-height: 1.45;
+}
+
+.first-player-interview-route span {
+  display: block;
+  margin-top: 3px;
+  color: rgba(224, 239, 239, .66);
+  font-size: 13px;
+}
+
+.checkpoint-panel.first-player-focus {
+  animation: first-player-focus 2.1s ease;
+}
+
+@keyframes first-player-result-in {
+  from { opacity: .25; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes first-player-toast-in {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes first-player-focus {
+  0%, 100% { box-shadow: none; }
+  20%, 70% { box-shadow: 0 0 0 3px rgba(121, 244, 235, .38), 0 0 46px rgba(121, 244, 235, .2); }
+}
+
+@media (max-width: 760px) {
+  .first-player-bookmarks,
+  .first-player-route-banner {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .first-player-route-banner button {
+    width: 100%;
+  }
+
+  .first-player-interview-route {
+    margin: 0 12px 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .first-player-toast,
+  .evidence-e001 .inspection-result,
+  .checkpoint-panel.first-player-focus {
+    animation: none;
+  }
+}

@@ -1,12 +1,12 @@
 {
   "name": "dbr",
   "private": true,
-  "version": "0.8.6",
+  "version": "0.8.7",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/final-smoke.mjs && node scripts/stability-smoke.mjs && node scripts/commercial-smoke.mjs && node scripts/react-core-smoke.mjs && node scripts/full-playthrough-smoke.mjs",
-    "premium:check": "node scripts/final-smoke.mjs && node scripts/stability-smoke.mjs && node scripts/commercial-smoke.mjs && node scripts/react-core-smoke.mjs && node scripts/full-playthrough-smoke.mjs",
+    "build": "tsc -b && vite build && node scripts/final-smoke.mjs && node scripts/stability-smoke.mjs && node scripts/commercial-release-smoke.mjs && node scripts/react-core-smoke.mjs && node scripts/full-playthrough-smoke.mjs && node scripts/first-player-smoke.mjs",
+    "premium:check": "node scripts/final-smoke.mjs && node scripts/stability-smoke.mjs && node scripts/commercial-release-smoke.mjs && node scripts/react-core-smoke.mjs && node scripts/full-playthrough-smoke.mjs && node scripts/first-player-smoke.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "preview": "vite preview"

@@ -1,19 +1,18 @@
 import { expect, test } from '@playwright/test';
 
-test('обложка, улики и персонажи используют только локальный медиапакет', async ({ page }) => {
+test('первичный осмотр использует реалистичные фото, а финальные материалы остаются локальными', async ({ page }) => {
   const remoteRequests: string[] = [];
   page.on('request', (request) => {
     if (request.url().includes('images.unsplash.com')) remoteRequests.push(request.url());
   });
 
-  await page.goto('./?release=e2e-local-media');
+  await page.goto('./?release=e2e-realistic-primary-media');
   await expect(page.locator('.commercial-launch')).toBeVisible();
-  await expect(page.locator('html')).toHaveAttribute('data-dbr-media-pack', 'case-001-v1');
 
   const homeBackground = await page.locator('.premium-home').evaluate((element) =>
     getComputedStyle(element).backgroundImage
   );
-  expect(homeBackground).toContain('/media/case-001/scenes/room-314.svg');
+  expect(homeBackground).toContain('images.unsplash.com');
 
   const finalMediaBackgrounds = await page.evaluate(() => {
     const classes = [
@@ -68,8 +67,7 @@ test('обложка, улики и персонажи используют то
   const evidenceSources = await page.locator('.premium-evidence-card img').evaluateAll((images) =>
     images.map((image) => (image as HTMLImageElement).src)
   );
-  expect(evidenceSources.length).toBeGreaterThan(0);
-  expect(evidenceSources.every((source) => source.includes('/media/case-001/'))).toBe(true);
+  expect(evidenceSources.some((source) => source.includes('images.unsplash.com'))).toBe(true);
 
   await page.getByRole('button', { name: /Люди/ }).first().click();
   await expect(page.locator('.premium-people-grid')).toBeVisible();
@@ -77,15 +75,8 @@ test('обложка, улики и персонажи используют то
     images.map((image) => (image as HTMLImageElement).src)
   );
   expect(portraitSources.length).toBeGreaterThan(0);
-  expect(portraitSources.every((source) => source.includes('/media/case-001/portraits/'))).toBe(true);
+  expect(portraitSources.every((source) => source.includes('images.unsplash.com'))).toBe(true);
 
-  const remoteResources = await page.evaluate(() =>
-    performance.getEntriesByType('resource')
-      .map((entry) => entry.name)
-      .filter((url) => url.includes('images.unsplash.com'))
-  );
-
-  expect(remoteRequests).toEqual([]);
-  expect(remoteResources).toEqual([]);
-  await expect(page.locator('img[src*="images.unsplash.com"]')).toHaveCount(0);
+  expect(remoteRequests.length).toBeGreaterThan(0);
+  await expect(page.locator('img[src*="images.unsplash.com"]')).not.toHaveCount(0);
 });
