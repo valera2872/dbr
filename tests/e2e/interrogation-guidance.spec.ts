@@ -13,13 +13,19 @@ async function openHeadquarters(page: Page) {
 }
 
 async function openTab(page: Page, label: string) {
-  const button = page
+  const buttons = page
     .locator('.premium-sidebar button, .premium-mobile-nav button')
-    .filter({ hasText: label })
-    .filter({ visible: true })
-    .first();
-  await expect(button).toBeVisible();
-  await button.click();
+    .filter({ hasText: label });
+  const count = await buttons.count();
+
+  for (let index = 0; index < count; index += 1) {
+    if (await buttons.nth(index).isVisible()) {
+      await buttons.nth(index).click();
+      return;
+    }
+  }
+
+  throw new Error(`Не найдена видимая вкладка: ${label}`);
 }
 
 test('ранний допрос Кирилла объясняет следующий шаг и ведёт к отчёту №1', async ({ page }) => {
