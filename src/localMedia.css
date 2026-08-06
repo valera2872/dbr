@@ -1,10 +1,10 @@
 .dashboard-hero {
   background:
-    linear-gradient(125deg, rgba(13, 35, 41, .95), rgba(8, 20, 24, .88)),
-    url('/dbr/media/case-001/scenes/room-314.svg') center / cover no-repeat;
+    linear-gradient(125deg, rgba(13, 35, 41, .91), rgba(8, 20, 24, .84)),
+    url('https://images.unsplash.com/photo-1702675301342-cac2dc3ef15a?auto=format&fit=crop&w=1800&q=86') center / cover no-repeat;
 }
 
 .premium-home,
 .premium-prologue {
-  --hero-image: url('/dbr/media/case-001/scenes/room-314.svg') !important;
+  --hero-image: url('https://images.unsplash.com/photo-1702675301342-cac2dc3ef15a?auto=format&fit=crop&w=2200&q=86') !important;
 }
