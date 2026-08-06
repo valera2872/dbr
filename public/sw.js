@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-8-6-full-playthrough';
+const CACHE_NAME = 'dbr-v0-8-7-first-player-fixes';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',
