@@ -45,7 +45,9 @@ test('ранний допрос Кирилла объясняет следующ
   const action = page.locator('.interrogation-guide-action');
   await expect(action).toContainText('Вопросы закончены');
   await expect(action).toContainText('Сейчас допрос нужно приостановить');
-  await action.getByRole('button', { name: /Открыть отчёт №1/ }).click();
+  const reportRoute = action.locator('[data-interrogation-guide-route="case"]');
+  await expect(reportRoute).toContainText('открыть отчёт №1');
+  await reportRoute.click();
 
   await expect(page.locator('.interrogation-shell')).toHaveCount(0);
   await expect(page.locator('.premium-dashboard')).toBeVisible();
