@@ -28,7 +28,9 @@ type InterrogationState = {
 
 type GuideRoute = 'case' | 'materials' | 'evidence' | 'contradiction';
 
-const QUESTION_IDS = ['alibi', 'passage', 'anton'];
+// Only the alibi question is justified by the information the detective has before E006/E008.
+// The old passage/Anton question ids remain in storage for compatibility, but are not offered to new players.
+const QUESTION_IDS = ['alibi'];
 const SOURCE_BY_EVIDENCE: Record<string, string> = {
   plan: 'E006',
   panel: 'E007',
@@ -74,19 +76,19 @@ function evidenceProgress(act2: Act2State, act3: Act3State) {
 }
 
 function nextMissingEvidence(progress: ReturnType<typeof evidenceProgress>): string {
-  if (!progress.plan) return 'E006 — архивный план этажа';
-  if (!progress.panel || !progress.routeTrace) return 'E007 — осмотр номера 312';
-  if (!progress.audio) return 'E008 — архивная запись Антона';
+  if (!progress.plan) return 'архивный план этажа';
+  if (!progress.panel || !progress.routeTrace) return 'осмотр номера 312';
+  if (!progress.audio) return 'архивная запись Антона';
   return 'материалы собраны';
 }
 
 function nextPresentation(presented: string[]): { id: string; label: string } | null {
-  if (!presented.includes('plan')) return { id: 'plan', label: 'E006 — архивный план' };
-  if (!presented.includes('panel')) return { id: 'panel', label: 'E007-A — свежие винты панели' };
+  if (!presented.includes('plan')) return { id: 'plan', label: 'архивный план' };
+  if (!presented.includes('panel')) return { id: 'panel', label: 'свежие винты панели' };
   if (!presented.includes('tracks') && !presented.includes('fibres')) {
-    return { id: 'tracks', label: 'E007-B или E007-C — физический след маршрута' };
+    return { id: 'tracks', label: 'физический след маршрута' };
   }
-  if (!presented.includes('audio')) return { id: 'audio', label: 'E008-C — запись разговора Антона' };
+  if (!presented.includes('audio')) return { id: 'audio', label: 'запись разговора Антона' };
   return null;
 }
 
@@ -96,14 +98,14 @@ function phaseMarkup(
   ready: boolean,
   complete: boolean
 ): string {
-  const questionState = questionsDone === 3 ? 'done' : 'active';
-  const evidenceState = complete || ready ? 'done' : questionsDone === 3 ? 'active' : 'locked';
+  const questionState = questionsDone === 1 ? 'done' : 'active';
+  const evidenceState = complete || ready ? 'done' : questionsDone === 1 ? 'active' : 'locked';
   const contradictionState = complete ? 'done' : ready ? 'active' : 'locked';
 
   return `
     <ol class="interrogation-guide-steps" aria-label="Путь допроса">
-      <li class="${questionState}"><span>1</span><div><small>Сначала</small><strong>Зафиксировать версию</strong><em>${questionsDone}/3 вопроса</em></div></li>
-      <li class="${evidenceState}"><span>2</span><div><small>Затем</small><strong>Собрать и предъявить улики</strong><em>${foundEvidence}/4 опорных факта</em></div></li>
+      <li class="${questionState}"><span>1</span><div><small>Сначала</small><strong>Зафиксировать алиби</strong><em>${questionsDone}/1 базовый вопрос</em></div></li>
+      <li class="${evidenceState}"><span>2</span><div><small>Затем</small><strong>Найти и предъявить основания</strong><em>${foundEvidence}/4 опорных факта</em></div></li>
       <li class="${contradictionState}"><span>3</span><div><small>Финал допроса</small><strong>Разрушить алиби</strong><em>${complete ? 'выполнено' : ready ? 'доступно' : 'заблокировано'}</em></div></li>
     </ol>`;
 }
@@ -125,25 +127,25 @@ function guidanceCopy(
     return {
       kicker: 'Допрос завершён',
       title: 'Кирилл указал новое место поиска',
-      body: 'Закройте протокол и переходите к материалам: теперь открывается спасательная операция E010.',
+      body: 'Закройте протокол и переходите к материалам: теперь открывается спасательная операция.',
       route: 'materials',
-      button: 'Перейти к спасательной операции E010 →'
+      button: 'Перейти к спасательной операции →'
     };
   }
 
-  if (questionsDone < 3) {
+  if (questionsDone < 1) {
     return {
       kicker: 'Этап 1 из 3',
-      title: 'Сначала зафиксируйте версию Кирилла',
-      body: `Задайте оставшиеся вопросы: ${3 - questionsDone}. Сейчас вы только закрепляете его алиби; доказательства понадобятся позже.`
+      title: 'Зафиксируйте только то, что уже известно',
+      body: 'Сейчас у следователя есть основание проверить лишь заявленное алиби Кирилла: покидал ли он номер после 23:41. Вопросы о неизвестном проходе или конкретном споре не появляются, пока такие факты не найдены в материалах.'
     };
   }
 
   if (!core.act1Complete) {
     return {
-      kicker: 'Вопросы закончены',
-      title: 'Сейчас допрос нужно приостановить',
-      body: 'Ответы Кирилла сохранены. Следующий шаг — закрыть допрос и сформулировать промежуточный отчёт №1. После правильного вывода откроются материалы о скрытом маршруте.',
+      kicker: 'Базовое алиби зафиксировано',
+      title: 'Дальше нужны факты, а не догадки',
+      body: 'На этом этапе следователь ещё не знает ни о старом проходе, ни о содержании архивной записи. Закройте допрос и сформулируйте промежуточный отчёт №1. Новые линии допроса возникнут только из найденных доказательств.',
       route: 'case',
       button: 'Закрыть допрос и открыть отчёт №1 →'
     };
@@ -152,8 +154,8 @@ function guidanceCopy(
   if (evidence.found < 4) {
     return {
       kicker: 'Этап 2 из 3',
-      title: 'Одних ответов недостаточно',
-      body: `Вернитесь в материалы и продолжите расследование. Следующая цель: ${nextMissingEvidence(evidence)}. Уже найдено опорных фактов: ${evidence.found}/4.`,
+      title: 'Сначала найдите основание для нового вопроса',
+      body: `Вернитесь в материалы. Следующая цель: ${nextMissingEvidence(evidence)}. Уже найдено опорных фактов: ${evidence.found}/4. Идея скрытого маршрута должна возникнуть из плана и следов, а не из готовой реплики следователя.`,
       route: 'materials',
       button: 'Закрыть допрос и перейти к материалам →'
     };
@@ -162,13 +164,13 @@ function guidanceCopy(
   if (!ready) {
     const next = nextPresentation(presented);
     return {
-      kicker: 'Материалы найдены',
-      title: 'Теперь предъявляйте их как логическую цепочку',
+      kicker: 'Основания собраны',
+      title: 'Теперь вопросы рождаются из доказательств',
       body: next
-        ? `Следующая улика: ${next.label}. Порядок важен: план → панель → физический след → запись Антона.`
+        ? `Следующее предъявление: ${next.label}. Порядок важен: план раскрывает существование прохода → панель и следы доказывают его использование → запись связывает Кирилла со знанием маршрута.`
         : 'Основная цепочка предъявлена. Перейдите к фиксации противоречия.',
       route: next ? 'evidence' : 'contradiction',
-      button: next ? 'Показать следующую улику →' : 'Перейти к противоречию →',
+      button: next ? 'Показать следующее доказательство →' : 'Перейти к противоречию →',
       targetEvidence: next?.id
     };
   }
@@ -176,18 +178,41 @@ function guidanceCopy(
   return {
     kicker: 'Этап 3 из 3',
     title: 'Логическая цепочка собрана',
-    body: 'Теперь выберите вывод, который связывает алиби, скрытый маршрут и физические следы этой ночи.',
+    body: 'Теперь выберите вывод, который связывает заявленное алиби Кирилла с уже доказанным скрытым маршрутом и физическими следами этой ночи.',
     route: 'contradiction',
     button: 'Зафиксировать противоречие →'
   };
+}
+
+function constrainPrematureQuestions(): void {
+  const shell = document.querySelector<HTMLElement>('.interrogation-shell');
+  const questions = shell?.querySelector<HTMLElement>('.interrogation-questions');
+  if (!questions) return;
+
+  // These legacy buttons used to reveal discoveries before the player had evidence for them.
+  ['passage', 'anton'].forEach((id) => {
+    const button = questions.querySelector<HTMLButtonElement>(`[data-ask="${id}"]`);
+    if (!button) return;
+    button.hidden = true;
+    button.disabled = true;
+    button.setAttribute('aria-hidden', 'true');
+  });
+
+  let note = questions.querySelector<HTMLElement>('.interrogation-premise-note');
+  if (!note) {
+    note = document.createElement('div');
+    note.className = 'interrogation-premise-note';
+    questions.querySelector('p')?.after(note);
+  }
+  note.innerHTML = '<strong>Правило допроса</strong><span>Следователь спрашивает только о том, для чего уже есть основание. Неизвестные факты не подсказываются заранее.</span>';
 }
 
 function annotateEvidence(core: CoreState): void {
   const title = document.querySelector<HTMLElement>('.interrogation-control-title small');
   if (title) {
     title.textContent = core.act1Complete
-      ? 'Недоступные улики показывают, в каком материале их найти'
-      : 'Улики откроются после промежуточного отчёта №1';
+      ? 'Недоступные доказательства показывают, где получить основание для следующего шага'
+      : 'Доказательства откроются после промежуточного отчёта №1';
   }
 
   document.querySelectorAll<HTMLButtonElement>('.interrogation-evidence').forEach((button) => {
@@ -261,6 +286,7 @@ function renderGuidance(): void {
     guide.dataset.guideSignature = signature;
   }
 
+  constrainPrematureQuestions();
   annotateEvidence(core);
 
   document.querySelectorAll('.interrogation-evidence.next-guided-evidence').forEach((element) => {

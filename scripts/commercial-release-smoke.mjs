@@ -19,9 +19,9 @@ const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.9.0', 'Коммерческая сборка должна иметь версию 0.9.0');
+check(pkg.version === '0.9.1', 'Коммерческая сборка должна иметь версию 0.9.1');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-9-0-player-guidance'), 'Service worker не использует cache key v0.9.0');
+check(sw.includes('dbr-v0-9-1-interrogation-premises'), 'Service worker не использует cache key v0.9.1');
 
 [
   'dist/index.html',
@@ -75,8 +75,10 @@ check(fixes.includes('Закладки следователя'), 'Кнопка �
 check(!fixes.includes('new MutationObserver'), 'First-player слой не должен создавать MutationObserver');
 check(!fixes.includes('setInterval'), 'First-player слой не должен использовать polling');
 
-check(interrogationGuide.includes('Сейчас допрос нужно приостановить'), 'Ранний допрос не объясняет остановку');
+check(interrogationGuide.includes('Дальше нужны факты, а не догадки'), 'Ранний допрос не объясняет границу знания следователя');
 check(interrogationGuide.includes('Закрыть допрос и открыть отчёт №1'), 'Из допроса нет прямого перехода к отчёту №1');
+check(interrogationGuide.includes("const QUESTION_IDS = ['alibi']"), 'Ранний допрос всё ещё требует преждевременные вопросы');
+check(interrogationGuide.includes("['passage', 'anton']"), 'Будущие гипотезы не скрываются до появления доказательств');
 check(!interrogationGuide.includes('new MutationObserver'), 'Маршрут допроса не должен создавать MutationObserver');
 check(!interrogationGuide.includes('setInterval'), 'Маршрут допроса не должен использовать polling');
 
@@ -87,6 +89,7 @@ check(!act23.includes('setInterval'), 'Act II–III UX слой не долже�
 
 check(playerGuide.includes('Что делать дальше?'), 'Нет постоянной навигационной помощи');
 check(playerGuide.includes('Как здесь расследовать'), 'Нет onboarding для нового игрока');
+check(playerGuide.includes('Следователь не должен знать о скрытом проходе заранее'), 'Player Guidance не объясняет происхождение гипотезы прохода');
 check(playerGuide.includes('subscribeInvestigationState'), 'Player Guidance не использует единое состояние расследования');
 check(!playerGuide.includes('new MutationObserver'), 'Player Guidance не должен создавать MutationObserver');
 check(!playerGuide.includes('setInterval'), 'Player Guidance не должен использовать polling');
@@ -101,4 +104,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.9.0 shell, Player Guidance, Act II–III guidance, React Core, interrogation routing and hybrid media are present.');
+console.log('\nCommercial release smoke passed: v0.9.1 keeps Player Guidance and grounds interrogation hypotheses in discovered evidence.');
