@@ -14,8 +14,8 @@ const guide = read('src/interrogationGuidance.ts');
 const css = read('src/interrogationGuidance.css');
 const test = read('tests/e2e/interrogation-guidance.spec.ts');
 
-check(pkg.version === '0.8.8', 'Interrogation guidance release должен иметь версию 0.8.8');
-check(build.includes("APP_BUILD = 'v0.8.8'"), 'APP_BUILD должен быть v0.8.8');
+check(['0.8.8','0.8.9'].includes(pkg.version), 'Interrogation guidance должна сохраняться в релизах 0.8.8+');
+check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(exists('src/interrogationGuidance.ts'), 'Нет runtime-подсказки допроса');
 check(exists('src/interrogationGuidance.css'), 'Нет стилей маршрута допроса');
 check(exists('tests/e2e/interrogation-guidance.spec.ts'), 'Нет браузерного теста раннего допроса');
@@ -56,4 +56,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nInterrogation guidance smoke passed: the early Kirill interview now explains the three-stage route, keeps its action stable and exits directly to report No. 1.');
+console.log('\nInterrogation guidance smoke passed: the early Kirill interview still explains the three-stage route, keeps its action stable and exits directly to report No. 1.');
