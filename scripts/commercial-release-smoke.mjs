@@ -14,13 +14,14 @@ const launch = read('src/commercialLaunch.ts');
 const fixes = read('src/firstPlayerFixes.ts');
 const interrogationGuide = read('src/interrogationGuidance.ts');
 const act23 = read('src/act23Usability.ts');
+const playerGuide = read('src/PlayerGuidance.tsx');
 const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.8.9', 'Коммерческая сборка должна иметь версию 0.8.9');
-check(build.includes("APP_BUILD = 'v0.8.9'"), 'APP_BUILD должен совпадать с v0.8.9');
-check(sw.includes('dbr-v0-8-9-act2-act3-usability'), 'Service worker не использует cache key v0.8.9');
+check(pkg.version === '0.9.0', 'Коммерческая сборка должна иметь версию 0.9.0');
+check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
+check(sw.includes('dbr-v0-9-0-player-guidance'), 'Service worker не использует cache key v0.9.0');
 
 [
   'dist/index.html',
@@ -28,6 +29,8 @@ check(sw.includes('dbr-v0-8-9-act2-act3-usability'), 'Service worker не исп
   'src/commercialLaunch.ts',
   'src/AppErrorBoundary.tsx',
   'src/ReactCaseExtension.tsx',
+  'src/PlayerGuidance.tsx',
+  'src/playerGuidance.css',
   'src/firstPlayerFixes.ts',
   'src/firstPlayerFixes.css',
   'src/interrogationGuidance.ts',
@@ -39,6 +42,7 @@ check(sw.includes('dbr-v0-8-9-act2-act3-usability'), 'Service worker не исп
   'tests/e2e/full-playthrough.spec.ts',
   'tests/e2e/first-player-flow.spec.ts',
   'tests/e2e/interrogation-guidance.spec.ts',
+  'tests/e2e/player-guidance.spec.ts',
   '.github/workflows/browser-e2e.yml'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
 
@@ -53,6 +57,8 @@ check(sw.includes('dbr-v0-8-9-act2-act3-usability'), 'Service worker не исп
 
 check(main.includes('AppErrorBoundary'), 'main.tsx не защищён аварийной границей');
 check(main.includes('ReactCaseExtension'), 'main.tsx не монтирует React Core');
+check(main.includes('PlayerGuidance'), 'main.tsx не монтирует Player Guidance');
+check(main.includes("./playerGuidance.css"), 'main.tsx не подключает стили Player Guidance');
 check(main.includes("./localMediaRuntime"), 'main.tsx не подключает гибридный медиаслой');
 check(main.includes("./firstPlayerFixes"), 'main.tsx не подключает исправления первого прохождения');
 check(main.includes("./interrogationGuidance"), 'main.tsx не подключает маршрут допроса');
@@ -79,6 +85,12 @@ check(act23.includes('Закрыть E009 и перейти к Кириллу'),
 check(!act23.includes('new MutationObserver'), 'Act II–III UX слой не должен создавать MutationObserver');
 check(!act23.includes('setInterval'), 'Act II–III UX слой не должен использовать polling');
 
+check(playerGuide.includes('Что делать дальше?'), 'Нет постоянной навигационной помощи');
+check(playerGuide.includes('Как здесь расследовать'), 'Нет onboarding для нового игрока');
+check(playerGuide.includes('subscribeInvestigationState'), 'Player Guidance не использует единое состояние расследования');
+check(!playerGuide.includes('new MutationObserver'), 'Player Guidance не должен создавать MutationObserver');
+check(!playerGuide.includes('setInterval'), 'Player Guidance не должен использовать polling');
+
 check(Array.isArray(manifest.icons) && manifest.icons.some((item) => item.src === './icon.svg'), 'PWA manifest не содержит иконку');
 check(pkg.scripts?.['test:e2e'] === 'playwright test', 'Не объявлен Playwright e2e-скрипт');
 check(pkg.devDependencies?.['@playwright/test'], 'Playwright отсутствует в devDependencies');
@@ -89,4 +101,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.8.9 shell, Act II–III guidance, React Core, interrogation routing and hybrid media are present.');
+console.log('\nCommercial release smoke passed: v0.9.0 shell, Player Guidance, Act II–III guidance, React Core, interrogation routing and hybrid media are present.');
