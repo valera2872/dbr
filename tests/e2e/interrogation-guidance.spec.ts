@@ -10,6 +10,8 @@ async function openHeadquarters(page: Page) {
     await page.locator('.premium-prologue-card .premium-cta').click();
   }
   await expect(page.locator('.premium-app')).toBeVisible();
+  await expect(page.locator('.player-onboarding')).toBeVisible();
+  await page.locator('.player-onboarding').getByRole('button', { name: 'Закрыть обучение' }).click();
 }
 
 async function openTab(page: Page, label: string) {
