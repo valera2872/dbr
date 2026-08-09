@@ -13,13 +13,14 @@ const main = read('src/main.tsx');
 const launch = read('src/commercialLaunch.ts');
 const fixes = read('src/firstPlayerFixes.ts');
 const interrogationGuide = read('src/interrogationGuidance.ts');
+const act23 = read('src/act23Usability.ts');
 const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.8.8', 'Коммерческая сборка должна иметь версию 0.8.8');
-check(build.includes("APP_BUILD = 'v0.8.8'"), 'APP_BUILD должен совпадать с v0.8.8');
-check(sw.includes('dbr-v0-8-8-interrogation-guidance'), 'Service worker не использует cache key v0.8.8');
+check(pkg.version === '0.8.9', 'Коммерческая сборка должна иметь версию 0.8.9');
+check(build.includes("APP_BUILD = 'v0.8.9'"), 'APP_BUILD должен совпадать с v0.8.9');
+check(sw.includes('dbr-v0-8-9-act2-act3-usability'), 'Service worker не использует cache key v0.8.9');
 
 [
   'dist/index.html',
@@ -31,6 +32,8 @@ check(sw.includes('dbr-v0-8-8-interrogation-guidance'), 'Service worker не и�
   'src/firstPlayerFixes.css',
   'src/interrogationGuidance.ts',
   'src/interrogationGuidance.css',
+  'src/act23Usability.ts',
+  'src/act23Usability.css',
   'src/localMediaRuntime.ts',
   'tests/e2e/commercial-flow.spec.ts',
   'tests/e2e/full-playthrough.spec.ts',
@@ -53,6 +56,7 @@ check(main.includes('ReactCaseExtension'), 'main.tsx не монтирует Rea
 check(main.includes("./localMediaRuntime"), 'main.tsx не подключает гибридный медиаслой');
 check(main.includes("./firstPlayerFixes"), 'main.tsx не подключает исправления первого прохождения');
 check(main.includes("./interrogationGuidance"), 'main.tsx не подключает маршрут допроса');
+check(main.includes("./act23Usability"), 'main.tsx не подключает маршрут актов II–III');
 check(main.includes('installCompletedCaseReturn()'), 'main.tsx не подключает возврат к итоговому отчёту');
 
 check(mediaRuntime.includes('REALISTIC_PRIMARY_MEDIA = true'), 'Реалистичные первичные фото не включены');
@@ -70,6 +74,11 @@ check(interrogationGuide.includes('Закрыть допрос и открыть
 check(!interrogationGuide.includes('new MutationObserver'), 'Маршрут допроса не должен создавать MutationObserver');
 check(!interrogationGuide.includes('setInterval'), 'Маршрут допроса не должен использовать polling');
 
+check(act23.includes('Здесь не нужно искать скрытые точки на картинке'), 'E008 не объясняет механику архивной проверки');
+check(act23.includes('Закрыть E009 и перейти к Кириллу'), 'После E009 нет прямого следующего шага');
+check(!act23.includes('new MutationObserver'), 'Act II–III UX слой не должен создавать MutationObserver');
+check(!act23.includes('setInterval'), 'Act II–III UX слой не должен использовать polling');
+
 check(Array.isArray(manifest.icons) && manifest.icons.some((item) => item.src === './icon.svg'), 'PWA manifest не содержит иконку');
 check(pkg.scripts?.['test:e2e'] === 'playwright test', 'Не объявлен Playwright e2e-скрипт');
 check(pkg.devDependencies?.['@playwright/test'], 'Playwright отсутствует в devDependencies');
@@ -80,4 +89,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.8.8 shell, recovery, React Core, first-player routing, interrogation guidance and hybrid media are present.');
+console.log('\nCommercial release smoke passed: v0.8.9 shell, Act II–III guidance, React Core, interrogation routing and hybrid media are present.');
