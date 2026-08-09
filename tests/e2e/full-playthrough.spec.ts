@@ -124,14 +124,14 @@ test('чистое расследование проходит весь марш
   await expect(page.locator('.react-case-modal.evidence-e009 .react-checkpoint')).toContainText('Верно');
   await closeEvidence(page);
 
-  // Evidence-driven interrogation of Kirill.
+  // Evidence-driven interrogation of Kirill. The passage is introduced by the plan, not by a premature question.
   await openTab(page, 'Люди');
   await page.locator('.premium-person-card').filter({ hasText: 'Кирилл Бессонов' }).click();
   await expect(page.locator('.interrogation-shell')).toBeVisible();
+  await expect(page.locator('[data-ask="passage"]')).toBeHidden();
+  await expect(page.locator('[data-ask="anton"]')).toBeHidden();
+  await page.locator('[data-ask="alibi"]').click();
 
-  for (const id of ['alibi', 'passage', 'anton']) {
-    await page.locator(`[data-ask="${id}"]`).click();
-  }
   for (const id of ['plan', 'panel', 'tracks', 'fibres', 'audio', 'card']) {
     await page.locator(`[data-present="${id}"]`).click();
   }
@@ -173,6 +173,7 @@ test('чистое расследование проходит весь марш
   expect(saved.act2.room).toEqual(['panel', 'tracks', 'envelope', 'fibres']);
   expect(saved.act3.complete).toBe(true);
   expect(saved.act3.checkpointAnswer).toBe('separate_lies');
+  expect(saved.interrogation.asked).toContain('alibi');
   expect(saved.interrogation.complete).toBe(true);
   expect(saved.act4.search).toEqual(['entry', 'ilya', 'medical', 'lamp']);
   expect(saved.act4.card).toEqual(['serial', 'copy', 'clip', 'integrity']);
