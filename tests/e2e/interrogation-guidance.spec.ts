@@ -30,23 +30,26 @@ async function openTab(page: Page, label: string) {
   throw new Error(`Не найдена видимая вкладка: ${label}`);
 }
 
-test('ранний допрос Кирилла объясняет следующий шаг и ведёт к отчёту №1', async ({ page }) => {
+test('ранний допрос не подсказывает проход до появления основания и ведёт к отчёту №1', async ({ page }) => {
   await openHeadquarters(page);
   await openTab(page, 'Люди');
 
   await page.locator('.premium-person-card').filter({ hasText: 'Кирилл Бессонов' }).click();
   await expect(page.locator('.interrogation-shell')).toBeVisible();
-  await expect(page.locator('.interrogation-guide')).toContainText('Зафиксировать версию');
+  await expect(page.locator('.interrogation-guide')).toContainText('Зафиксировать алиби');
+  await expect(page.locator('.interrogation-premise-note')).toContainText('Следователь спрашивает только о том, для чего уже есть основание');
+  await expect(page.locator('[data-ask="alibi"]')).toBeVisible();
+  await expect(page.locator('[data-ask="passage"]')).toBeHidden();
+  await expect(page.locator('[data-ask="anton"]')).toBeHidden();
   await expect(page.locator('.interrogation-control-title')).toContainText('после промежуточного отчёта №1');
   await expect(page.locator('.interrogation-evidence').first().locator('i')).toHaveText('После отчёта №1');
 
-  for (const id of ['alibi', 'passage', 'anton']) {
-    await page.locator(`[data-ask="${id}"]`).click();
-  }
+  await page.locator('[data-ask="alibi"]').click();
 
   const action = page.locator('.interrogation-guide-action');
-  await expect(action).toContainText('Вопросы закончены');
-  await expect(action).toContainText('Сейчас допрос нужно приостановить');
+  await expect(action).toContainText('Базовое алиби зафиксировано');
+  await expect(action).toContainText('Дальше нужны факты, а не догадки');
+  await expect(action).toContainText('ещё не знает ни о старом проходе');
   const reportRoute = action.locator('[data-interrogation-guide-route="case"]');
   await expect(reportRoute).toContainText('открыть отчёт №1');
   await reportRoute.click();
