@@ -6,17 +6,17 @@ Date: `2026-08-10`
 
 Branch: `main`
 
-Current release: **`v0.9.0 — Player Guidance`**
+Current release: **`v0.9.1 — Evidence-grounded interrogation`**
 
 Production:
 - base URL: `https://valera2872.github.io/dbr/`
-- test URL: `https://valera2872.github.io/dbr/?release=0.9.0-player-guidance-31337988987`
-- merged PR: `#47 — v0.9.0 Player Guidance`
-- PR head: `341567f0e6962d54c1299983bbb304de052c2a49`
-- merge commit: `85aa1e33f0fcacfe9a920b1d89655a91f98d55ae`
-- final validate run: `31337798438` — success
-- final Browser Playthrough run: `31337798462` — success
-- production Pages deploy run: `31337988987` — build success, deploy success
+- test URL: `https://valera2872.github.io/dbr/?release=0.9.1-evidence-grounded-31339854481`
+- merged PR: `#48 — v0.9.1 Evidence-grounded interrogation`
+- PR head: `09502b13d3c09bc980b2ff06bcbd82477f89fd24`
+- merge commit: `e1f9f6d646f959680a71b505b2bf4d68f659561c`
+- final validate run: `31339661407` — success
+- final Browser Playthrough run: `31339661409` — success
+- production Pages deploy run: `31339854481` — build success, deploy success
 
 ## Product
 
@@ -49,13 +49,17 @@ At every stage the product should communicate:
 
 Navigation help and detective hints are separate. Navigation help may explain what interaction is required or where to go, but must not reveal the correct theory.
 
+A second narrative rule is now explicit:
+
+> **The detective may ask only questions for which the investigation has already produced a factual premise. The interface must never reveal a future discovery by placing it in the detective's mouth early.**
+
 ## v0.9.0 — Player Guidance
 
 ### Interactive onboarding
 
 A completely new player entering HQ sees a short onboarding explaining:
 - `Материалы` — inspect scenes/documents/digital traces; findings save automatically;
-- `Люди` — compare statements with discovered facts; new questions appear as the case advances;
+- `Люди` — compare statements with discovered facts; new questions appear only when the case has produced a basis for them;
 - `Дело` — formulate intermediate conclusions that unlock the next stage.
 
 It explicitly explains `Что делать дальше?` as navigation help, not a solution hint.
@@ -128,6 +132,33 @@ Uses:
 
 Bounded post-click refreshes keep counters current after React/localStorage effects. No new `MutationObserver`; no continuous `setInterval` polling.
 
+## v0.9.1 — Evidence-grounded interrogation
+
+Manual review found a narrative logic defect: the early Kirill interrogation offered `Вы знали о старом проходе?` and `О чём вы спорили с Антоном?` before the player had discovered either the passage or the documented conflict. This made the interface itself leak future deductions.
+
+Correct causal route is now enforced:
+
+1. **Before E006** the detective can ask only the already-grounded alibi question: whether Kirill left room 312 after 23:41.
+2. **E006 archive plan** is the first source from which the idea of a hidden passage can arise.
+3. **E007 room 312** provides physical evidence — panel/marks/tracks/fibres — that the route was used recently.
+4. **E008 archive recording** introduces the documented Anton/Kirill conflict and links Kirill to knowledge of the route.
+5. Only then can the player use those discovered facts to dismantle the alibi.
+
+The old `passage` and `anton` question IDs remain readable in the canonical interrogation save for compatibility with existing saves, but those premature buttons are hidden and disabled for new playthroughs.
+
+The interrogation route now communicates:
+- `Зафиксировать алиби`;
+- `Найти и предъявить основания`;
+- `Разрушить алиби`.
+
+It explicitly states:
+- `Дальше нужны факты, а не догадки` after the base alibi is fixed;
+- the investigator does not yet know about the old passage or archive recording;
+- the idea of the hidden route must emerge from the plan and traces, not from a ready-made detective line;
+- plan → panel/traces → archive recording is the causal evidence chain.
+
+`PlayerGuidance` also explains that the detective must not know about the passage in advance.
+
 ## Retained manual-playthrough fixes
 
 ### E001
@@ -138,15 +169,17 @@ Bounded post-click refreshes keep counters current after React/localStorage effe
 ### E005
 - explicit route to the next required interaction.
 
-### Kirill early interrogation
-- explicit route: `Зафиксировать версию → Собрать и предъявить улики → Разрушить алиби`;
-- after preliminary questions, tells player to pause the interrogation and open report No. 1;
-- disabled evidence says where it must be found instead of only `Не найдено`.
+### Kirill interrogation
+- no premature passage/Anton questions;
+- only the stated alibi is fixed before new evidence exists;
+- after the alibi, the player is told to pause and continue the investigation;
+- disabled evidence says where its factual basis must be found instead of only `Не найдено`;
+- after E006–E008, evidence itself introduces the new interrogation lines.
 
 ### E006
 - stabilized the three inspection locations;
 - explicit task and progress;
-- direct transition to E007.
+- direct transition to E007;
 - visual warning: current archive-plan SVG remains weak/temporary and is not final premium art.
 
 ### E007
@@ -172,13 +205,13 @@ Do not rename these keys casually. The user's ongoing save must survive UX relea
 - interrogation: `dbr:dbr_001_room_314:interrogation:kirill:v0.6.2`
 - Act IV: `dbr:dbr_001_room_314:act4:v0.7.0`
 
-v0.9.0 preserves all of them.
+v0.9.1 preserves all of them.
 
 ## Browser verification
 
-Final PR head passed both required workflows:
-- Validate DBR prototype run `31337798438` — success;
-- Browser Playthrough run `31337798462` — success.
+Final v0.9.1 PR head passed both required workflows:
+- Validate DBR prototype run `31339661407` — success;
+- Browser Playthrough run `31339661409` — success.
 
 Final Playwright result: **26 passed, 2 intentionally skipped**.
 
@@ -190,14 +223,15 @@ Coverage includes:
 - `Что делать дальше?` and no-spoiler explanation;
 - Act II archive guidance;
 - first-player regressions;
-- early Kirill guidance;
+- early Kirill interrogation proves `passage` and `anton` questions are hidden before evidence;
+- full route proves E001–E011 completes using only the grounded alibi question plus the evidence presentation chain;
 - media regression;
 - performance marker regression;
 - React Core checks;
-- full clean desktop E001–E011 route through epilogue and completed-case return;
+- completed-case return;
 - desktop Chromium and Pixel 7 mobile profile where applicable.
 
-A green automated route is not proof that a human newcomer understands the game. v0.9.0 must now be tested by a person who has never seen ДБР and receives no verbal navigation help.
+A green automated route is not proof that a human newcomer understands the game. v0.9.1 must continue to be tested by a person who has never seen ДБР and receives no verbal navigation help.
 
 ## Media / visual truth boundary
 
@@ -243,11 +277,11 @@ Actor Studio: `?internal=1&actorStudio=kirill`
 
 ## Immediate next work
 
-1. Open the deployed v0.9.0 from a **fresh case** and manually judge the onboarding and first 10 minutes as a newcomer.
+1. Open the deployed v0.9.1 from a **fresh case** and manually judge the onboarding and first 10 minutes as a newcomer.
 2. Give the same build to at least one person who has never seen the interface and provide **zero verbal help**.
-3. Record every moment where the person asks what to click, what a control means, where to go, or why nothing happened.
+3. Record every moment where the person asks what to click, what a control means, where to go, why nothing happened, or why the detective suddenly knows something.
 4. Treat each such moment as a product defect, not user error.
-5. Fix remaining comprehension defects before new story features.
+5. Fix remaining comprehension and causal-logic defects before new story features.
 6. Then do visual/premium pass, especially E006/final-operation art.
 7. Test 5–10 independent players for comprehension, pacing and difficulty.
 8. Replace remote media, finish sound/legal, then implement payment/access/recovery.
@@ -259,8 +293,10 @@ When the user opens a new chat and says to continue ДБР, begin from this chec
 
 Current production test URL:
 
-`https://valera2872.github.io/dbr/?release=0.9.0-player-guidance-31337988987`
+`https://valera2872.github.io/dbr/?release=0.9.1-evidence-grounded-31339854481`
 
-Current priority: **fresh-player comprehension and zero-assistance usability testing**, not feature expansion.
+Current priority: **fresh-player comprehension, causal clarity and zero-assistance usability testing**, not feature expansion.
 
 If a player cannot determine the next operational action, do not merely explain the hidden route in chat. Change the visible interface.
+
+If the detective seems to know a fact or hypothesis before the player has found its evidentiary source, treat that as a narrative logic defect and move the premise to the discovery that actually establishes it.
