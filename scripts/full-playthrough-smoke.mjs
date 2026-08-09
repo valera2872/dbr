@@ -14,9 +14,9 @@ const main = read('src/main.tsx');
 const returnBridge = read('src/completedCaseReturn.ts');
 const test = read('tests/e2e/full-playthrough.spec.ts');
 
-check(pkg.version === '0.8.8', 'Полный playthrough release должен иметь версию 0.8.8');
-check(build.includes("APP_BUILD = 'v0.8.8'"), 'APP_BUILD должен быть v0.8.8');
-check(sw.includes('dbr-v0-8-8-interrogation-guidance'), 'Service worker не использует cache key v0.8.8');
+check(/^0\.(?:8\.[89]|9\.)/.test(pkg.version), 'Полный playthrough должен сохраняться в релизах 0.8.8+');
+check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
+check(sw.includes(`dbr-v${pkg.version.replaceAll('.', '-')}`), 'Service worker не использует текущий cache key');
 check(exists('dist/index.html'), 'Production bundle не создан');
 check(exists('tests/e2e/full-playthrough.spec.ts'), 'Отсутствует полный браузерный маршрут');
 check(exists('src/completedCaseReturn.ts'), 'Отсутствует механизм возврата к итоговому отчёту');
