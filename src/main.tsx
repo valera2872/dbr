@@ -37,6 +37,7 @@ import './localMedia.css';
 import './finalMedia.css';
 import './reactCaseExtension.css';
 import './firstPlayerFixes.css';
+import './act23Usability.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -48,6 +49,7 @@ import './kirillVideoRuntime';
 import './stabilityDiagnostics';
 import './localMediaRuntime';
 import './firstPlayerFixes';
+import './act23Usability';
 import './versionGuard';
 
 const rootElement = document.getElementById('root');
