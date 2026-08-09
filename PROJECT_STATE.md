@@ -2,7 +2,7 @@
 
 ## Checkpoint date
 
-2026-08-09
+2026-08-10
 
 ## Current branch
 
@@ -10,17 +10,17 @@
 
 ## Current version
 
-`0.8.9 — Act II–III usability and routing fixes`
+`0.9.0 — Player Guidance`
 
-## Production
+## Production status
 
-- URL: `https://valera2872.github.io/dbr/`
-- cache-busted test URL: `https://valera2872.github.io/dbr/?release=0.8.9-act23-usability-31285986839`
-- latest merged PR: `#46 — v0.8.9: fix Act II–III usability and routing`
-- merge commit: `abb8d00decefbe25efd76027abb200e5f32d691e`
-- successful production deploy run: `31285986839`
-- successful final browser playthrough run before merge: `31285877386`
-- successful validate/build run before merge: `31285877391`
+- Production base URL: `https://valera2872.github.io/dbr/`
+- Latest merged PR: `#47 — v0.9.0 Player Guidance`
+- PR head validated before merge: `341567f0e6962d54c1299983bbb304de052c2a49`
+- merge commit: `85aa1e33f0fcacfe9a920b1d89655a91f98d55ae`
+- final pre-merge validate run: `31337798438` — success
+- final pre-merge Browser Playthrough run: `31337798462` — success
+- production deployment for v0.9.0 must be confirmed separately by the `/deploy-dbr` workflow before claiming it live.
 
 ## Product
 
@@ -28,7 +28,7 @@ Web/PWA of the interactive investigation series **ДБР**.
 
 First case: **«Номер 314»**.
 
-## Complete playable story route
+Complete playable route:
 
 - Act I: E001–E005 and intermediate report No. 1;
 - Act II: E006 archive plan and E007 room 312;
@@ -36,108 +36,145 @@ First case: **«Номер 314»**.
 - evidence-driven interrogation of Kirill;
 - Act IV: E010 rescue operation, E011 card verification, final accusation and epilogue.
 
-## Current manual-playthrough status
+## Why v0.9.0 exists
 
-The user is actively playing the production build manually and reporting every point where a first-time player becomes confused or the visual presentation looks weak.
+Manual testing by the user and a completely new player exposed the main product problem: the case was technically playable but not self-explanatory. A newcomer spent cognitive effort figuring out the interface instead of solving the detective problem. Several valid routes existed but were invisible or ambiguous.
 
-The most recent user findings were:
+Established UX rule:
 
-1. In the room-inspection scene, checkmarks/hotspots appeared in arbitrary places.
-2. The E006 plan itself looked schematic and visually weak.
-3. E008 did not explain what the player was supposed to do.
-4. E009 could be completed, but the next step did not visibly open, so the player appeared stuck.
+> A player may be uncertain about the mystery, but must not be uncertain about how to operate the game. At every moment the interface should communicate where they are, what the current investigative objective is, what has already been completed, and what operational action can be taken next.
 
-These issues were addressed in v0.8.9. The user has not yet confirmed the new UX by replaying those screens after the v0.8.9 deployment.
+Navigation guidance and detective hints are separate concepts. Navigation help may say where to go and what interaction is required, but must not reveal the correct theory.
 
-## v0.8.9 changes
+## v0.9.0 — Player Guidance
 
-### E006 — archive plan
+### First-run interactive onboarding
 
-- removed formula-driven marker placement as the effective layout mechanism;
-- stabilized the three inspection points around meaningful plan areas;
-- added an explicit instruction banner describing what to inspect;
-- added a visible progress counter;
-- after completion, added a direct transition to E007;
-- the underlying archive-plan SVG is still a temporary stylized asset and is **not** considered final-quality visual media.
+A new player entering HQ for the first time now sees a short interactive onboarding instead of being dropped into the full interface without explanation.
 
-### E007 — room 312 inspection
+It explains three core spaces in human language:
 
-- removed the impression that four checkmarks are floating randomly over the scene;
-- reorganized inspection controls into a stable scene/control composition;
-- added explicit task wording;
-- added a direct transition to E008 after all four checks.
+1. `Материалы` — inspect scenes, documents and digital traces; findings save automatically.
+2. `Люди` — compare statements with discovered facts; new questions appear as the case advances.
+3. `Дело` — formulate intermediate conclusions at key checkpoints to unlock the next stage.
 
-### E008 — festival archive originals
+It explicitly explains that `Что делать дальше?` is navigation help rather than a puzzle-solution hint.
 
-- now explicitly tells the player that there are no hidden hotspots to find in the picture;
-- tells the player to open four sources in the right-side panel:
-  1. digitization catalogue;
-  2. contact sheet B;
-  3. recorder transcript;
-  4. media custody log;
-- added a visible progress counter;
-- after all four are reviewed, added a direct transition to E009.
+Primary onboarding action:
 
-### E009 — identity check
+`Начать: осмотреть номер 314 →`
 
-- now explains the three phases of the task:
-  1. compare identity records;
-  2. obtain Denis and Vera explanations;
-  3. submit intermediate report No. 2;
-- after report No. 2 is accepted, the modal itself displays a clear action to close E009 and go to Kirill;
-- this fixes the former UX defect where the valid next step existed only behind the still-open modal.
+This routes directly to the first real interaction E001.
 
-## Important UX principle established by this pass
+Onboarding completion key:
 
-Do not rely on a global `Следующий шаг` card hidden behind a modal as the only continuation path. Whenever a modal completes a required investigation step, the modal itself should clearly expose the next required action.
+`dbr:player-guidance:onboarding:v1`
 
-Likewise, do not create investigative scenes where markers are positioned by generic formulas that are visually disconnected from real objects. Hotspots must be attached to meaningful visual targets or replaced with an explicit control/list interaction.
+This is separate from all canonical case save keys.
 
-## v0.8.8 interrogation guidance retained
+### Persistent current objective
 
-The specialized Kirill interrogation exposes one explicit three-stage route:
+A compact floating Player Guidance control is available throughout HQ play. It exposes:
 
-1. `Зафиксировать версию` — ask Kirill's three preliminary questions;
-2. `Собрать и предъявить улики` — complete report No. 1, then investigate E006–E009 and present the logical chain;
-3. `Разрушить алиби` — fix the contradiction once the chain is sufficient.
+- current investigation phase;
+- current objective;
+- immediate progress;
+- `Что делать дальше?`.
 
-State-aware guidance changes its instruction according to the saved case:
+The floating container does not intercept clicks on the game underneath; only the help button is interactive.
 
-- before all three questions: it states how many questions remain and explains that this is only preliminary version-fixing;
-- after all three questions but before Act I completion: it says the interrogation must be paused and provides `Закрыть допрос и открыть отчёт №1`;
-- after report No. 1 but before evidence is found: it routes to Materials and names the exact next target (`E006`, `E007` or `E008`);
-- once evidence exists: it states the presentation order `план → панель → физический след → запись Антона` and highlights the next evidence button;
-- once the chain is ready: it routes directly to the contradiction panel;
-- after the confession: it routes to Materials and E010.
+It is hidden behind the commercial launch cover.
 
-Disabled evidence no longer ends with an unexplained `Не найдено`:
+### “Что делать дальше?”
 
-- before Act I completion: `После отчёта №1`;
-- after Act I completion: `Найти в E006`, `Найти в E007` or `Найти в E008`.
+The help panel shows:
 
-Existing interrogation answers and every canonical save key remain unchanged.
+- `Текущая цель`;
+- the exact operation required now;
+- current progress;
+- `Зачем это сейчас` so the task has narrative meaning;
+- a direct action button that navigates to the correct tab/material/person/report;
+- explicit notice that navigation help does not reveal the correct detective theory.
 
-## v0.8.7 first-player fixes retained
+### State-aware route across the whole case
 
-- E001 displays the most recently selected hotspot and highlights it;
-- key-material marking is explained as a personal bookmark and appears on the Case tab;
-- E005 contains a prominent route to People;
-- primary scenes and portraits use temporary realistic Unsplash references;
-- E006, E008, E010, E011 and the final report remain owned local visuals.
+The guide reads the unified `InvestigationSnapshot` and derives guidance from actual saved state, rather than maintaining a second independent progression model.
 
-## React Core
+Act I is granular:
 
-- evidence cards and interactive modals E006–E011 are rendered by React portals;
-- intermediate report No. 2, next-required-step navigation, final accusation and closed-case report are React-owned;
-- canonical core, Act II, Act III, interrogation and Act IV localStorage keys remain unchanged;
-- existing saves continue without a reset;
-- legacy Act II–IV runtime imports are absent from the production entry point;
-- the specialized Kirill interrogation remains a separate compatible module;
-- guidance layers use bounded `requestAnimationFrame` synchronization and no MutationObserver or polling where already migrated.
+- E001 — counts four room hotspots;
+- E002 — routes to Ilya's last message;
+- E003 — routes to the lock journal;
+- E004 — requires the actual correct camera answer `23:50`; wrong answers remain a retry state;
+- E005 — routes to the phone;
+- then routes to intermediate report No. 1.
+
+Acts II–IV:
+
+- archive plan — `0/3` checks;
+- room 312 — `0/4` checks;
+- archive — `0/4` sources and explicit statement that there are no hidden hotspots in the picture;
+- identity — `0/3` comparisons;
+- Denis/Vera follow-up interviews — `0/2` required explanations;
+- intermediate report No. 2;
+- Kirill interrogation;
+- service-room rescue — `0/4`;
+- card verification — `0/4`;
+- final accusation;
+- completed-case report.
+
+The guidance copy uses human investigative objectives rather than requiring a newcomer to understand E-codes.
+
+### Synchronization
+
+`PlayerGuidance` is React-owned and subscribes to the shared investigation-state API:
+
+- `getInvestigationState`
+- `subscribeInvestigationState`
+- `scheduleInvestigationRefresh`
+
+A bounded post-interaction sync refreshes guidance shortly after UI actions so counters such as `1/4` do not lag React/localStorage effects.
+
+There is no new `MutationObserver` and no continuous `setInterval` polling.
+
+## v0.8.9 fixes retained
+
+### E006
+
+- stabilized three inspection locations;
+- explicit task wording and progress;
+- direct transition to E007.
+
+The underlying archive-plan SVG is still visually temporary and should be replaced later.
+
+### E007
+
+- inspection controls no longer appear as arbitrary floating checkmarks;
+- stable scene/control layout;
+- explicit task and direct transition to E008.
+
+### E008
+
+- explicitly states there are no hidden hotspots;
+- asks the player to inspect four archive sources;
+- visible progress and direct transition to E009.
+
+### E009
+
+- explicit three-stage task structure;
+- after report No. 2, direct `Закрыть E009 и перейти к Кириллу` action inside the modal.
+
+## Earlier first-player fixes retained
+
+- E001 shows the most recently selected hotspot rather than leaving stale carpet text visible;
+- key-material marking is explained as an optional investigator bookmark and appears on the Case tab;
+- E005 has a prominent next-step route;
+- Kirill interrogation has explicit `Зафиксировать версию → Собрать и предъявить улики → Разрушить алиби` guidance;
+- disabled interrogation evidence says where it is found instead of only `Не найдено`.
 
 ## Canonical storage contract
 
-Do not change these save keys casually, because the user is testing an existing save through multiple releases:
+Do not rename these keys casually. Existing user saves must continue across UX releases:
 
 - core: `dbr:dbr_001_room_314:0.2.0`
 - Act II: `dbr:dbr_001_room_314:act2:v0.5.0`
@@ -145,86 +182,95 @@ Do not change these save keys casually, because the user is testing an existing 
 - interrogation: `dbr:dbr_001_room_314:interrogation:kirill:v0.6.2`
 - Act IV: `dbr:dbr_001_room_314:act4:v0.7.0`
 
-The v0.8.9 pass intentionally preserved all canonical localStorage keys.
+v0.9.0 intentionally preserves all of them.
 
 ## Browser verification
 
-Current CI contains both static/smoke validation and Playwright browser tests.
+Final v0.9.0 PR head `341567f0e6962d54c1299983bbb304de052c2a49` passed both required workflows:
 
-For v0.8.9:
+- Validate DBR prototype: run `31337798438` — success;
+- Browser playthrough: run `31337798462` — success.
 
-- production build/validation passed;
-- full clean E001–E011 browser route passed;
-- desktop and mobile Chromium suites passed after version assertions were updated from v0.8.8 to v0.8.9;
-- there was an intermediate red CI caused only by stale test expectations that still required `v0.8.8`; this was corrected before merge.
+Browser coverage includes:
 
-Do not claim a visual design is good merely because Playwright passes. Browser tests confirm route/functionality, not artistic quality.
+- commercial launch/recovery/restart;
+- new-player onboarding;
+- onboarding primary action into E001;
+- live E001 progress update from `0/4` to `1/4`;
+- `Что делать дальше?` panel and no-spoiler explanation;
+- Act II archive guidance;
+- first-player regressions;
+- early Kirill guidance;
+- media regression;
+- performance marker regression;
+- React Core checks;
+- complete clean desktop E001–E011 route through epilogue and completed-case return;
+- desktop Chromium and Pixel 7 mobile profile where applicable.
 
-## Media policy / visual truth boundary
+Do not equate green Playwright with proven usability. v0.9.0 provides the systemic guidance mechanism; a fresh human who has never seen ДБР must still be observed without verbal assistance.
 
-- primary room scenes, evidence cards and character portraits currently use temporary realistic Unsplash photography where configured;
+## Media / visual truth boundary
+
+- primary scenes/cards/portraits currently use temporary realistic Unsplash photography where configured;
 - E006, E008, E010, E011 and the final report retain owned local SVG visuals;
-- the active media marker remains `case-001-hybrid-realistic-v1`;
-- remote photography remains a temporary visual reference and must be replaced with owned local realistic media before fully offline paid distribution;
-- E006 archive-plan SVG is explicitly considered visually weak and should be redesigned later as a convincing architectural/archive plan.
+- media marker remains `case-001-hybrid-realistic-v1`;
+- remote photography must be replaced with owned local realistic media before fully offline paid distribution;
+- E006 archive-plan SVG is explicitly not final-quality art.
 
-### Kirill video truth boundary
+### Kirill truth boundary
 
-- there is **no real living Kirill video in the player build**;
-- runtime falls back to a static portrait unless real WebM clips are supplied;
+- there is no real living/3D Kirill video in the player build;
+- runtime falls back to a static portrait without real WebM clips;
 - Actor Studio is an internal human-recording tool, not an AI-avatar generator;
-- do not claim generated lip-sync, natural microreactions or real actor video unless actual clips exist.
+- 3D/video suspect is planned later through Kling;
+- do not claim lip-sync, natural microreactions or generated actor video until real assets exist.
 
 ## Internal QA contract
 
 Internal tools require `internal=1`.
 
-Fixtures additionally require:
+Fixtures:
 
 `?internal=1&qa=1&fixture=<name>`
 
-Available names: `clean`, `act2`, `act3`, `interrogation`, `act4`, `card`, `report`, `complete`.
+Available fixtures: `clean`, `act2`, `act3`, `interrogation`, `act4`, `card`, `report`, `complete`.
 
 Diagnostics: `?internal=1&diagnostics=1`
 
 Actor Studio: `?internal=1&actorStudio=kirill`
 
-## Current technical debt
+## Known technical / release debt
 
-- Acts II–IV are now React-owned, but parts of the overall application still preserve compatibility/runtime bridge layers;
-- final visual media are not yet consistently premium-quality;
-- E006 is especially temporary visually;
-- sound/atmosphere remain unfinished;
-- remote Unsplash dependencies remain;
-- no commercial payment/access system is implemented yet;
-- Actor Studio still exists as an internal route;
-- real suspect video clips are not present.
+- some compatibility/runtime bridge layers remain outside the React-owned Acts II–IV core;
+- temporary Unsplash dependencies remain;
+- E006 visual is weak;
+- final media quality is not yet uniform;
+- sound/atmosphere unfinished;
+- npm audit currently reports 2 unresolved dependency vulnerabilities: 1 moderate, 1 high;
+- GitHub Actions still declares Node 20 even though hosted actions are being forced toward Node 24; cleanup needed;
+- no payment/access/recovery system implemented;
+- no external independent usability dataset yet;
+- no genuine Kirill video clips yet.
 
 ## Remaining work before paid release
 
-1. Continue the user's manual walkthrough from the current saved state and remove every remaining ambiguous transition or ugly/broken scene through the final epilogue.
-2. Treat the user's manual experience as the primary usability signal; do not add new story scope while the current case still contains confusing screens.
-3. After the full route is manually clean, perform a dedicated visual/premium pass:
-   - replace the E006 plan;
-   - strengthen E010/final-operation visuals;
-   - normalize scene quality and typography;
-   - verify mobile layouts.
-4. Finalize sound design and atmosphere without fake AI-avatar effects.
-5. Conduct usability/pacing/difficulty testing with 5–10 independent players.
-6. Replace temporary remote realistic photos with owned local realistic media.
-7. Finalize legal wording, privacy notice and age-rating wording.
-8. Choose and implement payment, access delivery and purchase recovery.
-9. Later create a genuine 3D/video suspect layer while keeping deterministic interrogation logic.
-10. After one stable release cycle, archive retired compatibility sources.
+1. Deploy v0.9.0 and manually retest it from a genuinely fresh-player perspective.
+2. Give the build to at least one person who has never seen the interface and provide **zero verbal navigation help**.
+3. Record every point where the player still asks what to click, what a control means, or why nothing happened.
+4. Fix those systemic/scene-level usability defects before adding new story scope.
+5. After navigation is clean, perform a visual/premium pass, especially E006 and final-operation visuals.
+6. Test 5–10 independent players for comprehension, pacing and difficulty.
+7. Replace remote photos with owned realistic media.
+8. Finish sound, legal/privacy/age wording.
+9. Implement payment, access delivery and purchase recovery.
+10. Add genuine 3D/video Kirill later without changing deterministic investigation logic.
 
 ## Instruction for the next chat
 
-When the user opens a new chat and asks to continue ДБР, start from this checkpoint rather than reconstructing from memory.
+When the user starts a new chat and asks to continue ДБР, begin from this checkpoint.
 
-The immediate task is **not** to invent new features. The immediate task is to continue the user's manual playthrough of v0.8.9 and fix the next real problem they encounter.
+The current strategic priority is **first-time-player comprehension**, not new story features.
 
-If the user says that E006/E007 markers still look wrong, inspect the live layout/CSS rather than explaining the intended behavior. If E008 is still unclear, improve the actual interaction, not just the wording. If E009 still does not lead forward, trace the saved state and visible navigation all the way to Kirill.
+Do not answer a reported navigation problem by merely explaining where the hidden route already exists. Treat inability to understand what to do next as a product defect and change the visible interface.
 
-Current user-facing test URL:
-
-`https://valera2872.github.io/dbr/?release=0.8.9-act23-usability-31285986839`
+After v0.9.0 is deployed, the immediate next activity is a fresh manual walkthrough of the Player Guidance experience, followed by another zero-assistance test with a new person.
