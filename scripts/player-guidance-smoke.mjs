@@ -14,8 +14,8 @@ const guide = read('src/PlayerGuidance.tsx');
 const css = read('src/playerGuidance.css');
 const test = read('tests/e2e/player-guidance.spec.ts');
 
-check(pkg.version === '0.9.0', 'Player Guidance release должен иметь версию 0.9.0');
-check(build.includes("APP_BUILD = 'v0.9.0'"), 'APP_BUILD должен быть v0.9.0');
+check(['0.9.0','0.9.1'].includes(pkg.version), 'Player Guidance должен сохраняться в релизах 0.9.x');
+check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 [
   'src/PlayerGuidance.tsx',
   'src/playerGuidance.css',
@@ -36,6 +36,7 @@ check(main.includes("./playerGuidance.css"), 'main.tsx не подключает
   'Проверить, существовал ли другой путь между номерами 312 и 314',
   'На изображении скрытых точек искать не нужно',
   'Открыть допрос Кирилла',
+  'Следователь не должен знать о скрытом проходе заранее',
   'Открыть финальный отчёт'
 ].forEach((token) => check(guide.includes(token), `Player Guidance не содержит: ${token}`));
 
@@ -61,4 +62,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nPlayer Guidance smoke passed: onboarding, always-visible route help and state-aware next actions are present in v0.9.0.');
+console.log(`\nPlayer Guidance smoke passed: onboarding, always-visible route help and state-aware next actions are present in v${pkg.version}.`);
