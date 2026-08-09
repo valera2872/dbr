@@ -16,7 +16,7 @@ const media = read('src/localMediaRuntime.ts');
 const localCss = read('src/localMedia.css');
 const test = read('tests/e2e/first-player-flow.spec.ts');
 
-check(['0.8.8','0.8.9'].includes(pkg.version), 'First-player fixes должны сохраняться в релизах 0.8.8+');
+check(['0.8.8','0.8.9','0.9.0'].includes(pkg.version), 'First-player fixes должны сохраняться в релизах 0.8.8+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(exists('src/firstPlayerFixes.ts'), 'Нет слоя исправлений первого прохождения');
 check(exists('src/firstPlayerFixes.css'), 'Нет стилей исправлений первого прохождения');

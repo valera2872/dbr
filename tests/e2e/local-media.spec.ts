@@ -61,15 +61,20 @@ test('первичный осмотр использует реалистичн�
   }
 
   await expect(page.locator('.premium-app')).toBeVisible();
+  await expect(page.locator('.player-onboarding')).toBeVisible();
+  await page.locator('.player-onboarding').getByRole('button', { name: 'Закрыть обучение' }).click();
+  await expect(page.locator('.player-onboarding')).toHaveCount(0);
 
-  await page.getByRole('button', { name: /Материалы/ }).first().click();
+  const materialsButton = page.locator('.premium-sidebar button:visible, .premium-mobile-nav button:visible').filter({ hasText: 'Материалы' }).first();
+  await materialsButton.click();
   await expect(page.locator('.premium-evidence-grid')).toBeVisible();
   const evidenceSources = await page.locator('.premium-evidence-card img').evaluateAll((images) =>
     images.map((image) => (image as HTMLImageElement).src)
   );
   expect(evidenceSources.some((source) => source.includes('images.unsplash.com'))).toBe(true);
 
-  await page.getByRole('button', { name: /Люди/ }).first().click();
+  const peopleButton = page.locator('.premium-sidebar button:visible, .premium-mobile-nav button:visible').filter({ hasText: 'Люди' }).first();
+  await peopleButton.click();
   await expect(page.locator('.premium-people-grid')).toBeVisible();
   const portraitSources = await page.locator('.premium-person-card img').evaluateAll((images) =>
     images.map((image) => (image as HTMLImageElement).src)

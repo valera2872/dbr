@@ -3,11 +3,13 @@ import { INTERNAL_MODE } from './internalMode';
 import './routeFixtures';
 import './performanceKernel';
 import './investigationState';
+import './playerGuidanceSync';
 import './commercialRestart';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
 import { ReactCaseExtension } from './ReactCaseExtension';
+import { PlayerGuidance } from './PlayerGuidance';
 import { AppErrorBoundary } from './AppErrorBoundary';
 import { mountActorStudio } from './actorStudio';
 import { mountActorStudioGuide } from './actorStudioGuide';
@@ -38,6 +40,8 @@ import './finalMedia.css';
 import './reactCaseExtension.css';
 import './firstPlayerFixes.css';
 import './act23Usability.css';
+import './playerGuidance.css';
+import './playerGuidanceVisibility.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -67,6 +71,7 @@ if (actorStudio.mounted) {
       <AppErrorBoundary>
         <PremiumApp />
         <ReactCaseExtension />
+        <PlayerGuidance />
       </AppErrorBoundary>
     </React.StrictMode>
   );

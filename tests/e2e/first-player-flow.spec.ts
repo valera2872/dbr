@@ -19,6 +19,8 @@ async function openHeadquarters(page: Page) {
     await page.locator('.premium-prologue-card .premium-cta').click();
   }
   await expect(page.locator('.premium-app')).toBeVisible();
+  await expect(page.locator('.player-onboarding')).toBeVisible();
+  await page.locator('.player-onboarding').getByRole('button', { name: 'Закрыть обучение' }).click();
 }
 
 test('E001 показывает последнюю выбранную зону, а E005 ведёт к следующему шагу', async ({ page }) => {
