@@ -1,0 +1,5 @@
+.commercial-launch-open .player-guide-floating,
+.commercial-launch-open .player-guide-backdrop,
+.commercial-launch-open .player-onboarding-backdrop {
+  display: none !important;
+}
