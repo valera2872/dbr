@@ -24,26 +24,32 @@ check(main.includes("./interrogationGuidance.css"), 'main.tsx не подклю�
 check(main.indexOf("./interrogationGuidance';") < main.indexOf("./interactiveInterrogation';"), 'Guidance должен регистрироваться до перехвата карточки Кирилла');
 
 [
-  'Зафиксировать версию',
-  'Собрать и предъявить улики',
+  'Зафиксировать алиби',
+  'Найти и предъявить основания',
   'Разрушить алиби',
-  'Сейчас допрос нужно приостановить',
+  'Дальше нужны факты, а не догадки',
   'Закрыть допрос и открыть отчёт №1',
-  'Найти в ${source}',
-  'план → панель → физический след → запись Антона',
-  'Перейти к спасательной операции E010'
+  'Идея скрытого маршрута должна возникнуть из плана и следов',
+  'план раскрывает существование прохода',
+  'Перейти к спасательной операции'
 ].forEach((token) => check(guide.includes(token), `Guidance runtime не содержит: ${token}`));
 
+check(guide.includes("const QUESTION_IDS = ['alibi']"), 'Ранний допрос должен требовать только обоснованный вопрос об алиби');
+check(guide.includes("['passage', 'anton']"), 'Будущие гипотезы не скрываются из ранней линии вопросов');
+check(guide.includes('button.hidden = true'), 'Преждевременные вопросы остаются видимыми');
 check(!guide.includes('new MutationObserver'), 'Guidance runtime не должен создавать MutationObserver');
 check(!guide.includes('setInterval'), 'Guidance runtime не должен использовать polling');
 check(guide.includes('requestAnimationFrame'), 'Guidance runtime не синхронизируется с перерисовкой допроса');
 check(guide.includes('guide.dataset.guideSignature !== signature'), 'Guidance пересоздаёт кнопку без изменения состояния');
 check(css.includes('.interrogation-guide-steps'), 'Нет визуальной шкалы этапов');
-check(css.includes('.next-guided-evidence'), 'Следующая улика не подсвечивается');
+check(css.includes('.interrogation-premise-note'), 'Нет объяснения логики появления вопросов');
+check(css.includes('.next-guided-evidence'), 'Следующее доказательство не подсвечивается');
 check(css.includes('@media (max-width: 980px)'), 'Маршрут допроса не адаптирован под телефон');
 
 [
-  'Вопросы закончены',
+  'Базовое алиби зафиксировано',
+  'data-ask="passage"',
+  'toBeHidden()',
   'открыть отчёт №1',
   'data-interrogation-guide-route="case"',
   'После отчёта №1',
@@ -56,4 +62,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nInterrogation guidance smoke passed: the early Kirill interview still explains the three-stage route, keeps its action stable and exits directly to report No. 1.');
+console.log('\nInterrogation guidance smoke passed: the detective asks only grounded questions; the passage and Anton conflict are introduced by evidence, not spoiled in advance.');
