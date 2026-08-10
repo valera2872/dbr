@@ -16,7 +16,7 @@ const media = read('src/localMediaRuntime.ts');
 const localCss = read('src/localMedia.css');
 const test = read('tests/e2e/first-player-flow.spec.ts');
 
-check(['0.8.8','0.8.9','0.9.0','0.9.1'].includes(pkg.version), 'First-player fixes должны сохраняться в релизах 0.8.8+');
+check(['0.8.8','0.8.9','0.9.0','0.9.1','0.9.2'].includes(pkg.version), 'First-player fixes должны сохраняться в релизах 0.8.8+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(exists('src/firstPlayerFixes.ts'), 'Нет слоя исправлений первого прохождения');
 check(exists('src/firstPlayerFixes.css'), 'Нет стилей исправлений первого прохождения');
@@ -26,13 +26,8 @@ check(main.includes("./firstPlayerFixes.css"), 'main.tsx не подключае
 check(main.includes("./localMediaRuntime"), 'Гибридный медиаслой не подключён');
 
 [
-  'Выбрано сейчас',
-  'Закрытое окно',
-  'Добавлено в закладки следователя',
-  'Закладки следователя',
-  'Следующий обязательный шаг',
-  'Перейти к людям',
-  'Открыть отчёт №1'
+  'Выбрано сейчас','Закрытое окно','Добавлено в закладки следователя','Закладки следователя',
+  'Следующий обязательный шаг','Перейти к людям','Открыть отчёт №1'
 ].forEach((token) => check(fixes.includes(token), `First-player runtime не содержит: ${token}`));
 
 check(!fixes.includes('new MutationObserver'), 'First-player runtime не должен создавать MutationObserver');
@@ -44,11 +39,7 @@ check(media.includes('REALISTIC_PRIMARY_MEDIA = true'), 'Реалистичны�
 check(localCss.includes('images.unsplash.com'), 'Обложка не использует реалистичный production-референс');
 
 [
-  'Следы перемещения',
-  'Закрытое окно',
-  'not.toContainText(\'Ворс приглажен\')',
-  'Добавлено в закладки',
-  'Перейти к людям'
+  'Следы перемещения','Закрытое окно','not.toContainText(\'Ворс приглажен\')','Добавлено в закладки','Перейти к людям'
 ].forEach((token) => check(test.includes(token), `Браузерный тест не проверяет: ${token}`));
 
 if (failures.length) {
