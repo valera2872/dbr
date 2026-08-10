@@ -14,7 +14,7 @@ const guide = read('src/interrogationGuidance.ts');
 const css = read('src/interrogationGuidance.css');
 const test = read('tests/e2e/interrogation-guidance.spec.ts');
 
-check(['0.8.8','0.8.9','0.9.0','0.9.1'].includes(pkg.version), 'Interrogation guidance должна сохраняться в релизах 0.8.8+');
+check(['0.8.8','0.8.9','0.9.0','0.9.1','0.9.2'].includes(pkg.version), 'Interrogation guidance должна сохраняться в релизах 0.8.8+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(exists('src/interrogationGuidance.ts'), 'Нет runtime-подсказки допроса');
 check(exists('src/interrogationGuidance.css'), 'Нет стилей маршрута допроса');
@@ -24,14 +24,9 @@ check(main.includes("./interrogationGuidance.css"), 'main.tsx не подклю�
 check(main.indexOf("./interrogationGuidance';") < main.indexOf("./interactiveInterrogation';"), 'Guidance должен регистрироваться до перехвата карточки Кирилла');
 
 [
-  'Зафиксировать алиби',
-  'Найти и предъявить основания',
-  'Разрушить алиби',
-  'Дальше нужны факты, а не догадки',
-  'Закрыть допрос и открыть отчёт №1',
-  'Идея скрытого маршрута должна возникнуть из плана и следов',
-  'план раскрывает существование прохода',
-  'Перейти к спасательной операции'
+  'Зафиксировать алиби','Найти и предъявить основания','Разрушить алиби','Дальше нужны факты, а не догадки',
+  'Закрыть допрос и открыть отчёт №1','Идея скрытого маршрута должна возникнуть из плана и следов',
+  'план раскрывает существование прохода','Перейти к спасательной операции'
 ].forEach((token) => check(guide.includes(token), `Guidance runtime не содержит: ${token}`));
 
 check(guide.includes("const QUESTION_IDS = ['alibi']"), 'Ранний допрос должен требовать только обоснованный вопрос об алиби');
@@ -47,13 +42,8 @@ check(css.includes('.next-guided-evidence'), 'Следующее доказат�
 check(css.includes('@media (max-width: 980px)'), 'Маршрут допроса не адаптирован под телефон');
 
 [
-  'Базовое алиби зафиксировано',
-  'data-ask="passage"',
-  'toBeHidden()',
-  'открыть отчёт №1',
-  'data-interrogation-guide-route="case"',
-  'После отчёта №1',
-  'checkpoint-panel'
+  'Базовое алиби зафиксировано','data-ask="passage"','toBeHidden()','открыть отчёт №1',
+  'data-interrogation-guide-route="case"','После отчёта №1','checkpoint-panel'
 ].forEach((token) => check(test.includes(token), `Браузерный тест не проверяет: ${token}`));
 
 if (failures.length) {
