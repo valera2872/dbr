@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-9-1-interrogation-premises';
+const CACHE_NAME = 'dbr-v0-9-2-guided-first-run';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',
