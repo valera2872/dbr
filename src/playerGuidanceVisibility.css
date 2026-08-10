@@ -8,6 +8,6 @@
   pointer-events: none;
 }
 
-.player-guide-floating > button {
+.player-guide-floating button {
   pointer-events: auto;
 }
