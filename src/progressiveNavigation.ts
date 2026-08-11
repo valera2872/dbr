@@ -44,9 +44,10 @@ function applyNavigation(state: InvestigationSnapshot): void {
 
 function scheduleApply(reason = 'progressive-navigation'): void {
   window.requestAnimationFrame(() => {
-    const state = refreshInvestigationState(reason);
-    applyNavigation(state);
-    window.requestAnimationFrame(() => applyNavigation(state));
+    applyNavigation(refreshInvestigationState(reason));
+    window.requestAnimationFrame(() => {
+      applyNavigation(refreshInvestigationState(`${reason}:settled`));
+    });
   });
 }
 
