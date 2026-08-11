@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-9-3-commercial-consistency';
+const CACHE_NAME = 'dbr-v0-9-4-stage-aware-header';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',
