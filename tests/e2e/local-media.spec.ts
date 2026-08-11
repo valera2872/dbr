@@ -62,7 +62,7 @@ test('первичный осмотр использует реалистичн�
 
   await expect(page.locator('.premium-app')).toBeVisible();
   await expect(page.locator('.player-onboarding')).toBeVisible();
-  await page.locator('.player-onboarding').getByRole('button', { name: 'Закрыть обучение' }).click();
+  await page.locator('.player-onboarding .player-guide-secondary').click();
   await expect(page.locator('.player-onboarding')).toHaveCount(0);
 
   const materialsButton = page.locator('.premium-sidebar button:visible, .premium-mobile-nav button:visible').filter({ hasText: 'Материалы' }).first();
