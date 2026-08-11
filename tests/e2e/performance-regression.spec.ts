@@ -8,5 +8,5 @@ test('служебная метка версии не размножается �
   await expect(page.locator(markerSelector)).toHaveCount(1);
   await page.waitForTimeout(2_000);
   await expect(page.locator(markerSelector)).toHaveCount(1);
-  await expect(page.locator('html')).toHaveAttribute('data-dbr-build', 'v0.9.2');
+  await expect(page.locator('html')).toHaveAttribute('data-dbr-build', 'v0.9.3');
 });

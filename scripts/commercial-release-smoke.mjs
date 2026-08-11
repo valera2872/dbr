@@ -11,6 +11,7 @@ const pkg = JSON.parse(read('package.json'));
 const build = read('src/build.ts');
 const main = read('src/main.tsx');
 const launch = read('src/commercialLaunch.ts');
+const commercialMetadata = read('src/commercialMetadataConsistency.ts');
 const fixes = read('src/firstPlayerFixes.ts');
 const interrogationGuide = read('src/interrogationGuidance.ts');
 const act23 = read('src/act23Usability.ts');
@@ -19,18 +20,19 @@ const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.9.2', 'Коммерческая сборка должна иметь версию 0.9.2');
+check(pkg.version === '0.9.3', 'Коммерческая сборка должна иметь версию 0.9.3');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-9-2-guided-first-run'), 'Service worker не использует cache key v0.9.2');
+check(sw.includes('dbr-v0-9-3-commercial-consistency'), 'Service worker не использует cache key v0.9.3');
 
 [
-  'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/AppErrorBoundary.tsx',
-  'src/ReactCaseExtension.tsx', 'src/PlayerGuidance.tsx', 'src/playerGuidance.css',
+  'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/commercialMetadataConsistency.ts',
+  'src/AppErrorBoundary.tsx', 'src/ReactCaseExtension.tsx', 'src/PlayerGuidance.tsx', 'src/playerGuidance.css',
   'src/firstPlayerFixes.ts', 'src/firstPlayerFixes.css', 'src/interrogationGuidance.ts',
   'src/interrogationGuidance.css', 'src/act23Usability.ts', 'src/act23Usability.css',
-  'src/localMediaRuntime.ts', 'tests/e2e/commercial-flow.spec.ts', 'tests/e2e/full-playthrough.spec.ts',
-  'tests/e2e/first-player-flow.spec.ts', 'tests/e2e/interrogation-guidance.spec.ts',
-  'tests/e2e/player-guidance.spec.ts', '.github/workflows/browser-e2e.yml'
+  'src/localMediaRuntime.ts', 'tests/e2e/commercial-flow.spec.ts', 'tests/e2e/commercial-metadata.spec.ts',
+  'tests/e2e/full-playthrough.spec.ts', 'tests/e2e/first-player-flow.spec.ts',
+  'tests/e2e/interrogation-guidance.spec.ts', 'tests/e2e/player-guidance.spec.ts',
+  '.github/workflows/browser-e2e.yml'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
 
 ['Продолжить расследование','Начать расследование','Начать заново','Восстановить сохранение','Открыть итог дела','repairSave']
@@ -39,12 +41,21 @@ check(sw.includes('dbr-v0-9-2-guided-first-run'), 'Service worker не испо�
 check(main.includes('AppErrorBoundary'), 'main.tsx не защищён аварийной границей');
 check(main.includes('ReactCaseExtension'), 'main.tsx не монтирует React Core');
 check(main.includes('PlayerGuidance'), 'main.tsx не монтирует Player Guidance');
+check(main.includes('installCommercialMetadataConsistency'), 'main.tsx не подключает синхронизацию коммерческих параметров');
 check(main.includes("./playerGuidance.css"), 'main.tsx не подключает стили Player Guidance');
 check(main.includes("./localMediaRuntime"), 'main.tsx не подключает гибридный медиаслой');
 check(main.includes("./firstPlayerFixes"), 'main.tsx не подключает исправления первого прохождения');
 check(main.includes("./interrogationGuidance"), 'main.tsx не подключает маршрут допроса');
 check(main.includes("./act23Usability"), 'main.tsx не подключает маршрут актов II–III');
 check(main.includes('installCompletedCaseReturn()'), 'main.tsx не подключает возврат к итоговому отчёту');
+
+check(commercialMetadata.includes("./cases/room314.json"), 'Коммерческие параметры не берутся из manifest дела');
+check(commercialMetadata.includes('manifest.ageRating'), 'Возрастной рейтинг не синхронизирован с manifest');
+check(commercialMetadata.includes('manifest.estimatedMinutes'), 'Длительность не синхронизирована с manifest');
+check(commercialMetadata.includes('manifest.players'), 'Количество игроков не синхронизировано с manifest');
+check(commercialMetadata.includes('subscribeInvestigationState'), 'Коммерческие параметры не обновляются вместе с состоянием запуска');
+check(!commercialMetadata.includes('new MutationObserver'), 'Синхронизация коммерческих параметров не должна создавать MutationObserver');
+check(!commercialMetadata.includes('setInterval'), 'Синхронизация коммерческих параметров не должна использовать polling');
 
 check(mediaRuntime.includes('REALISTIC_PRIMARY_MEDIA = true'), 'Реалистичные первичные фото не включены');
 check(mediaRuntime.includes('case-001-hybrid-realistic-v1'), 'Гибридный медиапакет не маркирован');
@@ -86,4 +97,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.9.2 keeps evidence-grounded interrogation and exposes the next operational action directly.');
+console.log('\nCommercial release smoke passed: v0.9.3 keeps the investigation guidance intact and renders commercial metadata from the canonical case manifest.');

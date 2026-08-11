@@ -14,6 +14,7 @@ import { AppErrorBoundary } from './AppErrorBoundary';
 import { mountActorStudio } from './actorStudio';
 import { mountActorStudioGuide } from './actorStudioGuide';
 import { mountCommercialLaunch } from './commercialLaunch';
+import { installCommercialMetadataConsistency } from './commercialMetadataConsistency';
 import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
@@ -77,6 +78,7 @@ if (actorStudio.mounted) {
   );
   installCompletedCaseReturn();
   mountCommercialLaunch();
+  installCommercialMetadataConsistency();
 }
 
 if ('serviceWorker' in navigator) {

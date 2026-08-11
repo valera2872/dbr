@@ -14,7 +14,7 @@ const guide = read('src/interrogationGuidance.ts');
 const css = read('src/interrogationGuidance.css');
 const test = read('tests/e2e/interrogation-guidance.spec.ts');
 
-check(['0.8.8','0.8.9','0.9.0','0.9.1','0.9.2'].includes(pkg.version), 'Interrogation guidance должна сохраняться в релизах 0.8.8+');
+check(['0.8.8','0.8.9','0.9.0','0.9.1','0.9.2','0.9.3'].includes(pkg.version), 'Interrogation guidance должна сохраняться в релизах 0.8.8+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(exists('src/interrogationGuidance.ts'), 'Нет runtime-подсказки допроса');
 check(exists('src/interrogationGuidance.css'), 'Нет стилей маршрута допроса');
