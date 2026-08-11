@@ -12,6 +12,7 @@ const build = read('src/build.ts');
 const main = read('src/main.tsx');
 const launch = read('src/commercialLaunch.ts');
 const commercialMetadata = read('src/commercialMetadataConsistency.ts');
+const stageHeader = read('src/stageHeaderConsistency.ts');
 const fixes = read('src/firstPlayerFixes.ts');
 const interrogationGuide = read('src/interrogationGuidance.ts');
 const act23 = read('src/act23Usability.ts');
@@ -20,16 +21,17 @@ const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.9.3', 'Коммерческая сборка должна иметь версию 0.9.3');
+check(pkg.version === '0.9.4', 'Коммерческая сборка должна иметь версию 0.9.4');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-9-3-commercial-consistency'), 'Service worker не использует cache key v0.9.3');
+check(sw.includes('dbr-v0-9-4-stage-aware-header'), 'Service worker не использует cache key v0.9.4');
 
 [
   'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/commercialMetadataConsistency.ts',
-  'src/AppErrorBoundary.tsx', 'src/ReactCaseExtension.tsx', 'src/PlayerGuidance.tsx', 'src/playerGuidance.css',
-  'src/firstPlayerFixes.ts', 'src/firstPlayerFixes.css', 'src/interrogationGuidance.ts',
-  'src/interrogationGuidance.css', 'src/act23Usability.ts', 'src/act23Usability.css',
-  'src/localMediaRuntime.ts', 'tests/e2e/commercial-flow.spec.ts', 'tests/e2e/commercial-metadata.spec.ts',
+  'src/stageHeaderConsistency.ts', 'src/AppErrorBoundary.tsx', 'src/ReactCaseExtension.tsx',
+  'src/PlayerGuidance.tsx', 'src/playerGuidance.css', 'src/firstPlayerFixes.ts', 'src/firstPlayerFixes.css',
+  'src/interrogationGuidance.ts', 'src/interrogationGuidance.css', 'src/act23Usability.ts',
+  'src/act23Usability.css', 'src/localMediaRuntime.ts', 'tests/e2e/commercial-flow.spec.ts',
+  'tests/e2e/commercial-metadata.spec.ts', 'tests/e2e/stage-header.spec.ts',
   'tests/e2e/full-playthrough.spec.ts', 'tests/e2e/first-player-flow.spec.ts',
   'tests/e2e/interrogation-guidance.spec.ts', 'tests/e2e/player-guidance.spec.ts',
   '.github/workflows/browser-e2e.yml'
@@ -42,6 +44,7 @@ check(main.includes('AppErrorBoundary'), 'main.tsx не защищён авар�
 check(main.includes('ReactCaseExtension'), 'main.tsx не монтирует React Core');
 check(main.includes('PlayerGuidance'), 'main.tsx не монтирует Player Guidance');
 check(main.includes('installCommercialMetadataConsistency'), 'main.tsx не подключает синхронизацию коммерческих параметров');
+check(main.includes('installStageHeaderConsistency'), 'main.tsx не подключает синхронизацию текущего этапа в topbar');
 check(main.includes("./playerGuidance.css"), 'main.tsx не подключает стили Player Guidance');
 check(main.includes("./localMediaRuntime"), 'main.tsx не подключает гибридный медиаслой');
 check(main.includes("./firstPlayerFixes"), 'main.tsx не подключает исправления первого прохождения');
@@ -56,6 +59,14 @@ check(commercialMetadata.includes('manifest.players'), 'Количество и�
 check(commercialMetadata.includes('subscribeInvestigationState'), 'Коммерческие параметры не обновляются вместе с состоянием запуска');
 check(!commercialMetadata.includes('new MutationObserver'), 'Синхронизация коммерческих параметров не должна создавать MutationObserver');
 check(!commercialMetadata.includes('setInterval'), 'Синхронизация коммерческих параметров не должна использовать polling');
+
+['Акт I', 'Акт II', 'Акт III', 'Ключевой допрос', 'Акт IV', 'Завершено']
+  .forEach((token) => check(stageHeader.includes(token), `Stage-aware header не содержит этап: ${token}`));
+check(stageHeader.includes('subscribeInvestigationState'), 'Stage-aware header не подписан на единое состояние расследования');
+check(stageHeader.includes('refreshInvestigationState'), 'Stage-aware header не синхронизирует события актов с единым состоянием');
+check(stageHeader.includes('Расследование завершено'), 'Финальный статус расследования не определён');
+check(!stageHeader.includes('new MutationObserver'), 'Stage-aware header не должен создавать MutationObserver');
+check(!stageHeader.includes('setInterval'), 'Stage-aware header не должен использовать polling');
 
 check(mediaRuntime.includes('REALISTIC_PRIMARY_MEDIA = true'), 'Реалистичные первичные фото не включены');
 check(mediaRuntime.includes('case-001-hybrid-realistic-v1'), 'Гибридный медиапакет не маркирован');
@@ -97,4 +108,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.9.3 keeps the investigation guidance intact and renders commercial metadata from the canonical case manifest.');
+console.log('\nCommercial release smoke passed: v0.9.4 keeps canonical commercial metadata and shows the real investigation stage in the headquarters header.');
