@@ -14,6 +14,7 @@ const launch = read('src/commercialLaunch.ts');
 const commercialMetadata = read('src/commercialMetadataConsistency.ts');
 const stageHeader = read('src/stageHeaderConsistency.ts');
 const focusedFirstAction = read('src/focusedFirstAction.ts');
+const progressiveNavigation = read('src/progressiveNavigation.ts');
 const fixes = read('src/firstPlayerFixes.ts');
 const interrogationGuide = read('src/interrogationGuidance.ts');
 const act23 = read('src/act23Usability.ts');
@@ -22,18 +23,19 @@ const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.9.6', 'Коммерческая сборка должна иметь версию 0.9.6');
+check(pkg.version === '0.9.7', 'Коммерческая сборка должна иметь версию 0.9.7');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-9-6-focused-first-action'), 'Service worker не использует cache key v0.9.6');
+check(sw.includes('dbr-v0-9-7-progressive-hq'), 'Service worker не использует cache key v0.9.7');
 
 [
   'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/commercialMetadataConsistency.ts',
   'src/stageHeaderConsistency.ts', 'src/focusedFirstAction.ts', 'src/focusedFirstAction.css',
-  'src/AppErrorBoundary.tsx', 'src/ReactCaseExtension.tsx', 'src/PlayerGuidance.tsx', 'src/playerGuidance.css',
-  'src/firstPlayerFixes.ts', 'src/firstPlayerFixes.css', 'src/interrogationGuidance.ts',
-  'src/interrogationGuidance.css', 'src/act23Usability.ts', 'src/act23Usability.css',
-  'src/localMediaRuntime.ts', 'tests/e2e/commercial-flow.spec.ts', 'tests/e2e/commercial-metadata.spec.ts',
-  'tests/e2e/stage-header.spec.ts', 'tests/e2e/stage-dashboard.spec.ts', 'tests/e2e/full-playthrough.spec.ts',
+  'src/progressiveNavigation.ts', 'src/AppErrorBoundary.tsx', 'src/ReactCaseExtension.tsx',
+  'src/PlayerGuidance.tsx', 'src/playerGuidance.css', 'src/firstPlayerFixes.ts', 'src/firstPlayerFixes.css',
+  'src/interrogationGuidance.ts', 'src/interrogationGuidance.css', 'src/act23Usability.ts',
+  'src/act23Usability.css', 'src/localMediaRuntime.ts', 'tests/e2e/commercial-flow.spec.ts',
+  'tests/e2e/commercial-metadata.spec.ts', 'tests/e2e/stage-header.spec.ts', 'tests/e2e/stage-dashboard.spec.ts',
+  'tests/e2e/progressive-navigation.spec.ts', 'tests/e2e/full-playthrough.spec.ts',
   'tests/e2e/first-player-flow.spec.ts', 'tests/e2e/interrogation-guidance.spec.ts',
   'tests/e2e/player-guidance.spec.ts', '.github/workflows/browser-e2e.yml'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
@@ -47,6 +49,7 @@ check(main.includes('PlayerGuidance'), 'main.tsx не монтирует Player 
 check(main.includes('installCommercialMetadataConsistency'), 'main.tsx не подключает синхронизацию коммерческих параметров');
 check(main.includes('installStageHeaderConsistency'), 'main.tsx не подключает синхронизацию текущего этапа в штабе');
 check(main.includes('installFocusedFirstAction'), 'main.tsx не подключает focused first action');
+check(main.includes('installProgressiveNavigation'), 'main.tsx не подключает progressive navigation');
 check(main.includes("./focusedFirstAction.css"), 'main.tsx не подключает стили focused first action');
 check(main.includes("./playerGuidance.css"), 'main.tsx не подключает стили Player Guidance');
 check(main.includes("./localMediaRuntime"), 'main.tsx не подключает гибридный медиаслой');
@@ -95,6 +98,19 @@ check(focusedFirstAction.includes('requestAnimationFrame'), 'Focused first actio
 check(!focusedFirstAction.includes('new MutationObserver'), 'Focused first action не должен создавать MutationObserver');
 check(!focusedFirstAction.includes('setInterval'), 'Focused first action не должен использовать polling');
 
+[
+  'dbr:player-guidance:guided-first-run:v1',
+  "new Set(['Дело', 'Материалы'])",
+  "labels.add('Люди')",
+  "labels.add('Хронология')",
+  "labels.add('Версии')"
+].forEach((token) => check(progressiveNavigation.includes(token), `Progressive navigation не содержит: ${token}`));
+check(progressiveNavigation.includes('subscribeInvestigationState'), 'Progressive navigation не подписана на состояние расследования');
+check(progressiveNavigation.includes('refreshInvestigationState'), 'Progressive navigation не перечитывает прогресс');
+check(progressiveNavigation.includes('requestAnimationFrame'), 'Progressive navigation не синхронизируется с React');
+check(!progressiveNavigation.includes('new MutationObserver'), 'Progressive navigation не должна создавать MutationObserver');
+check(!progressiveNavigation.includes('setInterval'), 'Progressive navigation не должна использовать polling');
+
 check(mediaRuntime.includes('REALISTIC_PRIMARY_MEDIA = true'), 'Реалистичные первичные фото не включены');
 check(mediaRuntime.includes('case-001-hybrid-realistic-v1'), 'Гибридный медиапакет не маркирован');
 check(!mediaRuntime.includes('new MutationObserver'), 'Медиаслой не должен создавать MutationObserver');
@@ -134,4 +150,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.9.6 keeps the canonical investigation flow and replaces the first HQ overload with one focused first action.');
+console.log('\nCommercial release smoke passed: v0.9.7 keeps the canonical investigation flow while progressively revealing the HQ for guided newcomers.');
