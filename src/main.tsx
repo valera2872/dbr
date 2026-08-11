@@ -44,6 +44,7 @@ import './firstPlayerFixes.css';
 import './act23Usability.css';
 import './playerGuidance.css';
 import './playerGuidanceVisibility.css';
+import './stageHeaderConsistency.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
