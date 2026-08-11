@@ -1,26 +1,34 @@
 import { expect, test } from '@playwright/test';
 
-test('новичок получает понятную модель игры и видимый следующий шаг без открытия справки', async ({ page }) => {
+test('новичок получает одно понятное первое действие вместо обзора всего штаба', async ({ page }) => {
   await page.goto('./?fresh=1&release=e2e-player-guidance');
   const launch = page.locator('.commercial-launch');
   await expect(launch).toBeVisible();
   await launch.getByRole('button', { name: 'Начать расследование' }).click();
 
-  for (let step = 0; step < 4; step += 1) {
+  for (let step = 0; step < 3; step += 1) {
     await page.locator('.premium-prologue-card .premium-cta').click();
   }
 
+  const finalPrologueAction = page.locator('.premium-prologue-card .premium-cta');
+  await expect(finalPrologueAction).toContainText('Перейти к первому действию');
+  await finalPrologueAction.click();
+
   const onboarding = page.locator('.player-onboarding');
   await expect(onboarding).toBeVisible();
-  await expect(onboarding).toContainText('Вы — следователь');
-  await expect(onboarding).toContainText('Главное правило игры');
-  await expect(onboarding).toContainText('Материалы');
-  await expect(onboarding).toContainText('Люди');
-  await expect(onboarding).toContainText('Дело');
-  await expect(onboarding).toContainText('Следующий шаг');
-  await expect(onboarding).toContainText('Ничего искать по меню наугад не нужно');
+  await expect(onboarding).toHaveClass(/focused-first-action/);
+  await expect(onboarding).toHaveAttribute('aria-label', 'Ваше первое действие');
+  await expect(onboarding).toContainText('Осмотрите номер 314');
+  await expect(onboarding).toContainText('Пока не нужно разбираться во всём штабе');
+  await expect(onboarding).toContainText('На фотографии будут отмечены четыре зоны');
+  await expect(onboarding).toContainText('Когда осмотр закончится, игра сама покажет следующее действие');
+  await expect(onboarding.locator('.player-onboarding-grid')).toBeHidden();
 
-  await onboarding.getByRole('button', { name: /Начать расследование: осмотреть номер 314/ }).click();
+  const firstAction = onboarding.getByRole('button', { name: /^Осмотреть номер 314/ });
+  await expect(firstAction).toBeVisible();
+  await expect(onboarding.getByRole('button', { name: 'Открыть весь штаб без обучения' })).toBeVisible();
+  await firstAction.click();
+
   await expect(onboarding).toHaveCount(0);
   await expect(page.locator('.evidence-e001')).toBeVisible();
 
