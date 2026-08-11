@@ -40,7 +40,7 @@ function actOneStep(state: InvestigationSnapshot): GuideStep {
     return {
       phase: 'Первый осмотр',
       objective: 'Понять, что произошло в запертом номере',
-      instruction: 'Осмотрите четыре отмеченные зоны номера 314. Нажимайте на точки на фотографии или на названия зон справа.',
+      instruction: 'Осмотрите четыре отмеченные зоны номера 314. Нажимайте на точки на фотографии или на названия зон справа. После каждой проверки счётчик изменится автоматически.',
       progress: `Осмотрено зон: ${roomCount}/4`,
       why: 'Сначала нужно отделить реальные физические следы от того, как исчезновение выглядит на первый взгляд.',
       action: roomCount ? 'Продолжить осмотр номера' : 'Начать с осмотра номера 314',
@@ -52,7 +52,7 @@ function actOneStep(state: InvestigationSnapshot): GuideStep {
     return {
       phase: 'Первичные материалы',
       objective: 'Восстановить последние известные действия Ильи',
-      instruction: 'Прочитайте последнее сообщение Ильи и обратите внимание, кто и когда его получил.',
+      instruction: 'Прочитайте последнее сообщение Ильи и обратите внимание, кто и когда его получил. После изучения материала игра сама предложит следующий шаг.',
       progress: 'Номер осмотрен · следующий материал',
       why: 'Сообщение связывает исчезновение с участниками встречи и объясняет, почему ночь могла закончиться конфликтом.',
       action: 'Открыть последнее сообщение',
@@ -64,7 +64,7 @@ function actOneStep(state: InvestigationSnapshot): GuideStep {
     return {
       phase: 'Проверка выхода',
       objective: 'Проверить, использовалась ли главная дверь',
-      instruction: 'Изучите журнал электронного замка номера 314.',
+      instruction: 'Изучите журнал электронного замка номера 314. Вам не нужно запоминать весь интерфейс: после завершения текущего действия нижняя панель обновится.',
       progress: 'Сообщение изучено · проверяем дверь',
       why: 'Прежде чем строить версии, нужно понять, мог ли Илья или другой человек пройти обычным путём.',
       action: 'Открыть журнал замка',
@@ -325,12 +325,18 @@ export function PlayerGuidance() {
 
   return <>
     <aside className="player-guide-floating" aria-label="Текущий шаг расследования">
-      <div>
+      <div className="player-guide-floating-copy">
         <small>{step.phase}</small>
         <strong>{step.objective}</strong>
+        <p>{step.instruction}</p>
         <span>{step.progress}</span>
       </div>
-      <button type="button" onClick={() => setHelpOpen(true)}>Что делать дальше?</button>
+      <div className="player-guide-floating-actions">
+        <button type="button" className="player-guide-next" onClick={() => goToTarget(step.target)} aria-label={`Следующий шаг: ${step.action}`}>
+          <small>Следующий шаг</small><strong>{step.action}</strong><b aria-hidden="true">→</b>
+        </button>
+        <button type="button" className="player-guide-explain" onClick={() => setHelpOpen(true)}>Объяснить</button>
+      </div>
     </aside>
 
     {helpOpen && <div className="player-guide-backdrop" onMouseDown={() => setHelpOpen(false)}>
@@ -355,18 +361,22 @@ export function PlayerGuidance() {
 
     {onboardingOpen && <div className="player-onboarding-backdrop">
       <section className="player-onboarding" role="dialog" aria-modal="true" aria-label="Как играть в ДБР">
-        <p className="player-onboarding-kicker">Перед первым расследованием · 40 секунд</p>
-        <h1>Как здесь расследовать</h1>
-        <p className="player-onboarding-lead">Вам не нужно угадывать, где продолжать. Игра будет показывать текущую цель и следующий операционный шаг — без подсказки к разгадке.</p>
-        <div className="player-onboarding-grid">
-          <article><span>01</span><div><strong>Материалы</strong><p>Осматривайте сцены, документы и цифровые следы. Всё найденное сохраняется автоматически.</p></div></article>
-          <article><span>02</span><div><strong>Люди</strong><p>Сверяйте показания с фактами. Новые вопросы появляются только тогда, когда для них уже найдено основание.</p></div></article>
-          <article><span>03</span><div><strong>Дело</strong><p>В ключевых точках формулируйте промежуточные выводы. Это открывает следующий этап.</p></div></article>
+        <p className="player-onboarding-kicker">Перед первым расследованием · около минуты</p>
+        <h1>Вы — следователь. Интерфейс не должен быть загадкой.</h1>
+        <p className="player-onboarding-lead">Илья исчез после ночной встречи в номере 314. Ваша задача — не угадывать виновного с первого экрана, а последовательно собирать факты, сверять показания и только затем делать выводы.</p>
+        <div className="player-onboarding-rule">
+          <strong>Главное правило игры</strong>
+          <p>В каждый момент у вас есть одна текущая задача. Выполните её — и нижняя панель сама покажет следующее действие. Ничего искать по меню наугад не нужно.</p>
         </div>
-        <div className="player-onboarding-note"><strong>Если потерялись</strong><span>Кнопка «Что делать дальше?» всегда покажет маршрут, но не ответ на загадку.</span></div>
+        <div className="player-onboarding-grid">
+          <article><span>01</span><div><strong>Материалы</strong><p>Осматривайте сцены, документы и цифровые следы. На интерактивных сценах нажимайте отмеченные зоны или их названия. Всё найденное сохраняется автоматически.</p></div></article>
+          <article><span>02</span><div><strong>Люди</strong><p>Сверяйте показания с уже найденными фактами. Новые вопросы появляются только тогда, когда расследование дало для них основание.</p></div></article>
+          <article><span>03</span><div><strong>Дело</strong><p>В ключевых точках формулируйте промежуточные выводы. Это не финальное обвинение, а проверка понимания фактов и переход к следующему этапу.</p></div></article>
+        </div>
+        <div className="player-onboarding-note"><strong>Не знаете, куда идти?</strong><span>Смотрите на блок «Следующий шаг» внизу экрана. Кнопка «Объяснить» расскажет, зачем это действие нужно, но не выдаст разгадку.</span></div>
         <div className="player-onboarding-actions">
-          <button type="button" className="player-guide-primary" onClick={beginFirstAction}>Начать: осмотреть номер 314 <b aria-hidden="true">→</b></button>
-          <button type="button" className="player-guide-secondary" onClick={dismissOnboarding}>Закрыть обучение</button>
+          <button type="button" className="player-guide-primary" onClick={beginFirstAction}>Начать расследование: осмотреть номер 314 <b aria-hidden="true">→</b></button>
+          <button type="button" className="player-guide-secondary" onClick={dismissOnboarding}>Я разберусь сам</button>
         </div>
       </section>
     </div>}

@@ -14,7 +14,7 @@ const guide = read('src/PlayerGuidance.tsx');
 const css = read('src/playerGuidance.css');
 const test = read('tests/e2e/player-guidance.spec.ts');
 
-check(['0.9.0','0.9.1'].includes(pkg.version), 'Player Guidance должен сохраняться в релизах 0.9.x');
+check(/^0\.9\./.test(pkg.version), 'Player Guidance должен сохраняться в релизах 0.9.x');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 [
   'src/PlayerGuidance.tsx',
@@ -26,11 +26,13 @@ check(main.includes('PlayerGuidance'), 'main.tsx не монтирует PlayerG
 check(main.includes("./playerGuidance.css"), 'main.tsx не подключает playerGuidance.css');
 
 [
-  'Как здесь расследовать',
+  'Вы — следователь. Интерфейс не должен быть загадкой.',
+  'Главное правило игры',
   'Материалы',
   'Люди',
   'Дело',
-  'Что делать дальше?',
+  'Следующий шаг',
+  'Объяснить',
   'Эта помощь объясняет только управление и следующий шаг',
   'Осмотрите четыре отмеченные зоны номера 314',
   'Проверить, существовал ли другой путь между номерами 312 и 314',
@@ -45,15 +47,18 @@ check(guide.includes('scheduleInvestigationRefresh'), 'Player Guidance не об
 check(!guide.includes('new MutationObserver'), 'Player Guidance не должен создавать MutationObserver');
 check(!guide.includes('setInterval'), 'Player Guidance не должен использовать polling');
 check(css.includes('.player-guide-floating'), 'Нет постоянно доступной навигационной помощи');
-check(css.includes('.player-onboarding'), 'Нет интерактивного onboarding');
+check(css.includes('.player-guide-next'), 'Нет видимого прямого следующего действия');
+check(css.includes('.player-onboarding-rule'), 'Onboarding не объясняет главную модель игры');
 check(css.includes('@media (max-width: 760px)'), 'Player Guidance не адаптирован под телефон');
 
 [
-  'Как здесь расследовать',
-  'Начать: осмотреть номер 314',
+  'Вы — следователь',
+  'Главное правило игры',
+  'Начать расследование: осмотреть номер 314',
   'Осмотрено зон: 1/4',
-  'Что делать дальше?',
-  'Открыть архивный план'
+  'Следующий шаг: Продолжить осмотр номера',
+  'Объяснить',
+  'Следующий шаг: Открыть архивный план'
 ].forEach((token) => check(test.includes(token), `Браузерный тест Player Guidance не проверяет: ${token}`));
 
 if (failures.length) {
@@ -62,4 +67,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nPlayer Guidance smoke passed: onboarding, always-visible route help and state-aware next actions are present in v${pkg.version}.`);
+console.log(`\nPlayer Guidance smoke passed: onboarding, visible next action and state-aware navigation are present in v${pkg.version}.`);

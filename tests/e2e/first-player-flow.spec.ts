@@ -20,7 +20,7 @@ async function openHeadquarters(page: Page) {
   }
   await expect(page.locator('.premium-app')).toBeVisible();
   await expect(page.locator('.player-onboarding')).toBeVisible();
-  await page.locator('.player-onboarding').getByRole('button', { name: 'Закрыть обучение' }).click();
+  await page.locator('.player-onboarding .player-guide-secondary').click();
 }
 
 test('E001 показывает последнюю выбранную зону, а E005 ведёт к следующему шагу', async ({ page }) => {
