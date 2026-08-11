@@ -17,6 +17,7 @@ import { mountCommercialLaunch } from './commercialLaunch';
 import { installCommercialMetadataConsistency } from './commercialMetadataConsistency';
 import { installStageHeaderConsistency } from './stageHeaderConsistency';
 import { installFocusedFirstAction } from './focusedFirstAction';
+import { installProgressiveNavigation } from './progressiveNavigation';
 import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
@@ -85,6 +86,7 @@ if (actorStudio.mounted) {
   installCommercialMetadataConsistency();
   installStageHeaderConsistency();
   installFocusedFirstAction();
+  installProgressiveNavigation();
 }
 
 if ('serviceWorker' in navigator) {
