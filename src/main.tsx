@@ -16,6 +16,7 @@ import { mountActorStudioGuide } from './actorStudioGuide';
 import { mountCommercialLaunch } from './commercialLaunch';
 import { installCommercialMetadataConsistency } from './commercialMetadataConsistency';
 import { installStageHeaderConsistency } from './stageHeaderConsistency';
+import { installFocusedFirstAction } from './focusedFirstAction';
 import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
@@ -44,6 +45,7 @@ import './firstPlayerFixes.css';
 import './act23Usability.css';
 import './playerGuidance.css';
 import './playerGuidanceVisibility.css';
+import './focusedFirstAction.css';
 import './stageHeaderConsistency.css';
 import './premiumEnhancements';
 import './cameraMeaning';
@@ -82,6 +84,7 @@ if (actorStudio.mounted) {
   mountCommercialLaunch();
   installCommercialMetadataConsistency();
   installStageHeaderConsistency();
+  installFocusedFirstAction();
 }
 
 if ('serviceWorker' in navigator) {

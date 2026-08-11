@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-9-5-stage-aware-dashboard';
+const CACHE_NAME = 'dbr-v0-9-6-focused-first-action';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',
