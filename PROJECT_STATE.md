@@ -2,21 +2,21 @@
 
 ## Checkpoint
 
-Date: `2026-08-10`
+Date: `2026-08-11`
 
 Branch: `main`
 
-Current release: **`v0.9.1 — Evidence-grounded interrogation`**
+Current release: **`v0.9.6 — Focused first action`**
 
-Production:
-- base URL: `https://valera2872.github.io/dbr/`
-- test URL: `https://valera2872.github.io/dbr/?release=0.9.1-evidence-grounded-31339854481`
-- merged PR: `#48 — v0.9.1 Evidence-grounded interrogation`
-- PR head: `09502b13d3c09bc980b2ff06bcbd82477f89fd24`
-- merge commit: `e1f9f6d646f959680a71b505b2bf4d68f659561c`
-- final validate run: `31339661407` — success
-- final Browser Playthrough run: `31339661409` — success
-- production Pages deploy run: `31339854481` — build success, deploy success
+Production base URL:
+- `https://valera2872.github.io/dbr/`
+
+Latest UX release:
+- merged PR: `#53 — v0.9.6 Focused first action`
+- PR head: `9d284f86f23c6413b433b11a0d17c14ab3ea8c7d`
+- merge commit: `785a5899d7a156899afd07e687303e12470b4c69`
+- Validate DBR prototype run: `31520687511` — success
+- Browser Playthrough run: `31520687581` — success
 
 ## Product
 
@@ -24,279 +24,204 @@ Web/PWA of the interactive investigation series **ДБР**.
 
 First case: **«Номер 314»**.
 
-Complete story route is implemented:
+The complete route exists and is automated end-to-end:
 - Act I: E001–E005 + intermediate report No. 1;
 - Act II: E006 archive plan + E007 room 312;
-- Act III: E008 archive provenance + E009 identity check + intermediate report No. 2;
-- evidence-driven interrogation of Kirill;
-- Act IV: E010 rescue, E011 card verification, final accusation and epilogue.
+- Act III: E008 archive provenance + E009 identity + follow-up questions + report No. 2;
+- evidence-grounded interrogation of Kirill;
+- Act IV: E010 rescue + E011 card verification + final accusation + epilogue.
 
 ## Current strategic priority
 
-**First-time-player comprehension is now the top priority. Do not add new story scope while a new player can still get lost in the interface.**
-
-Manual testing by the user and a completely new player showed that the game was technically playable but not self-explanatory. Newcomers spent cognitive effort working out what to click, where to go and why nothing happened instead of solving the detective mystery.
+**Fresh-player comprehension remains the top priority. Do not add new story scope while a person who has never seen ДБР can still become confused by the interface.**
 
 Established UX rule:
 
-> The player may be uncertain about the mystery, but must not be uncertain about how to operate the game.
+> The player may be uncertain about the mystery, but must never be uncertain about how to operate the game.
 
-At every stage the product should communicate:
+At every stage the interface should make four things clear:
 1. where the player is;
-2. the current investigative objective;
+2. what is being investigated now;
 3. what has already been completed;
-4. the next operational action available.
+4. what operational action can be taken next.
 
-Navigation help and detective hints are separate. Navigation help may explain what interaction is required or where to go, but must not reveal the correct theory.
+Navigation help and detective hints are different systems. Navigation help may say where to click and why the operation matters, but must not reveal the correct theory.
 
-A second narrative rule is now explicit:
+Narrative rule:
 
-> **The detective may ask only questions for which the investigation has already produced a factual premise. The interface must never reveal a future discovery by placing it in the detective's mouth early.**
+> The detective may ask only questions for which the investigation has already produced a factual premise.
 
-## v0.9.0 — Player Guidance
+## Human-test finding that triggered the current work
 
-### Interactive onboarding
+A completely new player was sent to the game without verbal help and did not understand how to proceed. The problem was not the detective mystery itself: the interface required the newcomer to work out what tabs, cards, codes and actions meant before they could start investigating.
 
-A completely new player entering HQ sees a short onboarding explaining:
-- `Материалы` — inspect scenes/documents/digital traces; findings save automatically;
-- `Люди` — compare statements with discovered facts; new questions appear only when the case has produced a basis for them;
-- `Дело` — formulate intermediate conclusions that unlock the next stage.
+The user later supplied a screenshot of the HQ screen showing the core overload clearly:
+- five navigation sections visible immediately;
+- current objective, progress, report and several system controls competing for attention;
+- a visible next-step card was not enough to remove the feeling that the whole screen had to be understood first.
 
-It explicitly explains `Что делать дальше?` as navigation help, not a solution hint.
+Treat this as a product defect, not user error.
 
-Primary onboarding action:
+## UX releases completed
 
-`Начать: осмотреть номер 314 →`
+### v0.9.0 — Player Guidance
 
-This opens the first real E001 interaction directly.
+Introduced the systemic navigation layer instead of local one-off instructions:
+- persistent current objective;
+- visible `Следующий шаг`;
+- live progress;
+- `Что делать дальше?` / `Объяснить` navigation help;
+- direct routing to the correct material/person/report;
+- no-spoiler explanation;
+- state-aware route from E001 through the completed case.
 
-Onboarding-only key:
+### v0.9.1 — Evidence-grounded interrogation
 
-`dbr:player-guidance:onboarding:v1`
+Removed premature Kirill questions that leaked future discoveries.
 
-It is separate from all canonical case save keys.
+Correct causal chain:
+1. base alibi;
+2. E006 introduces the possibility of the old passage;
+3. E007 proves recent physical use;
+4. E008 introduces the old conflict;
+5. only then can the evidence dismantle Kirill's alibi.
 
-### Persistent guidance
+### v0.9.2 — Guided first run / regression repair
 
-A compact Player Guidance control remains available while playing and shows:
-- investigation phase;
-- current objective;
-- immediate progress;
-- `Что делать дальше?`.
+Kept the new onboarding path stable and repaired browser tests that were still coupled to obsolete onboarding copy.
 
-The floating container does not block gameplay underneath; only its help button receives pointer input. It is hidden while the commercial launch cover is open.
+### v0.9.3 — Commercial metadata consistency
 
-### “Что делать дальше?” panel
+Commercial launch now follows the canonical case manifest rather than maintaining conflicting duplicate values.
 
-Shows:
-- `Текущая цель`;
-- exact operational instruction;
-- progress;
-- `Зачем это сейчас` to connect the operation to the investigation;
-- direct button to the correct material/person/report;
-- explicit no-spoiler notice.
+Canonical case parameters:
+- `14+`;
+- approximately `90 minutes`;
+- `1–4 players`.
 
-### State-aware route
+### v0.9.4 — Stage-aware HQ header
 
-`PlayerGuidance` is React-owned and derives its guidance from the existing unified `InvestigationSnapshot`, not from a second independent progress model.
+The HQ header no longer stays on `Act I` after the first report. It follows the real investigation stage:
+- Act I;
+- Act II;
+- Act III;
+- key interrogation;
+- Act IV;
+- completed.
 
-Act I is granular:
-- E001 — four room hotspots, live count `0/4…4/4`;
-- E002 — Ilya's last message;
-- E003 — lock journal;
-- E004 — camera reconstruction, with actual answer state (`23:50` is the correct answer); wrong answer remains a retry state;
-- E005 — phone;
-- then report No. 1.
+### v0.9.5 — Stage-aware case dashboard
 
-Acts II–IV guidance:
-- archive plan `0/3`;
-- room 312 `0/4`;
-- archive `0/4`, explicitly says there are no hidden hotspots in the image;
-- identity `0/3`;
-- Denis/Vera follow-up questions `0/2`;
-- report No. 2;
-- Kirill interrogation;
-- rescue room `0/4`;
-- card verification `0/4`;
-- final accusation;
-- completed-case report.
+The main `Текущая задача` no longer freezes on the start of Act II.
 
-Copy is written as human investigative goals; players should not need to understand internal E-codes to know what to do.
+After Act I:
+- the old Act I fact list is clearly historical rather than current;
+- report No. 1 is shown as accepted history;
+- the Act I-only progress meter is hidden;
+- current task copy follows the actual RouteStage.
 
-### State synchronization
+### v0.9.6 — Focused first action
 
-Uses:
-- `getInvestigationState`
-- `subscribeInvestigationState`
-- `scheduleInvestigationRefresh`
+This release directly addresses the overloaded HQ screenshot and newcomer feedback.
 
-Bounded post-click refreshes keep counters current after React/localStorage effects. No new `MutationObserver`; no continuous `setInterval` polling.
+For a fresh player:
+- the last prologue CTA is reframed from `Открыть штаб` to `Перейти к первому действию`;
+- the first onboarding screen no longer teaches `Материалы / Люди / Дело` all at once;
+- the old three-section onboarding lecture is hidden;
+- the player sees one concrete task: **`Осмотреть номер 314`**;
+- the screen explains only the interaction needed now: four marked zones, click them, findings save automatically;
+- the primary action opens the real E001 interaction directly;
+- a low-emphasis `Открыть весь штаб без обучения` escape hatch remains for repeat/experienced users;
+- after E001 the existing Player Guidance continues to supply the next operational action.
 
-## v0.9.1 — Evidence-grounded interrogation
+Implementation is deliberately layered over the existing Player Guidance rather than replacing its route logic.
 
-Manual review found a narrative logic defect: the early Kirill interrogation offered `Вы знали о старом проходе?` and `О чём вы спорили с Антоном?` before the player had discovered either the passage or the documented conflict. This made the interface itself leak future deductions.
+Files:
+- `src/focusedFirstAction.ts`
+- `src/focusedFirstAction.css`
 
-Correct causal route is now enforced:
-
-1. **Before E006** the detective can ask only the already-grounded alibi question: whether Kirill left room 312 after 23:41.
-2. **E006 archive plan** is the first source from which the idea of a hidden passage can arise.
-3. **E007 room 312** provides physical evidence — panel/marks/tracks/fibres — that the route was used recently.
-4. **E008 archive recording** introduces the documented Anton/Kirill conflict and links Kirill to knowledge of the route.
-5. Only then can the player use those discovered facts to dismantle the alibi.
-
-The old `passage` and `anton` question IDs remain readable in the canonical interrogation save for compatibility with existing saves, but those premature buttons are hidden and disabled for new playthroughs.
-
-The interrogation route now communicates:
-- `Зафиксировать алиби`;
-- `Найти и предъявить основания`;
-- `Разрушить алиби`.
-
-It explicitly states:
-- `Дальше нужны факты, а не догадки` after the base alibi is fixed;
-- the investigator does not yet know about the old passage or archive recording;
-- the idea of the hidden route must emerge from the plan and traces, not from a ready-made detective line;
-- plan → panel/traces → archive recording is the causal evidence chain.
-
-`PlayerGuidance` also explains that the detective must not know about the passage in advance.
-
-## Retained manual-playthrough fixes
-
-### E001
-- right-side text now follows the most recently selected hotspot instead of remaining stuck on the carpet;
-- selected hotspot is visibly current;
-- “mark as key” is explained as an optional investigator bookmark and appears in `Дело`.
-
-### E005
-- explicit route to the next required interaction.
-
-### Kirill interrogation
-- no premature passage/Anton questions;
-- only the stated alibi is fixed before new evidence exists;
-- after the alibi, the player is told to pause and continue the investigation;
-- disabled evidence says where its factual basis must be found instead of only `Не найдено`;
-- after E006–E008, evidence itself introduces the new interrogation lines.
-
-### E006
-- stabilized the three inspection locations;
-- explicit task and progress;
-- direct transition to E007;
-- visual warning: current archive-plan SVG remains weak/temporary and is not final premium art.
-
-### E007
-- inspection controls no longer appear as arbitrary floating checkmarks;
-- stable scene/control composition;
-- direct transition to E008.
-
-### E008
-- explicitly states there are no hidden hotspots;
-- instructs player to inspect four archive sources;
-- progress and direct transition to E009.
-
-### E009
-- explicit three-stage task structure;
-- after report No. 2, modal itself exposes `Закрыть E009 и перейти к Кириллу` rather than hiding the next route behind the modal.
+No `MutationObserver`, no continuous `setInterval` polling.
 
 ## Canonical save contract
 
-Do not rename these keys casually. The user's ongoing save must survive UX releases:
+Do not rename these keys casually. UX releases must preserve existing progress:
 - core: `dbr:dbr_001_room_314:0.2.0`
 - Act II: `dbr:dbr_001_room_314:act2:v0.5.0`
 - Act III: `dbr:dbr_001_room_314:act3:v0.6.0`
 - interrogation: `dbr:dbr_001_room_314:interrogation:kirill:v0.6.2`
 - Act IV: `dbr:dbr_001_room_314:act4:v0.7.0`
 
-v0.9.1 preserves all of them.
+Onboarding-only key:
+- `dbr:player-guidance:onboarding:v1`
+
+v0.9.6 changes none of the canonical case save keys.
 
 ## Browser verification
 
-Final v0.9.1 PR head passed both required workflows:
-- Validate DBR prototype run `31339661407` — success;
-- Browser Playthrough run `31339661409` — success.
+v0.9.6 passed both required workflows:
+- Validate DBR prototype `31520687511` — success;
+- Browser Playthrough `31520687581` — success.
 
-Final Playwright result: **26 passed, 2 intentionally skipped**.
-
-Coverage includes:
-- commercial launch, continue, restart and save recovery;
-- new-player onboarding;
-- onboarding primary action into E001;
-- E001 live progress update `0/4 → 1/4`;
-- `Что делать дальше?` and no-spoiler explanation;
-- Act II archive guidance;
-- first-player regressions;
-- early Kirill interrogation proves `passage` and `anton` questions are hidden before evidence;
-- full route proves E001–E011 completes using only the grounded alibi question plus the evidence presentation chain;
-- media regression;
-- performance marker regression;
-- React Core checks;
+Coverage includes desktop and mobile where applicable and verifies:
+- commercial launch/continue/restart/recovery;
+- final prologue transition to the first action;
+- focused first onboarding screen;
+- old onboarding grid is actually hidden;
+- direct entry into E001;
+- E001 guidance `0/4 → 1/4`;
+- persistent no-spoiler navigation help;
+- Acts II–IV route;
+- grounded Kirill interrogation;
+- stage-aware header/dashboard;
+- complete E001–E011 playthrough and epilogue;
 - completed-case return;
-- desktop Chromium and Pixel 7 mobile profile where applicable.
+- media and performance regressions.
 
-A green automated route is not proof that a human newcomer understands the game. v0.9.1 must continue to be tested by a person who has never seen ДБР and receives no verbal navigation help.
+Automated success is not proof of human comprehension. Zero-assistance human testing remains mandatory.
 
 ## Media / visual truth boundary
 
-- primary scenes/cards/portraits currently use temporary realistic Unsplash photography where configured;
+- primary scenes/cards/portraits still use temporary realistic Unsplash photography where configured;
 - E006, E008, E010, E011 and final report use owned local SVG visuals;
 - media marker: `case-001-hybrid-realistic-v1`;
-- remote realistic references must be replaced by owned local realistic media before fully offline paid distribution;
-- E006 archive-plan SVG is explicitly not final quality.
+- remote media must be replaced before fully offline paid distribution;
+- E006 archive-plan visual is still below final premium quality.
 
 ## Kirill truth boundary
 
-- no real living/3D Kirill video exists in the player build;
-- runtime falls back to static portrait without actual WebM clips;
-- Actor Studio is an internal human-recording utility, not an AI avatar generator;
-- later 3D/video suspect is planned through Kling;
-- never claim lip-sync, natural microreactions or generated actor video until actual media exists.
-
-## Internal QA
-
-Internal tools require `internal=1`.
-
-Fixtures:
-`?internal=1&qa=1&fixture=<name>`
-
-Available: `clean`, `act2`, `act3`, `interrogation`, `act4`, `card`, `report`, `complete`.
-
-Diagnostics: `?internal=1&diagnostics=1`
-
-Actor Studio: `?internal=1&actorStudio=kirill`
+- no genuine living/3D Kirill video exists in the player build;
+- player runtime falls back to a static portrait without real WebM clips;
+- Actor Studio is an internal recording utility, not an AI avatar generator;
+- future 3D/video Kirill may be produced separately, but must not change deterministic investigation logic.
 
 ## Known debt
 
+- the HQ may still feel visually dense after the first guided action; this must be judged by a new human tester, not assumed solved;
 - some compatibility/runtime bridge layers remain outside React-owned Acts II–IV;
 - temporary Unsplash dependencies remain;
 - E006 visual is weak;
 - final visual quality is not uniform;
 - sound/atmosphere unfinished;
-- npm audit currently reports 2 unresolved vulnerabilities: 1 moderate, 1 high;
-- GitHub Actions still declares Node 20 while hosted actions are being forced toward Node 24;
+- npm audit still reports unresolved vulnerabilities;
+- GitHub Actions still declares Node 20 while hosted actions are moving toward Node 24;
 - no payment/access/purchase-recovery system;
 - no independent usability dataset yet;
 - no genuine Kirill video clips.
 
 ## Immediate next work
 
-1. Open the deployed v0.9.1 from a **fresh case** and manually judge the onboarding and first 10 minutes as a newcomer.
-2. Give the same build to at least one person who has never seen the interface and provide **zero verbal help**.
-3. Record every moment where the person asks what to click, what a control means, where to go, why nothing happened, or why the detective suddenly knows something.
-4. Treat each such moment as a product defect, not user error.
-5. Fix remaining comprehension and causal-logic defects before new story features.
-6. Then do visual/premium pass, especially E006/final-operation art.
-7. Test 5–10 independent players for comprehension, pacing and difficulty.
-8. Replace remote media, finish sound/legal, then implement payment/access/recovery.
-9. Add genuine 3D/video Kirill later without changing deterministic investigation logic.
+1. Verify the deployed `main` build from a fresh browser state.
+2. Run the first 10 minutes yourself from a clean case and judge only comprehension, not puzzle difficulty.
+3. Give the same build to a person who has never seen ДБР and provide **zero verbal help**.
+4. Record every pause/question of the form: what do I click, what does this mean, where do I go, why did nothing happen?
+5. If the HQ still overwhelms the player after E001, implement the next progressive-disclosure pass rather than adding more explanatory paragraphs.
+6. Only after zero-assistance comprehension improves, return to premium visual/media polish and broader external testing.
 
 ## Instruction for next chat
 
-When the user opens a new chat and says to continue ДБР, begin from this checkpoint.
+When the user says `продолжаем ДБР с последней контрольной точки`, start from **v0.9.6 — Focused first action** on `main`.
 
-Current production test URL:
+Current priority: **fresh-player comprehension and progressive disclosure, not feature expansion**.
 
-`https://valera2872.github.io/dbr/?release=0.9.1-evidence-grounded-31339854481`
+If a player cannot determine the next operational action, change the visible interface rather than explaining the hidden route in chat.
 
-Current priority: **fresh-player comprehension, causal clarity and zero-assistance usability testing**, not feature expansion.
-
-If a player cannot determine the next operational action, do not merely explain the hidden route in chat. Change the visible interface.
-
-If the detective seems to know a fact or hypothesis before the player has found its evidentiary source, treat that as a narrative logic defect and move the premise to the discovery that actually establishes it.
+If the detective appears to know something before the player has found the source, treat it as a narrative logic defect.
