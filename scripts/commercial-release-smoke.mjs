@@ -21,9 +21,9 @@ const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.9.4', 'Коммерческая сборка должна иметь версию 0.9.4');
+check(pkg.version === '0.9.5', 'Коммерческая сборка должна иметь версию 0.9.5');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-9-4-stage-aware-header'), 'Service worker не использует cache key v0.9.4');
+check(sw.includes('dbr-v0-9-5-stage-aware-dashboard'), 'Service worker не использует cache key v0.9.5');
 
 [
   'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/commercialMetadataConsistency.ts',
@@ -31,7 +31,7 @@ check(sw.includes('dbr-v0-9-4-stage-aware-header'), 'Service worker не исп�
   'src/PlayerGuidance.tsx', 'src/playerGuidance.css', 'src/firstPlayerFixes.ts', 'src/firstPlayerFixes.css',
   'src/interrogationGuidance.ts', 'src/interrogationGuidance.css', 'src/act23Usability.ts',
   'src/act23Usability.css', 'src/localMediaRuntime.ts', 'tests/e2e/commercial-flow.spec.ts',
-  'tests/e2e/commercial-metadata.spec.ts', 'tests/e2e/stage-header.spec.ts',
+  'tests/e2e/commercial-metadata.spec.ts', 'tests/e2e/stage-header.spec.ts', 'tests/e2e/stage-dashboard.spec.ts',
   'tests/e2e/full-playthrough.spec.ts', 'tests/e2e/first-player-flow.spec.ts',
   'tests/e2e/interrogation-guidance.spec.ts', 'tests/e2e/player-guidance.spec.ts',
   '.github/workflows/browser-e2e.yml'
@@ -44,7 +44,7 @@ check(main.includes('AppErrorBoundary'), 'main.tsx не защищён авар�
 check(main.includes('ReactCaseExtension'), 'main.tsx не монтирует React Core');
 check(main.includes('PlayerGuidance'), 'main.tsx не монтирует Player Guidance');
 check(main.includes('installCommercialMetadataConsistency'), 'main.tsx не подключает синхронизацию коммерческих параметров');
-check(main.includes('installStageHeaderConsistency'), 'main.tsx не подключает синхронизацию текущего этапа в topbar');
+check(main.includes('installStageHeaderConsistency'), 'main.tsx не подключает синхронизацию текущего этапа в штабе');
 check(main.includes("./playerGuidance.css"), 'main.tsx не подключает стили Player Guidance');
 check(main.includes("./localMediaRuntime"), 'main.tsx не подключает гибридный медиаслой');
 check(main.includes("./firstPlayerFixes"), 'main.tsx не подключает исправления первого прохождения');
@@ -61,12 +61,25 @@ check(!commercialMetadata.includes('new MutationObserver'), 'Синхрониз�
 check(!commercialMetadata.includes('setInterval'), 'Синхронизация коммерческих параметров не должна использовать polling');
 
 ['Акт I', 'Акт II', 'Акт III', 'Ключевой допрос', 'Акт IV', 'Завершено']
-  .forEach((token) => check(stageHeader.includes(token), `Stage-aware header не содержит этап: ${token}`));
-check(stageHeader.includes('subscribeInvestigationState'), 'Stage-aware header не подписан на единое состояние расследования');
-check(stageHeader.includes('refreshInvestigationState'), 'Stage-aware header не синхронизирует события актов с единым состоянием');
+  .forEach((token) => check(stageHeader.includes(token), `Stage-aware штаб не содержит этап: ${token}`));
+[
+  'Сформулируйте первый вывод',
+  'Восстановите прежнюю планировку этажа',
+  'Восстановите историю карты 314-17',
+  'Разрушьте алиби Кирилла',
+  'Найдите Илью',
+  'Сформулируйте окончательное обвинение',
+  'Архив дела · Акт I',
+  'Факты первого этапа',
+  'Промежуточный отчёт №1',
+  'Принят'
+].forEach((token) => check(stageHeader.includes(token), `Stage-aware dashboard не содержит: ${token}`));
+check(stageHeader.includes('subscribeInvestigationState'), 'Stage-aware штаб не подписан на единое состояние расследования');
+check(stageHeader.includes('refreshInvestigationState'), 'Stage-aware штаб не синхронизирует события актов с единым состоянием');
+check(stageHeader.includes('dashboard-meter'), 'Stage-aware dashboard не управляет устаревшим счётчиком акта I');
 check(stageHeader.includes('Расследование завершено'), 'Финальный статус расследования не определён');
-check(!stageHeader.includes('new MutationObserver'), 'Stage-aware header не должен создавать MutationObserver');
-check(!stageHeader.includes('setInterval'), 'Stage-aware header не должен использовать polling');
+check(!stageHeader.includes('new MutationObserver'), 'Stage-aware штаб не должен создавать MutationObserver');
+check(!stageHeader.includes('setInterval'), 'Stage-aware штаб не должен использовать polling');
 
 check(mediaRuntime.includes('REALISTIC_PRIMARY_MEDIA = true'), 'Реалистичные первичные фото не включены');
 check(mediaRuntime.includes('case-001-hybrid-realistic-v1'), 'Гибридный медиапакет не маркирован');
@@ -108,4 +121,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.9.4 keeps canonical commercial metadata and shows the real investigation stage in the headquarters header.');
+console.log('\nCommercial release smoke passed: v0.9.5 keeps the headquarters header and case dashboard aligned with the canonical investigation stage.');
