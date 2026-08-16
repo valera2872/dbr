@@ -117,15 +117,50 @@ test('чистое расследование проходит весь марш
   await expect(page.locator('.react-case-modal.evidence-e007')).toContainText('Маршрут использовали этой ночью');
   await closeEvidence(page);
 
-  // ACT III — E008, E009 and intermediate report No. 2.
-  await expect(page.locator('[data-evidence-id="E008"]')).toBeEnabled();
-  await page.locator('[data-evidence-id="E008"]').click();
+  // ACT III discovery — the archive is requested because the 2015 envelope creates a reason to look there.
+  await expect(page.locator('[data-evidence-id="E008"]')).toBeHidden();
+  const guide = page.locator('.player-guide-floating');
+  await expect(guide).toContainText('Открыть рабочую панель');
+  await guide.getByRole('button', { name: /Открыть рабочую панель/ }).click();
+
+  const archiveLead = page.locator('.evidence-led-panel[data-evidence-led-mode="archive-lead"]');
+  await expect(archiveLead).toBeVisible();
+  await archiveLead.getByRole('button', { name: /Проверить следы инструмента на винтах/ }).click();
+  await expect(archiveLead).toContainText('инструмент типовой');
+  await archiveLead.getByRole('button', { name: /Изучить маркировку конверта 2015 года/ }).click();
+  await archiveLead.getByRole('button', { name: /Спросить Дениса о пометке/ }).click();
+  await expect(archiveLead).toContainText('BOX 15-B / CONTACT B');
+  await archiveLead.getByRole('button', { name: /Запросить BOX 15-B и журнал оцифровки/ }).click();
+
+  const archiveReceived = page.locator('.evidence-led-panel[data-evidence-led-mode="archive-received"]');
+  await expect(archiveReceived).toContainText('Архив выдал BOX 15-B');
+  await archiveReceived.getByRole('button', { name: /Открыть полученный архивный материал/ }).click();
+  await expect(page.locator('.react-case-modal.evidence-e008')).toBeVisible();
   await clickEvery(page.locator('.react-case-modal.evidence-e008 .react-point-list button'));
   await expect(page.locator('.react-case-modal.evidence-e008')).toContainText('Денис скрывал уникальный оригинал B-17');
   await closeEvidence(page);
 
-  await expect(page.locator('[data-evidence-id="E009"]')).toBeEnabled();
-  await page.locator('[data-evidence-id="E009"]').click();
+  // The Vera/Elena identity line must also be earned from the chain of custody, not announced by the UI.
+  await expect(page.locator('[data-evidence-id="E009"]')).toBeHidden();
+  await expect(guide).toContainText('Открыть рабочую панель');
+  await guide.getByRole('button', { name: /Открыть рабочую панель/ }).click();
+
+  const identityLead = page.locator('.evidence-led-panel[data-evidence-led-mode="identity-lead"]');
+  await expect(identityLead).toBeVisible();
+  await identityLead.getByRole('button', { name: /Поднять дополнительный лист выдачи носителей/ }).click();
+  await expect(identityLead).toContainText('Вера Белова');
+  await identityLead.getByRole('button', { name: /Уточнить у Дениса/ }).click();
+  await expect(identityLead).toContainText('такого имени среди участников нет');
+  await identityLead.getByRole('button', { name: /Проверить Кирилла Бессонова/ }).click();
+  await expect(identityLead).toContainText('Подмена личности не обнаружена');
+  await identityLead.getByRole('button', { name: /Проверить Елену Ветрову/ }).click();
+  await expect(identityLead).toContainText('дата рождения Елены совпадает');
+  await identityLead.getByRole('button', { name: /Запросить документы для проверки Елены/ }).click();
+
+  const identityReceived = page.locator('.evidence-led-panel[data-evidence-led-mode="identity-received"]');
+  await expect(identityReceived).toContainText('Получены документы Елены');
+  await identityReceived.getByRole('button', { name: /Провести документальную сверку/ }).click();
+  await expect(page.locator('.react-case-modal.evidence-e009')).toBeVisible();
   await clickEvery(page.locator('.react-case-modal.evidence-e009 .react-point-list button'));
   await page.getByRole('button', { name: /Денис: почему отсутствует B-17/ }).click();
   await page.getByRole('button', { name: /Елена: ваше настоящее имя — Вера Белова/ }).click();
@@ -135,7 +170,7 @@ test('чистое расследование проходит весь марш
   await expect(page.locator('.react-case-modal.evidence-e009 .react-checkpoint')).toContainText('Верно');
   await closeEvidence(page);
 
-  // Evidence-driven interrogation of Kirill. The passage is introduced by the plan, not by a premature question.
+  // Evidence-driven interrogation of Kirill.
   await openTab(page, 'Люди');
   await page.locator('.premium-person-card').filter({ hasText: 'Кирилл Бессонов' }).click();
   await expect(page.locator('.interrogation-shell')).toBeVisible();
@@ -183,6 +218,11 @@ test('чистое расследование проходит весь марш
   expect(saved.act2.questions).toEqual(expect.arrayContaining(['agency:wall', 'agency:renovation', 'agency:plan-requested']));
   expect(saved.act2.plan).toEqual(['wall', 'stamp', 'width']);
   expect(saved.act2.room).toEqual(['panel', 'tracks', 'envelope', 'fibres']);
+  expect(saved.act3.questions).toEqual(expect.arrayContaining([
+    'agency3:envelope', 'agency3:denis-envelope', 'agency3:archive-requested',
+    'agency3:trace-custody', 'agency3:denis-family', 'agency3:id-kirill',
+    'agency3:id-elena', 'agency3:identity-requested', 'd-original', 'v-name'
+  ]));
   expect(saved.act3.complete).toBe(true);
   expect(saved.act3.checkpointAnswer).toBe('separate_lies');
   expect(saved.interrogation.asked).toContain('alibi');
@@ -195,7 +235,6 @@ test('чистое расследование проходит весь марш
   await page.screenshot({ path: testInfo.outputPath('completed-case-report.png'), fullPage: true });
   await page.getByRole('button', { name: 'Закрыть', exact: true }).click();
 
-  // A new top-level browsing context has fresh sessionStorage but shares the saved case.
   await page.close();
   const returningPage = await context.newPage();
   trackErrors(returningPage);
