@@ -81,6 +81,51 @@ const checkpoint = room314Source.checkpoint;
 let installed = false;
 let latest: InvestigationSnapshot | null = null;
 
+function agencyTask(state: InvestigationSnapshot): { title: string; text: string } | null {
+  if (state.core.phase !== 'hq') return null;
+
+  if (state.core.act1Complete && state.derived.planCount === 0) {
+    if (state.act2.questions.includes('agency:plan-requested')) {
+      return {
+        title: 'Получен материал по вашему запросу',
+        text: 'Архив прислал обмерный план до реконструкции. Теперь его можно изучить как найденный следствием материал.'
+      };
+    }
+    return {
+      title: 'Чего не хватает в картине исчезновения?',
+      text: 'Дверь и окно исключены. Камера не показывает выхода. Выберите, какие следственные проверки помогут проверить оставшиеся версии.'
+    };
+  }
+
+  if (state.derived.act2Complete && state.derived.archiveCount === 0) {
+    if (state.act3.questions.includes('agency3:archive-requested')) {
+      return {
+        title: 'Получен материал по вашему запросу',
+        text: 'BOX 15-B и журнал оцифровки готовы к изучению.'
+      };
+    }
+    return {
+      title: 'Что связывает номер 312 со старым делом?',
+      text: 'Скрытый маршрут доказан. Теперь решите, какие найденные в комнате следы объясняют мотив и ведут к следующему источнику.'
+    };
+  }
+
+  if (state.derived.archiveCount >= 4 && state.derived.identityCount === 0 && !state.act3.complete) {
+    if (state.act3.questions.includes('agency3:identity-requested')) {
+      return {
+        title: 'Есть основание проверить личность Елены',
+        text: 'Документы получены. Теперь сопоставьте их самостоятельно.'
+      };
+    }
+    return {
+      title: 'Кто сохранил оригинал B-17?',
+      text: 'Восстановите цепочку хранения после гибели Антона и только затем решайте, чью личность нужно проверять.'
+    };
+  }
+
+  return null;
+}
+
 function setTone(element: HTMLElement, tone: 'secure' | 'live' | 'neutral'): void {
   element.classList.remove('secure', 'live', 'neutral', 'amber');
   element.classList.add(tone);
@@ -90,7 +135,7 @@ function applyDashboardState(state: InvestigationSnapshot): void {
   const dashboard = document.querySelector<HTMLElement>('.premium-dashboard');
   if (!dashboard) return;
 
-  const task = CURRENT_TASK[state.derived.stage];
+  const task = agencyTask(state) ?? CURRENT_TASK[state.derived.stage];
   const hero = dashboard.querySelector<HTMLElement>('.dashboard-hero');
   const title = hero?.querySelector<HTMLElement>('h1');
   const text = hero?.querySelector<HTMLElement>('p:not(.premium-kicker)');
@@ -124,6 +169,7 @@ function applyDashboardState(state: InvestigationSnapshot): void {
   }
 
   dashboard.dataset.routeStage = state.derived.stage;
+  dashboard.dataset.taskSource = agencyTask(state) ? 'investigative-agency' : 'route-stage';
 }
 
 function applyStageHeader(state: InvestigationSnapshot): void {

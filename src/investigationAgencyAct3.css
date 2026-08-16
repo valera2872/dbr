@@ -1,0 +1,213 @@
+.evidence-led-panel {
+  margin: 18px 0 22px;
+  padding: 20px;
+  border: 1px solid rgba(173, 139, 82, .28);
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(173, 139, 82, .08), transparent 42%),
+    rgba(12, 15, 20, .92);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .2);
+}
+
+.evidence-led-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.evidence-led-panel > header p,
+.evidence-led-breakthrough > p {
+  margin: 0 0 4px;
+  color: #b99a67;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.evidence-led-panel > header h2,
+.evidence-led-breakthrough h3 {
+  margin: 0;
+  color: #f4f0e8;
+}
+
+.evidence-led-panel > header h2 {
+  font-size: clamp(21px, 2.5vw, 30px);
+  line-height: 1.12;
+}
+
+.evidence-led-panel > header > span {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(185, 154, 103, .32);
+  border-radius: 999px;
+  color: #d7bd8e;
+  background: rgba(185, 154, 103, .08);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.evidence-led-intro {
+  max-width: 920px;
+  margin: 0 0 16px;
+  color: #b9bec7;
+  line-height: 1.65;
+}
+
+.evidence-led-intro strong {
+  color: #e7e0d5;
+}
+
+.evidence-led-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.evidence-led-actions.compact,
+.evidence-led-actions.candidates {
+  margin-top: 12px;
+}
+
+.evidence-led-action {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 88px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, .025);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+
+.evidence-led-action:not(:disabled):hover {
+  transform: translateY(-1px);
+  border-color: rgba(185, 154, 103, .45);
+  background: rgba(185, 154, 103, .07);
+}
+
+.evidence-led-action > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(185, 154, 103, .28);
+  border-radius: 50%;
+  color: #c6aa79;
+  font-weight: 800;
+}
+
+.evidence-led-action strong,
+.evidence-led-action small {
+  display: block;
+}
+
+.evidence-led-action strong {
+  margin: 2px 0 6px;
+  color: #ebe7df;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.evidence-led-action small {
+  color: #8f96a2;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.evidence-led-action.done {
+  border-color: rgba(88, 150, 119, .24);
+  background: rgba(88, 150, 119, .055);
+}
+
+.evidence-led-action.done > span {
+  border-color: rgba(88, 150, 119, .4);
+  color: #8ec4a5;
+}
+
+.evidence-led-action:disabled:not(.done) {
+  opacity: .48;
+  cursor: default;
+}
+
+.evidence-led-waiting {
+  margin-top: 13px;
+  padding: 12px 14px;
+  border-left: 2px solid rgba(185, 154, 103, .28);
+  color: #8f96a2;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.evidence-led-breakthrough {
+  margin-top: 15px;
+  padding: 16px;
+  border: 1px solid rgba(185, 154, 103, .3);
+  border-radius: 15px;
+  background: rgba(185, 154, 103, .075);
+}
+
+.evidence-led-breakthrough.identity {
+  margin-bottom: 12px;
+}
+
+.evidence-led-breakthrough h3 {
+  margin-bottom: 7px;
+  font-size: 18px;
+}
+
+.evidence-led-breakthrough > span {
+  display: block;
+  color: #aeb4be;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.evidence-led-breakthrough button,
+.evidence-led-open {
+  margin-top: 13px;
+  padding: 11px 15px;
+  border: 1px solid rgba(185, 154, 103, .45);
+  border-radius: 11px;
+  background: #b59665;
+  color: #111318;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.evidence-led-open {
+  margin-top: 4px;
+}
+
+@media (max-width: 760px) {
+  .evidence-led-panel {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .evidence-led-panel > header {
+    flex-direction: column;
+  }
+
+  .evidence-led-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .evidence-led-action {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .evidence-led-action {
+    transition: none;
+  }
+}
