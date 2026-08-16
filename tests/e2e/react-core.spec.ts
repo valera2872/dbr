@@ -86,7 +86,9 @@ test('React Core сохраняет акт IV, а финальное обвин�
   });
   await continueCase(page);
 
-  await expect(page.locator('[data-react-case-core="v0.8.5"]')).toBeVisible();
+  // React Core remains mounted and owns the compatible Act IV state, but its old
+  // pre-written final answer has no visible surface while FinalSynthesis owns the finale.
+  await expect(page.locator('[data-react-case-core="v0.8.5"]')).toHaveCount(1);
   await expect(page.locator('.final-synthesis')).toBeVisible();
   await expect(page.locator('.react-final-panel')).toBeHidden();
   await expect(page.locator('.act4-final-panel:not(.react-final-panel)')).toHaveCount(0);
