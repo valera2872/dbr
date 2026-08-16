@@ -18,6 +18,7 @@ const progressiveNavigation = read('src/progressiveNavigation.ts');
 const investigationAgency = read('src/investigationAgency.ts');
 const investigationAgencyAct3 = read('src/investigationAgencyAct3.ts');
 const interrogationAgency = read('src/investigationAgencyInterrogation.ts');
+const finalSynthesis = read('src/FinalSynthesis.tsx');
 const fixes = read('src/firstPlayerFixes.ts');
 const interrogationGuide = read('src/interrogationGuidance.ts');
 const act23 = read('src/act23Usability.ts');
@@ -26,9 +27,9 @@ const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.10.0', 'Коммерческая сборка должна иметь версию 0.10.0');
+check(pkg.version === '0.10.1', 'Коммерческая сборка должна иметь версию 0.10.1');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-10-0-interrogation-agency'), 'Service worker не использует cache key v0.10.0');
+check(sw.includes('dbr-v0-10-1-final-synthesis'), 'Service worker не использует cache key v0.10.1');
 
 [
   'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/commercialMetadataConsistency.ts',
@@ -36,6 +37,7 @@ check(sw.includes('dbr-v0-10-0-interrogation-agency'), 'Service worker не ис
   'src/progressiveNavigation.ts', 'src/investigationAgency.ts', 'src/investigationAgency.css',
   'src/investigationAgencyAct3.ts', 'src/investigationAgencyAct3.css',
   'src/investigationAgencyInterrogation.ts', 'src/interrogationAgency.css',
+  'src/FinalSynthesis.tsx', 'src/finalSynthesis.css',
   'src/AppErrorBoundary.tsx', 'src/ReactCaseExtension.tsx', 'src/PlayerGuidance.tsx', 'src/playerGuidance.css',
   'src/firstPlayerFixes.ts', 'src/firstPlayerFixes.css', 'src/interrogationGuidance.ts',
   'src/interrogationGuidance.css', 'src/act23Usability.ts', 'src/act23Usability.css',
@@ -43,9 +45,9 @@ check(sw.includes('dbr-v0-10-0-interrogation-agency'), 'Service worker не ис
   'tests/e2e/stage-header.spec.ts', 'tests/e2e/stage-dashboard.spec.ts',
   'tests/e2e/progressive-navigation.spec.ts', 'tests/e2e/investigative-agency.spec.ts',
   'tests/e2e/evidence-led-chain.spec.ts', 'tests/e2e/interrogation-agency.spec.ts',
-  'tests/e2e/full-playthrough.spec.ts', 'tests/e2e/first-player-flow.spec.ts',
-  'tests/e2e/interrogation-guidance.spec.ts', 'tests/e2e/player-guidance.spec.ts',
-  '.github/workflows/browser-e2e.yml'
+  'tests/e2e/final-synthesis.spec.ts', 'tests/e2e/full-playthrough.spec.ts',
+  'tests/e2e/first-player-flow.spec.ts', 'tests/e2e/interrogation-guidance.spec.ts',
+  'tests/e2e/player-guidance.spec.ts', '.github/workflows/browser-e2e.yml'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
 
 ['Продолжить расследование','Начать расследование','Начать заново','Восстановить сохранение','Открыть итог дела','repairSave']
@@ -54,6 +56,7 @@ check(sw.includes('dbr-v0-10-0-interrogation-agency'), 'Service worker не ис
 check(main.includes('AppErrorBoundary'), 'main.tsx не защищён аварийной границей');
 check(main.includes('ReactCaseExtension'), 'main.tsx не монтирует React Core');
 check(main.includes('PlayerGuidance'), 'main.tsx не монтирует Player Guidance');
+check(main.includes('FinalSynthesis'), 'main.tsx не монтирует сборку финального обвинения');
 check(main.includes('installCommercialMetadataConsistency'), 'main.tsx не подключает синхронизацию коммерческих параметров');
 check(main.includes('installStageHeaderConsistency'), 'main.tsx не подключает синхронизацию текущего этапа в штабе');
 check(main.includes('installFocusedFirstAction'), 'main.tsx не подключает focused first action');
@@ -62,6 +65,7 @@ check(main.includes('installInvestigationAgency'), 'main.tsx не подключ
 check(main.includes('installInvestigationAgencyAct3'), 'main.tsx не подключает evidence-led Act III agency');
 check(main.includes("./investigationAgencyInterrogation"), 'main.tsx не подключает player-led interrogation agency');
 check(main.includes("./interrogationAgency.css"), 'main.tsx не подключает стили player-led interrogation');
+check(main.includes("./finalSynthesis.css"), 'main.tsx не подключает стили финальной реконструкции');
 check(main.includes("./investigationAgency.css"), 'main.tsx не подключает стили investigative agency');
 check(main.includes("./investigationAgencyAct3.css"), 'main.tsx не подключает стили evidence-led Act III');
 check(main.includes("./focusedFirstAction.css"), 'main.tsx не подключает стили focused first action');
@@ -142,6 +146,19 @@ check(!investigationAgencyAct3.includes('setInterval'), 'Evidence-led Act III н
 check(!interrogationAgency.includes('new MutationObserver'), 'Player-led interrogation не должен создавать MutationObserver');
 check(!interrogationAgency.includes('setInterval'), 'Player-led interrogation не должен использовать polling');
 
+[
+  'Соберите обвинение из доказанных частей',
+  'Какая пара материалов доказывает способ проникновения?',
+  'Какая пара материалов связывает нападение с B-17?',
+  'Версия не выдерживает проверку',
+  "finalAnswer: 'kirill_responsibility'"
+].forEach((token) => check(finalSynthesis.includes(token), `Финальная реконструкция не содержит: ${token}`));
+check(finalSynthesis.includes('ACT4_STORAGE_KEY'), 'Финальная реконструкция не использует существующее состояние акта IV');
+check(finalSynthesis.includes('wrongAnswers'), 'Ошибочные финальные версии не учитываются в итоговой оценке');
+check(finalSynthesis.includes('subscribeInvestigationState'), 'Финальная реконструкция не подписана на единое состояние');
+check(!finalSynthesis.includes('new MutationObserver'), 'Финальная реконструкция не должна создавать MutationObserver');
+check(!finalSynthesis.includes('setInterval'), 'Финальная реконструкция не должна использовать polling');
+
 check(mediaRuntime.includes('REALISTIC_PRIMARY_MEDIA = true'), 'Реалистичные первичные фото не включены');
 check(mediaRuntime.includes('case-001-hybrid-realistic-v1'), 'Гибридный медиапакет не маркирован');
 check(!mediaRuntime.includes('new MutationObserver'), 'Медиаслой не должен создавать MutationObserver');
@@ -178,4 +195,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.10.0 keeps the interface understandable while leaving Kirill interrogation strategy to the player.');
+console.log('\nCommercial release smoke passed: v0.10.1 keeps player-led investigation through the final accusation synthesis.');
