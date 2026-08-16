@@ -96,7 +96,8 @@ check(css.includes('@media (max-width: 760px)'), 'Player Guidance не адап�
   'Осмотрено зон: 1/4',
   'Следующий шаг: Продолжить осмотр номера',
   'Объяснить',
-  'Следующий шаг: Открыть архивный план'
+  'Следующее действие выбирает следователь',
+  'Игра не указывает правильное направление'
 ].forEach((token) => check(test.includes(token), `Браузерный тест Player Guidance не проверяет: ${token}`));
 
 [
@@ -112,4 +113,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nPlayer Guidance smoke passed: focused first action, progressive HQ disclosure and state-aware navigation are present in v${pkg.version}.`);
+console.log(`\nPlayer Guidance smoke passed: focused first action, progressive HQ disclosure and investigative agency coexist in v${pkg.version}.`);

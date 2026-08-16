@@ -1,0 +1,213 @@
+.investigation-agency-panel {
+  margin: 18px 0 22px;
+  padding: 18px;
+  border: 1px solid rgba(124, 232, 227, .18);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(9, 30, 32, .92), rgba(4, 17, 19, .96));
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .22);
+}
+
+.investigation-agency-panel header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.investigation-agency-panel header p,
+.agency-breakthrough > p {
+  margin: 0 0 5px;
+  color: #72d7d2;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.investigation-agency-panel header h2 {
+  margin: 0;
+  color: #eef8f6;
+  font-size: clamp(20px, 2.5vw, 30px);
+  line-height: 1.08;
+}
+
+.investigation-agency-panel header > span {
+  flex: 0 0 auto;
+  padding: 7px 9px;
+  border: 1px solid rgba(124, 232, 227, .18);
+  border-radius: 999px;
+  color: #8fb0ad;
+  background: rgba(124, 232, 227, .055);
+  font-size: 9px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.agency-lead {
+  max-width: 920px;
+  margin: 12px 0 0;
+  color: #9bb0ad;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.agency-lead strong {
+  color: #dbe9e7;
+}
+
+.agency-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.agency-action {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 10px;
+  align-items: flex-start;
+  padding: 13px;
+  border: 1px solid rgba(124, 232, 227, .13);
+  border-radius: 11px;
+  color: inherit;
+  background: rgba(1, 12, 14, .58);
+  text-align: left;
+  cursor: pointer;
+}
+
+.agency-action:hover,
+.agency-action:focus-visible {
+  border-color: rgba(124, 232, 227, .38);
+  outline: none;
+  background: rgba(15, 54, 55, .38);
+}
+
+.agency-action > span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(124, 232, 227, .22);
+  border-radius: 50%;
+  color: #78ded8;
+  font: 850 11px/1 ui-monospace, monospace;
+}
+
+.agency-action strong,
+.agency-action small {
+  display: block;
+}
+
+.agency-action strong {
+  color: #e4f0ee;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.agency-action small {
+  margin-top: 5px;
+  color: #78918e;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.agency-action.done {
+  border-color: rgba(92, 181, 151, .2);
+  background: rgba(23, 67, 56, .24);
+  cursor: default;
+}
+
+.agency-action.done > span {
+  border-color: rgba(106, 208, 169, .35);
+  color: #7cddb8;
+}
+
+.agency-action.done small {
+  color: #9eb9b2;
+}
+
+.agency-waiting,
+.agency-breakthrough {
+  margin-top: 14px;
+  padding: 13px 14px;
+  border-radius: 10px;
+}
+
+.agency-waiting {
+  border-left: 3px solid rgba(124, 232, 227, .28);
+  color: #718986;
+  background: rgba(124, 232, 227, .035);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.agency-breakthrough {
+  border: 1px solid rgba(124, 232, 227, .22);
+  border-left: 4px solid #74ded8;
+  background: rgba(24, 79, 78, .22);
+}
+
+.agency-breakthrough h3 {
+  margin: 0;
+  color: #e6f5f2;
+  font-size: 15px;
+}
+
+.agency-breakthrough > span {
+  display: block;
+  margin-top: 7px;
+  color: #91aaa6;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.agency-breakthrough button,
+.agency-open-materials {
+  margin-top: 12px;
+  padding: 11px 13px;
+  border: 0;
+  border-radius: 9px;
+  color: #031112;
+  background: #7ce8e2;
+  font: 900 11px/1.2 inherit;
+  cursor: pointer;
+}
+
+.agency-breakthrough button:hover,
+.agency-breakthrough button:focus-visible,
+.agency-open-materials:hover,
+.agency-open-materials:focus-visible {
+  outline: 2px solid rgba(124, 232, 227, .36);
+  outline-offset: 3px;
+}
+
+html[data-dbr-investigation-agency="lead"] .react-next-action {
+  display: none !important;
+}
+
+html[data-dbr-investigation-agency="lead"] .player-guide-floating .player-guide-next:disabled {
+  opacity: .55;
+  cursor: default;
+}
+
+@media (max-width: 760px) {
+  .investigation-agency-panel {
+    margin: 12px 0 18px;
+    padding: 14px;
+  }
+
+  .investigation-agency-panel header {
+    display: grid;
+  }
+
+  .investigation-agency-panel header > span {
+    justify-self: start;
+  }
+
+  .agency-actions {
+    grid-template-columns: 1fr;
+  }
+}

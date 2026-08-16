@@ -18,6 +18,7 @@ import { installCommercialMetadataConsistency } from './commercialMetadataConsis
 import { installStageHeaderConsistency } from './stageHeaderConsistency';
 import { installFocusedFirstAction } from './focusedFirstAction';
 import { installProgressiveNavigation } from './progressiveNavigation';
+import { installInvestigationAgency } from './investigationAgency';
 import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
@@ -48,11 +49,13 @@ import './playerGuidance.css';
 import './playerGuidanceVisibility.css';
 import './focusedFirstAction.css';
 import './stageHeaderConsistency.css';
+import './investigationAgency.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
 import './premiumPassV2';
 import './interrogationGuidance';
+import './investigationAgencyInterrogation';
 import './interactiveInterrogation';
 import './livingSuspect';
 import './kirillVideoRuntime';
@@ -87,6 +90,7 @@ if (actorStudio.mounted) {
   installStageHeaderConsistency();
   installFocusedFirstAction();
   installProgressiveNavigation();
+  installInvestigationAgency();
 }
 
 if ('serviceWorker' in navigator) {
