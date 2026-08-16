@@ -59,6 +59,7 @@ import './premiumPassV2';
 import './interrogationGuidance';
 import './investigationAgencyInterrogation';
 import './interactiveInterrogation';
+import './investigationAgencyAccessibility';
 import './livingSuspect';
 import './kirillVideoRuntime';
 import './stabilityDiagnostics';
