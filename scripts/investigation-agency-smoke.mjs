@@ -12,6 +12,7 @@ const build = read('src/build.ts');
 const main = read('src/main.tsx');
 const agency = read('src/investigationAgency.ts');
 const agencyAct3 = read('src/investigationAgencyAct3.ts');
+const agencyA11y = read('src/investigationAgencyAccessibility.ts');
 const css = read('src/investigationAgency.css');
 const cssAct3 = read('src/investigationAgencyAct3.css');
 const sw = read('public/sw.js');
@@ -26,12 +27,14 @@ check(sw.includes('dbr-v0-9-9-evidence-led-chain'), 'Service worker cache не �
   'src/investigationAgency.css',
   'src/investigationAgencyAct3.ts',
   'src/investigationAgencyAct3.css',
+  'src/investigationAgencyAccessibility.ts',
   'tests/e2e/investigative-agency.spec.ts',
   'tests/e2e/evidence-led-chain.spec.ts'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
 
 check(main.includes('installInvestigationAgency'), 'main.tsx не подключает investigative agency runtime');
 check(main.includes('installInvestigationAgencyAct3'), 'main.tsx не подключает evidence-led Act III runtime');
+check(main.includes("./investigationAgencyAccessibility"), 'main.tsx не подключает accessibility guard agency-навигации');
 check(main.includes("./investigationAgency.css"), 'main.tsx не подключает investigative agency CSS');
 check(main.includes("./investigationAgencyAct3.css"), 'main.tsx не подключает evidence-led Act III CSS');
 
@@ -64,6 +67,11 @@ check(main.includes("./investigationAgencyAct3.css"), 'main.tsx не подкл�
   'Открыть рабочую панель'
 ].forEach((token) => check(agencyAct3.includes(token), `Evidence-led Act III не содержит: ${token}`));
 
+check(agencyA11y.includes("setAttribute('aria-label', 'Открыть рабочую панель')"), 'Agency navigation сохраняет устаревший aria-label');
+check(agencyA11y.includes('agencyOriginalAria'), 'Agency navigation не восстанавливает исходную accessibility-метку');
+check(!agencyA11y.includes('new MutationObserver'), 'Accessibility guard не должен создавать MutationObserver');
+check(!agencyA11y.includes('setInterval'), 'Accessibility guard не должен использовать polling');
+
 check(agency.includes('ACT2_STORAGE_KEY'), 'Следственные решения акта II не сохраняются в существующем ключе');
 check(agencyAct3.includes('ACT3_STORAGE_KEY'), 'Следственные решения акта III не сохраняются в существующем ключе');
 check(agency.includes('subscribeInvestigationState'), 'Investigative agency не подписан на единое состояние');
@@ -94,7 +102,8 @@ check(cssAct3.includes('@media (max-width: 760px)'), 'Evidence-led Act III не 
   'E009 появляется только после восстановления Веры',
   'Проверить Марину Орлову',
   'Проверить Елену Ветрову',
-  'agency3:identity-requested'
+  'agency3:identity-requested',
+  'Открыть рабочую панель'
 ].forEach((token) => check(act3Test.includes(token), `Браузерный тест evidence-led цепочки не проверяет: ${token}`));
 
 if (failures.length) {
