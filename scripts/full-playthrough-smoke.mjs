@@ -14,7 +14,7 @@ const main = read('src/main.tsx');
 const returnBridge = read('src/completedCaseReturn.ts');
 const test = read('tests/e2e/full-playthrough.spec.ts');
 
-check(/^0\.(?:8\.[89]|9\.)/.test(pkg.version), 'Полный playthrough должен сохраняться в релизах 0.8.8+');
+check(/^0\.(?:8\.[89]|9\.|10\.)/.test(pkg.version), 'Полный playthrough должен сохраняться в релизах 0.8.8+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(sw.includes(`dbr-v${pkg.version.replaceAll('.', '-')}`), 'Service worker не использует текущий cache key');
 check(exists('dist/index.html'), 'Production bundle не создан');
@@ -37,6 +37,9 @@ for (let index = 1; index <= 11; index += 1) {
   'Запросить обмерный план до реконструкции',
   'agency:plan-requested',
   'До реконструкции здесь был служебный проём',
+  'Запросить BOX 15-B и журнал оцифровки',
+  'Проверить Елену Ветрову',
+  'agency3:identity-requested',
   'Денис скрывал оригинал, Вера — личность',
   'data-conclusion="route"',
   'Извлечь карту 314-17',
@@ -71,4 +74,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFull playthrough smoke passed: a clean browser route earns the archive plan through investigation, then covers E001–E011, reports, interrogation, rescue, accusation, epilogue and return.');
+console.log('\nFull playthrough smoke passed: a clean browser route earns E006/E008/E009 through investigation, then covers interrogation, rescue, accusation, epilogue and return.');
