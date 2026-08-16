@@ -51,7 +51,7 @@ test('новичок получает одно понятное первое д�
   await expect(help).toContainText('Она не раскрывает правильную детективную версию');
 });
 
-test('проводник показывает следующий архивный шаг прямо на игровом поле', async ({ page }) => {
+test('после первого отчёта проводник перестаёт выдавать идею старого плана', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('dbr:player-guidance:onboarding:v1', '1');
     localStorage.setItem('dbr:dbr_001_room_314:0.2.0', JSON.stringify({
@@ -69,18 +69,21 @@ test('проводник показывает следующий архивны�
       act1Complete: true,
       startedAt: '2026-08-10T00:00:00.000Z'
     }));
+    localStorage.setItem('dbr:dbr_001_room_314:act2:v0.5.0', JSON.stringify({ plan: [], room: [], questions: [] }));
   });
 
   await page.goto('./?release=e2e-player-guidance-act2');
   await page.locator('.commercial-launch').getByRole('button', { name: 'Продолжить расследование' }).click();
 
   const floating = page.locator('.player-guide-floating');
-  await expect(floating).toContainText('Проверить, существовал ли другой путь между номерами 312 и 314');
-  await expect(floating).toContainText('Изучите архивный план этажа');
-  await expect(floating.getByRole('button', { name: /Следующий шаг: Открыть архивный план/ })).toBeVisible();
+  await expect(floating).toContainText('Известные пути не объясняют исчезновение');
+  await expect(floating).toContainText('Игра не указывает правильное направление');
+  await expect(floating).not.toContainText('Изучите архивный план этажа');
+  await expect(floating.getByRole('button', { name: 'Следующее действие выбирает следователь' })).toBeDisabled();
+  await expect(floating.getByRole('button', { name: 'Объяснить' })).toBeHidden();
 
-  await floating.getByRole('button', { name: 'Объяснить' }).click();
-  const help = page.locator('.player-guide-panel');
-  await expect(help).toContainText('Проверено отметок на плане: 0/3');
-  await expect(help.getByRole('button', { name: 'Открыть архивный план' })).toBeVisible();
+  await expect(page.locator('[data-evidence-id="E006"]')).toBeHidden();
+  const caseTab = page.locator('.premium-sidebar button:visible, .premium-mobile-nav button:visible').filter({ hasText: 'Дело' }).first();
+  await caseTab.click();
+  await expect(page.locator('.investigation-agency-panel')).toContainText('Выберите проверки, которые считаете разумными');
 });
