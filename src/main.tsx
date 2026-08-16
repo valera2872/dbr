@@ -19,6 +19,7 @@ import { installStageHeaderConsistency } from './stageHeaderConsistency';
 import { installFocusedFirstAction } from './focusedFirstAction';
 import { installProgressiveNavigation } from './progressiveNavigation';
 import { installInvestigationAgency } from './investigationAgency';
+import { installInvestigationAgencyAct3 } from './investigationAgencyAct3';
 import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
@@ -50,6 +51,7 @@ import './playerGuidanceVisibility.css';
 import './focusedFirstAction.css';
 import './stageHeaderConsistency.css';
 import './investigationAgency.css';
+import './investigationAgencyAct3.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -91,6 +93,7 @@ if (actorStudio.mounted) {
   installFocusedFirstAction();
   installProgressiveNavigation();
   installInvestigationAgency();
+  installInvestigationAgencyAct3();
 }
 
 if ('serviceWorker' in navigator) {
