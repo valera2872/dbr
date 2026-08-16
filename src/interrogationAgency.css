@@ -61,11 +61,30 @@
   font-size: 25px;
 }
 
-.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence:not(:disabled) {
+/*
+ * The old guided interrogation animated/highlighted the prescribed next card.
+ * In agency mode every available item is an equal player choice, so motion here
+ * is both misleading and a real interaction bug (the hit target never settles).
+ */
+.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence,
+.interrogation-shell[data-investigation-agency="mid"] .interrogation-evidence {
   outline: none;
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
 }
 
-.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence.next-guided-evidence {
+.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence:hover,
+.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence:focus-visible,
+.interrogation-shell[data-investigation-agency="mid"] .interrogation-evidence:hover,
+.interrogation-shell[data-investigation-agency="mid"] .interrogation-evidence:focus-visible {
+  transform: none !important;
+}
+
+.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence.next-guided-evidence,
+.interrogation-shell[data-investigation-agency="mid"] .interrogation-evidence.next-guided-evidence {
+  animation: none !important;
+  transition: none !important;
   box-shadow: none !important;
   transform: none !important;
 }
