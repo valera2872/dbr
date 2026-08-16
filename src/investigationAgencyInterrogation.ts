@@ -4,69 +4,150 @@ import {
   type InvestigationSnapshot
 } from './investigationState';
 
-const PLAN_REQUESTED = 'agency:plan-requested';
 let scheduled = false;
 
-function leadActive(state: InvestigationSnapshot): boolean {
+function keyInterrogation(state: InvestigationSnapshot): boolean {
   return state.core.phase === 'hq'
-    && state.core.act1Complete
-    && state.derived.planCount === 0
-    && !state.act2.questions.includes(PLAN_REQUESTED);
+    && state.derived.stage === 'kirill-interrogation'
+    && !state.interrogation.complete;
 }
 
-function apply(state: InvestigationSnapshot): void {
-  const active = leadActive(state);
-  const shell = document.querySelector<HTMLElement>('.interrogation-shell');
-  if (!shell) return;
+function midInvestigationInterrogation(state: InvestigationSnapshot): boolean {
+  return state.core.phase === 'hq'
+    && state.core.act1Complete
+    && !state.act3.complete
+    && !state.interrogation.complete;
+}
 
+function hideFutureEvidence(shell: HTMLElement): void {
+  shell.querySelectorAll<HTMLButtonElement>('.interrogation-evidence').forEach((button) => {
+    const hiddenByAgency = button.dataset.agencyFutureHidden === '1';
+    const shouldHide = button.disabled && !button.classList.contains('presented');
+
+    if (shouldHide) {
+      button.dataset.agencyFutureHidden = '1';
+      button.hidden = true;
+      button.style.display = 'none';
+      button.setAttribute('aria-hidden', 'true');
+      return;
+    }
+
+    if (hiddenByAgency) {
+      button.hidden = false;
+      button.style.display = '';
+      button.removeAttribute('aria-hidden');
+      delete button.dataset.agencyFutureHidden;
+    }
+  });
+}
+
+function removeGuidedEvidenceHighlight(shell: HTMLElement): void {
+  shell.querySelectorAll('.interrogation-evidence.next-guided-evidence').forEach((element) => {
+    element.classList.remove('next-guided-evidence');
+  });
+}
+
+function briefingMarkup(mode: 'mid' | 'key', state: InvestigationSnapshot): string {
+  if (mode === 'key') {
+    const presented = state.interrogation.presented.length;
+    return `<section class="interrogation-agency-brief" data-interrogation-agency-mode="key">
+      <div class="interrogation-agency-copy">
+        <small>Допрос · самостоятельная проверка</small>
+        <strong>Проверьте алиби Кирилла своей доказательной цепочкой</strong>
+        <p>Все доступные материалы уже собраны. Решите сами, что предъявлять и в каком порядке. Если связка слаба, Кирилл объяснит, чего она не доказывает. Его возражение — часть расследования, а не ошибка интерфейса.</p>
+      </div>
+      <div class="interrogation-agency-status"><span>Предъявлено материалов</span><b>${presented}</b><em>Правильный порядок не показывается</em></div>
+    </section>`;
+  }
+
+  return `<section class="interrogation-agency-brief" data-interrogation-agency-mode="mid">
+    <div class="interrogation-agency-copy">
+      <small>Допрос · граница знания</small>
+      <strong>Спрашивайте только о том, для чего уже есть основание</strong>
+      <p>Можно зафиксировать известное алиби и использовать уже найденные материалы. Будущие доказательства и их названия здесь не показываются. Если аргумента не хватает — продолжайте расследование.</p>
+    </div>
+  </section>`;
+}
+
+function renderBrief(shell: HTMLElement, mode: 'mid' | 'key' | 'off', state: InvestigationSnapshot): void {
+  const old = shell.querySelector<HTMLElement>('.interrogation-agency-brief');
   const guide = shell.querySelector<HTMLElement>('.interrogation-guide');
-  if (guide) {
-    if (active) {
-      guide.dataset.agencyHidden = '1';
-      guide.style.display = 'none';
-    } else if (guide.dataset.agencyHidden === '1') {
+
+  if (mode === 'off') {
+    old?.remove();
+    if (guide?.dataset.agencyHidden === '1') {
       guide.style.display = '';
       delete guide.dataset.agencyHidden;
     }
+    return;
   }
 
-  shell.querySelectorAll<HTMLButtonElement>('.interrogation-evidence').forEach((button) => {
-    if (active && button.disabled) {
-      button.dataset.agencyHidden = '1';
-      button.hidden = true;
-      button.style.display = 'none';
-      return;
-    }
-    if (!active && button.dataset.agencyHidden === '1') {
-      button.hidden = false;
-      button.style.display = '';
-      delete button.dataset.agencyHidden;
-    }
-  });
+  if (guide) {
+    guide.dataset.agencyHidden = '1';
+    guide.style.display = 'none';
+  }
 
+  const signature = `${mode}:${state.interrogation.asked.join('|')}:${state.interrogation.presented.join('|')}`;
+  if (old?.dataset.signature === signature) return;
+  old?.remove();
+
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = briefingMarkup(mode, state);
+  const brief = wrapper.firstElementChild as HTMLElement | null;
+  if (!brief) return;
+  brief.dataset.signature = signature;
+  shell.querySelector('.interrogation-header')?.insertAdjacentElement('afterend', brief);
+}
+
+function rewriteEvidenceCaption(shell: HTMLElement, mode: 'mid' | 'key' | 'off'): void {
   const note = shell.querySelector<HTMLElement>('.interrogation-control-title small');
-  if (active && note) {
-    note.dataset.agencyOriginal = note.textContent ?? '';
-    note.textContent = 'Предъявляйте только уже найденные материалы. Будущие доказательства здесь не раскрываются.';
-  } else if (!active && note?.dataset.agencyOriginal) {
-    note.textContent = note.dataset.agencyOriginal;
-    delete note.dataset.agencyOriginal;
+  if (!note) return;
+
+  if (mode === 'off') {
+    if (note.dataset.agencyOriginal) {
+      note.textContent = note.dataset.agencyOriginal;
+      delete note.dataset.agencyOriginal;
+    }
+    return;
   }
 
-  shell.dataset.investigationAgency = active ? 'lead' : 'off';
+  if (!note.dataset.agencyOriginal) note.dataset.agencyOriginal = note.textContent ?? '';
+  note.textContent = mode === 'key'
+    ? 'Выберите доказательство самостоятельно. Кирилл будет оспаривать слабые связки.'
+    : 'Показаны только уже найденные материалы. Будущие доказательства скрыты.';
+}
+
+function apply(state: InvestigationSnapshot): void {
+  const shell = document.querySelector<HTMLElement>('.interrogation-shell');
+  if (!shell) return;
+
+  hideFutureEvidence(shell);
+  removeGuidedEvidenceHighlight(shell);
+
+  const mode: 'mid' | 'key' | 'off' = keyInterrogation(state)
+    ? 'key'
+    : midInvestigationInterrogation(state)
+      ? 'mid'
+      : 'off';
+
+  renderBrief(shell, mode, state);
+  rewriteEvidenceCaption(shell, mode);
+  shell.dataset.investigationAgency = mode;
 }
 
 function schedule(reason: string): void {
   if (scheduled) return;
   scheduled = true;
-  window.requestAnimationFrame(() => {
+  window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
     scheduled = false;
     apply(refreshInvestigationState(reason));
-    window.requestAnimationFrame(() => apply(refreshInvestigationState(`${reason}:settled`)));
-  });
+  }));
 }
 
-subscribeInvestigationState((state) => window.requestAnimationFrame(() => apply(state)));
+subscribeInvestigationState((state) => window.requestAnimationFrame(() => window.requestAnimationFrame(() => apply(state))));
 document.addEventListener('click', () => schedule('investigation-agency-interrogation:click'), true);
 window.addEventListener('dbr:interrogation-updated', () => schedule('investigation-agency-interrogation:update'));
 window.addEventListener('dbr:act2-updated', () => schedule('investigation-agency-interrogation:act2'));
+window.addEventListener('dbr:act3-updated', () => schedule('investigation-agency-interrogation:act3'));
+window.addEventListener('dbr:runtime-settled', () => schedule('investigation-agency-interrogation:runtime'));
+window.addEventListener('pageshow', () => schedule('investigation-agency-interrogation:pageshow'));

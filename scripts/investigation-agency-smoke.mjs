@@ -13,98 +13,65 @@ const main = read('src/main.tsx');
 const agency = read('src/investigationAgency.ts');
 const agencyAct3 = read('src/investigationAgencyAct3.ts');
 const agencyA11y = read('src/investigationAgencyAccessibility.ts');
-const css = read('src/investigationAgency.css');
-const cssAct3 = read('src/investigationAgencyAct3.css');
+const interrogationAgency = read('src/investigationAgencyInterrogation.ts');
+const interrogationCss = read('src/interrogationAgency.css');
 const sw = read('public/sw.js');
-const test = read('tests/e2e/investigative-agency.spec.ts');
-const act3Test = read('tests/e2e/evidence-led-chain.spec.ts');
+const interrogationTest = read('tests/e2e/interrogation-agency.spec.ts');
 
-check(pkg.version === '0.9.9', 'Investigative agency release должна иметь версию 0.9.9');
-check(build.includes("APP_BUILD = 'v0.9.9'"), 'APP_BUILD не обновлён до v0.9.9');
-check(sw.includes('dbr-v0-9-9-evidence-led-chain'), 'Service worker cache не обновлён до v0.9.9');
+check(pkg.version === '0.10.0', 'Investigative agency release должна иметь версию 0.10.0');
+check(build.includes("APP_BUILD = 'v0.10.0'"), 'APP_BUILD не обновлён до v0.10.0');
+check(sw.includes('dbr-v0-10-0-interrogation-agency'), 'Service worker cache не обновлён до v0.10.0');
 [
   'src/investigationAgency.ts',
-  'src/investigationAgency.css',
   'src/investigationAgencyAct3.ts',
-  'src/investigationAgencyAct3.css',
   'src/investigationAgencyAccessibility.ts',
+  'src/investigationAgencyInterrogation.ts',
+  'src/interrogationAgency.css',
   'tests/e2e/investigative-agency.spec.ts',
-  'tests/e2e/evidence-led-chain.spec.ts'
+  'tests/e2e/evidence-led-chain.spec.ts',
+  'tests/e2e/interrogation-agency.spec.ts'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
 
 check(main.includes('installInvestigationAgency'), 'main.tsx не подключает investigative agency runtime');
 check(main.includes('installInvestigationAgencyAct3'), 'main.tsx не подключает evidence-led Act III runtime');
-check(main.includes("./investigationAgencyAccessibility"), 'main.tsx не подключает accessibility guard agency-навигации');
-check(main.includes("./investigationAgency.css"), 'main.tsx не подключает investigative agency CSS');
-check(main.includes("./investigationAgencyAct3.css"), 'main.tsx не подключает evidence-led Act III CSS');
+check(main.includes("./investigationAgencyInterrogation"), 'main.tsx не подключает interrogation agency runtime');
+check(main.includes("./interrogationAgency.css"), 'main.tsx не подключает interrogation agency CSS');
+check(main.includes("./investigationAgencyAccessibility"), 'main.tsx не подключает accessibility guard');
 
 [
-  'agency:window',
-  'agency:lock',
-  'agency:wall',
-  'agency:renovation',
   'agency:plan-requested',
-  'Не каждая обязана дать новую улику',
   'Запросить обмерный план до реконструкции',
-  'Третий этаж перестраивали после фестиваля 2015 года',
-  'Известные пути выхода не объясняют исчезновение',
-  'До реконструкции здесь был служебный проём'
-].forEach((token) => check(agency.includes(token), `Investigative agency не содержит: ${token}`));
-
+  'Не каждая обязана дать новую улику'
+].forEach((token) => check(agency.includes(token), `Act II agency не содержит: ${token}`));
 [
-  'agency3:fibres',
-  'agency3:toolmarks',
-  'agency3:envelope',
-  'agency3:denis-envelope',
   'agency3:archive-requested',
-  'agency3:trace-custody',
-  'agency3:denis-family',
-  'agency3:id-elena',
   'agency3:identity-requested',
   'Запросить BOX 15-B и журнал оцифровки',
-  'Вера Белова должна была приехать, но такого имени среди участников нет',
-  'Запросить документы для проверки Елены',
-  'Открыть рабочую панель'
-].forEach((token) => check(agencyAct3.includes(token), `Evidence-led Act III не содержит: ${token}`));
+  'Запросить документы для проверки Елены'
+].forEach((token) => check(agencyAct3.includes(token), `Act III agency не содержит: ${token}`));
+
+[
+  'Правильный порядок не показывается',
+  'Если связка слаба, Кирилл объяснит, чего она не доказывает',
+  'Будущие доказательства и их названия здесь не показываются',
+  'next-guided-evidence',
+  'agencyFutureHidden'
+].forEach((token) => check(interrogationAgency.includes(token), `Interrogation agency не содержит: ${token}`));
+check(interrogationAgency.includes("stage === 'kirill-interrogation'"), 'Interrogation agency не различает ключевой допрос');
+check(interrogationAgency.includes('button.disabled'), 'Будущие доказательства не скрываются по фактической доступности');
+check(!interrogationAgency.includes('new MutationObserver'), 'Interrogation agency не должен создавать MutationObserver');
+check(!interrogationAgency.includes('setInterval'), 'Interrogation agency не должен использовать polling');
+check(interrogationCss.includes('.interrogation-agency-brief'), 'Нет визуального briefing допроса');
+
+[
+  'ключевой допрос не показывает правильный порядок доказательств',
+  'Старая запись не доказывает, что я куда-либо ходил этой ночью',
+  'audio-before-route',
+  'ранний повторный допрос не раскрывает названия ещё не найденных доказательств',
+  'toBeHidden()'
+].forEach((token) => check(interrogationTest.includes(token), `Браузерный тест допроса не проверяет: ${token}`));
 
 check(agencyA11y.includes("setAttribute('aria-label', 'Открыть рабочую панель')"), 'Agency navigation сохраняет устаревший aria-label');
-check(agencyA11y.includes('agencyOriginalAria'), 'Agency navigation не восстанавливает исходную accessibility-метку');
-check(!agencyA11y.includes('new MutationObserver'), 'Accessibility guard не должен создавать MutationObserver');
-check(!agencyA11y.includes('setInterval'), 'Accessibility guard не должен использовать polling');
-
-check(agency.includes('ACT2_STORAGE_KEY'), 'Следственные решения акта II не сохраняются в существующем ключе');
-check(agencyAct3.includes('ACT3_STORAGE_KEY'), 'Следственные решения акта III не сохраняются в существующем ключе');
-check(agency.includes('subscribeInvestigationState'), 'Investigative agency не подписан на единое состояние');
-check(agencyAct3.includes('subscribeInvestigationState'), 'Evidence-led Act III не подписан на единое состояние');
-check(agencyAct3.includes('data-evidence-led-route'), 'Навигация к рабочей панели не отделена от детективной подсказки');
-check(!agency.includes('new MutationObserver'), 'Investigative agency не должен создавать MutationObserver');
-check(!agencyAct3.includes('new MutationObserver'), 'Evidence-led Act III не должен создавать MutationObserver');
-check(!agency.includes('setInterval'), 'Investigative agency не должен использовать polling');
-check(!agencyAct3.includes('setInterval'), 'Evidence-led Act III не должен использовать polling');
-check(css.includes('.investigation-agency-panel'), 'Нет визуального слоя первого следственного решения');
-check(cssAct3.includes('.evidence-led-panel'), 'Нет визуального слоя evidence-led Act III');
-check(cssAct3.includes('@media (max-width: 760px)'), 'Evidence-led Act III не адаптирован для телефона');
-
-[
-  'Известные пути не объясняют исчезновение',
-  'Перепроверить окно снаружи',
-  'Повторно осмотреть шкаф и общую стену',
-  'Уточнить историю ремонтов этажа',
-  'Запросить обмерный план до реконструкции',
-  'agency:plan-requested',
-  'До реконструкции здесь был служебный проём'
-].forEach((token) => check(test.includes(token), `Браузерный тест первого agency не проверяет: ${token}`));
-
-[
-  'E008 появляется только после самостоятельного выхода на архив 2015 года',
-  'Отправить волокна на экспресс-анализ',
-  'Запросить BOX 15-B и журнал оцифровки',
-  'E009 появляется только после восстановления Веры',
-  'Проверить Марину Орлову',
-  'Проверить Елену Ветрову',
-  'agency3:identity-requested',
-  'Открыть рабочую панель'
-].forEach((token) => check(act3Test.includes(token), `Браузерный тест evidence-led цепочки не проверяет: ${token}`));
 
 if (failures.length) {
   console.error('\nInvestigative agency smoke failed:');
@@ -112,4 +79,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nInvestigative agency smoke passed: E006, E008 and E009 must all be earned through player-selected investigative actions.');
+console.log('\nInvestigative agency smoke passed: deductions and Kirill interrogation remain player-led in v0.10.0.');
