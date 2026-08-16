@@ -7,7 +7,7 @@ const ACT4 = 'dbr:dbr_001_room_314:act4:v0.7.0';
 const INTERROGATION = 'dbr:dbr_001_room_314:interrogation:kirill:v0.6.2';
 
 async function openTab(page: Page, label: string) {
-  const button = page.locator('.premium-sidebar button').filter({ hasText: label });
+  const button = page.locator('.premium-sidebar button:visible, .premium-mobile-nav button:visible').filter({ hasText: label }).first();
   await expect(button).toBeVisible();
   await button.click();
 }
@@ -88,16 +88,27 @@ test('чистое расследование проходит весь марш
   await closeEvidence(page);
 
   await openTab(page, 'Дело');
-  await page.getByRole('button', { name: /Другой человек проник в номер и вывел Илью/ }).click();
+  await page.getByRole('button', { name: /Известные пути выхода не объясняют исчезновение/ }).click();
   await expect(page.locator('.checkpoint-panel')).toContainText('Вывод подтверждён');
 
-  // ACT II — E006 and E007.
-  await openTab(page, 'Материалы');
+  // ACT II discovery — the investigator earns the old plan instead of receiving it as a scripted next step.
+  const agency = page.locator('.investigation-agency-panel[data-agency-mode="lead"]');
+  await expect(agency).toBeVisible();
+  await expect(page.locator('.react-next-action')).toBeHidden();
+  await agency.getByRole('button', { name: /Повторно осмотреть шкаф и общую стену/ }).click();
+  await agency.getByRole('button', { name: /Уточнить историю ремонтов этажа/ }).click();
+  await expect(agency).toContainText('Третий этаж перестраивали после фестиваля 2015 года');
+  await agency.getByRole('button', { name: /Запросить обмерный план до реконструкции/ }).click();
+
+  const received = page.locator('.investigation-agency-panel[data-agency-mode="received"]');
+  await expect(received).toContainText('Архив прислал обмерный план 2004 года');
+  await received.getByRole('button', { name: /Перейти к полученному материалу/ }).click();
+
   await expect(page.locator('[data-evidence-id="E006"]')).toBeEnabled();
   await page.locator('[data-evidence-id="E006"]').click();
   await expect(page.locator('.react-case-modal.evidence-e006')).toBeVisible();
   await clickEvery(page.locator('.react-case-modal.evidence-e006 .plan-hotspot'));
-  await expect(page.locator('.react-case-modal.evidence-e006')).toContainText('Проход сохранился за панелями');
+  await expect(page.locator('.react-case-modal.evidence-e006')).toContainText('До реконструкции здесь был служебный проём');
   await closeEvidence(page);
 
   await expect(page.locator('[data-evidence-id="E007"]')).toBeEnabled();
@@ -169,6 +180,7 @@ test('чистое расследование проходит весь марш
 
   expect(saved.core.act1Complete).toBe(true);
   expect(saved.core.checkpointAnswerId).toBe('other_route');
+  expect(saved.act2.questions).toEqual(expect.arrayContaining(['agency:wall', 'agency:renovation', 'agency:plan-requested']));
   expect(saved.act2.plan).toEqual(['wall', 'stamp', 'width']);
   expect(saved.act2.room).toEqual(['panel', 'tracks', 'envelope', 'fibres']);
   expect(saved.act3.complete).toBe(true);
