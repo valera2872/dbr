@@ -62,6 +62,13 @@ test('финальное обвинение собирается из шести
   await expect(page.locator('.react-final-panel')).toBeHidden();
   await expect(page.locator('.react-next-action')).toBeHidden();
 
+  const guide = page.locator('.player-guide-floating');
+  await expect(guide).toContainText('Соберите собственную доказательную цепочку');
+  await expect(guide).toContainText('Готового финального ответа нет');
+  await expect(guide).not.toContainText('Открыть финальный отчёт');
+  await expect(guide.getByRole('button', { name: 'Открыть сборку обвинения' })).toBeVisible();
+  await expect(guide.locator('.player-guide-explain')).toBeHidden();
+
   await choose(page, /Кто совершил действия/, /Кирилл Бессонов/);
   await choose(page, /Как был преодолён/, /служебный проём между 312 и 314/);
   await choose(page, /Зачем нападавшему/, /Получить носитель B-17/);
