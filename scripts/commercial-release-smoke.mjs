@@ -17,6 +17,7 @@ const focusedFirstAction = read('src/focusedFirstAction.ts');
 const progressiveNavigation = read('src/progressiveNavigation.ts');
 const investigationAgency = read('src/investigationAgency.ts');
 const investigationAgencyAct3 = read('src/investigationAgencyAct3.ts');
+const interrogationAgency = read('src/investigationAgencyInterrogation.ts');
 const fixes = read('src/firstPlayerFixes.ts');
 const interrogationGuide = read('src/interrogationGuidance.ts');
 const act23 = read('src/act23Usability.ts');
@@ -25,24 +26,26 @@ const mediaRuntime = read('src/localMediaRuntime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.9.9', 'Коммерческая сборка должна иметь версию 0.9.9');
+check(pkg.version === '0.10.0', 'Коммерческая сборка должна иметь версию 0.10.0');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-9-9-evidence-led-chain'), 'Service worker не использует cache key v0.9.9');
+check(sw.includes('dbr-v0-10-0-interrogation-agency'), 'Service worker не использует cache key v0.10.0');
 
 [
   'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/commercialMetadataConsistency.ts',
   'src/stageHeaderConsistency.ts', 'src/focusedFirstAction.ts', 'src/focusedFirstAction.css',
   'src/progressiveNavigation.ts', 'src/investigationAgency.ts', 'src/investigationAgency.css',
   'src/investigationAgencyAct3.ts', 'src/investigationAgencyAct3.css',
+  'src/investigationAgencyInterrogation.ts', 'src/interrogationAgency.css',
   'src/AppErrorBoundary.tsx', 'src/ReactCaseExtension.tsx', 'src/PlayerGuidance.tsx', 'src/playerGuidance.css',
   'src/firstPlayerFixes.ts', 'src/firstPlayerFixes.css', 'src/interrogationGuidance.ts',
   'src/interrogationGuidance.css', 'src/act23Usability.ts', 'src/act23Usability.css',
   'src/localMediaRuntime.ts', 'tests/e2e/commercial-flow.spec.ts', 'tests/e2e/commercial-metadata.spec.ts',
   'tests/e2e/stage-header.spec.ts', 'tests/e2e/stage-dashboard.spec.ts',
   'tests/e2e/progressive-navigation.spec.ts', 'tests/e2e/investigative-agency.spec.ts',
-  'tests/e2e/evidence-led-chain.spec.ts', 'tests/e2e/full-playthrough.spec.ts',
-  'tests/e2e/first-player-flow.spec.ts', 'tests/e2e/interrogation-guidance.spec.ts',
-  'tests/e2e/player-guidance.spec.ts', '.github/workflows/browser-e2e.yml'
+  'tests/e2e/evidence-led-chain.spec.ts', 'tests/e2e/interrogation-agency.spec.ts',
+  'tests/e2e/full-playthrough.spec.ts', 'tests/e2e/first-player-flow.spec.ts',
+  'tests/e2e/interrogation-guidance.spec.ts', 'tests/e2e/player-guidance.spec.ts',
+  '.github/workflows/browser-e2e.yml'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
 
 ['Продолжить расследование','Начать расследование','Начать заново','Восстановить сохранение','Открыть итог дела','repairSave']
@@ -57,6 +60,8 @@ check(main.includes('installFocusedFirstAction'), 'main.tsx не подключ�
 check(main.includes('installProgressiveNavigation'), 'main.tsx не подключает progressive navigation');
 check(main.includes('installInvestigationAgency'), 'main.tsx не подключает investigative agency');
 check(main.includes('installInvestigationAgencyAct3'), 'main.tsx не подключает evidence-led Act III agency');
+check(main.includes("./investigationAgencyInterrogation"), 'main.tsx не подключает player-led interrogation agency');
+check(main.includes("./interrogationAgency.css"), 'main.tsx не подключает стили player-led interrogation');
 check(main.includes("./investigationAgency.css"), 'main.tsx не подключает стили investigative agency');
 check(main.includes("./investigationAgencyAct3.css"), 'main.tsx не подключает стили evidence-led Act III');
 check(main.includes("./focusedFirstAction.css"), 'main.tsx не подключает стили focused first action');
@@ -77,6 +82,7 @@ check(!commercialMetadata.includes('setInterval'), 'Синхронизация �
 
 ['Акт I', 'Акт II', 'Акт III', 'Ключевой допрос', 'Акт IV', 'Завершено']
   .forEach((token) => check(stageHeader.includes(token), `Stage-aware штаб не содержит этап: ${token}`));
+check(stageHeader.includes('agencyTask'), 'Stage-aware штаб не учитывает player-led agency состояния');
 check(stageHeader.includes('subscribeInvestigationState'), 'Stage-aware штаб не подписан на единое состояние расследования');
 check(stageHeader.includes('refreshInvestigationState'), 'Stage-aware штаб не синхронизирует события актов с единым состоянием');
 check(!stageHeader.includes('new MutationObserver'), 'Stage-aware штаб не должен создавать MutationObserver');
@@ -126,6 +132,16 @@ check(investigationAgencyAct3.includes('ACT3_STORAGE_KEY'), 'Evidence-led Act II
 check(!investigationAgencyAct3.includes('new MutationObserver'), 'Evidence-led Act III не должен создавать MutationObserver');
 check(!investigationAgencyAct3.includes('setInterval'), 'Evidence-led Act III не должен использовать polling');
 
+[
+  'Правильный порядок не показывается',
+  'Если связка слаба, Кирилл объяснит, чего она не доказывает',
+  'Будущие доказательства и их названия здесь не показываются',
+  'next-guided-evidence',
+  'agencyFutureHidden'
+].forEach((token) => check(interrogationAgency.includes(token), `Player-led interrogation не содержит: ${token}`));
+check(!interrogationAgency.includes('new MutationObserver'), 'Player-led interrogation не должен создавать MutationObserver');
+check(!interrogationAgency.includes('setInterval'), 'Player-led interrogation не должен использовать polling');
+
 check(mediaRuntime.includes('REALISTIC_PRIMARY_MEDIA = true'), 'Реалистичные первичные фото не включены');
 check(mediaRuntime.includes('case-001-hybrid-realistic-v1'), 'Гибридный медиапакет не маркирован');
 check(!mediaRuntime.includes('new MutationObserver'), 'Медиаслой не должен создавать MutationObserver');
@@ -162,4 +178,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.9.9 makes E006, E008 and E009 player-earned deductions while preserving the commercial investigation shell.');
+console.log('\nCommercial release smoke passed: v0.10.0 keeps the interface understandable while leaving Kirill interrogation strategy to the player.');
