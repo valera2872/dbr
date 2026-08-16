@@ -31,7 +31,12 @@ for (let index = 1; index <= 11; index += 1) {
   'one-corridor-event[data-time="23:50"]',
   'one-corridor-event[data-time="00:17"]',
   'cameraAnswers.nth(2)',
-  'Другой человек проник в номер и вывел Илью',
+  'Известные пути выхода не объясняют исчезновение',
+  'Повторно осмотреть шкаф и общую стену',
+  'Уточнить историю ремонтов этажа',
+  'Запросить обмерный план до реконструкции',
+  'agency:plan-requested',
+  'До реконструкции здесь был служебный проём',
   'Денис скрывал оригинал, Вера — личность',
   'data-conclusion="route"',
   'Извлечь карту 314-17',
@@ -66,4 +71,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFull playthrough smoke passed: a clean browser route covers E001–E011, current E004 reconstruction, both reports, interrogation, rescue, accusation, epilogue and return from a fresh tab.');
+console.log('\nFull playthrough smoke passed: a clean browser route earns the archive plan through investigation, then covers E001–E011, reports, interrogation, rescue, accusation, epilogue and return.');
