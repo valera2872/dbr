@@ -32,6 +32,12 @@ async function clickEvery(locator: ReturnType<Page['locator']>) {
   }
 }
 
+async function chooseFinal(page: Page, groupTitle: RegExp, option: RegExp) {
+  const group = page.locator('.final-synthesis-group').filter({ hasText: groupTitle });
+  await expect(group).toBeVisible();
+  await group.getByRole('button', { name: option }).click();
+}
+
 test('чистое расследование проходит весь маршрут E001–E011 и сохраняет эпилог', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Полный маршрут выполняется один раз в desktop Chromium');
   test.setTimeout(90_000);
@@ -186,7 +192,7 @@ test('чистое расследование проходит весь марш
   await expect(page.locator('.interrogation-contradiction.complete')).toContainText('Алиби разрушено');
   await page.getByRole('button', { name: 'Закрыть допрос' }).click();
 
-  // ACT IV — E010, E011, accusation and epilogue.
+  // ACT IV — E010 and E011 are causally grounded by Kirill's statement and Ilya's hidden-card lead.
   await openTab(page, 'Материалы');
   await expect(page.locator('[data-evidence-id="E010"]')).toBeEnabled();
   await page.locator('[data-evidence-id="E010"]').click();
@@ -199,8 +205,18 @@ test('чистое расследование проходит весь марш
   await expect(page.locator('.react-case-modal.evidence-e011')).toContainText('Старое дело стало мотивом нападения');
   await page.getByRole('button', { name: /Перейти к обвинению/ }).click();
 
-  await expect(page.locator('.react-final-panel')).toBeVisible();
-  await page.getByRole('button', { name: /Кирилл пришёл за картой через скрытый проход/ }).click();
+  // Final accusation is built by the player from six independent parts instead of selecting one pre-written paragraph.
+  const synthesis = page.locator('.final-synthesis');
+  await expect(synthesis).toBeVisible();
+  await chooseFinal(page, /Кто совершил действия/, /Кирилл Бессонов/);
+  await chooseFinal(page, /Как был преодолён/, /служебный проём между 312 и 314/);
+  await chooseFinal(page, /Зачем нападавшему/, /Получить носитель B-17/);
+  await chooseFinal(page, /доказанная роль Кирилла/, /знал об опасном открытом служебном маршруте/);
+  await chooseFinal(page, /Какая пара материалов доказывает способ/, /E006 старый план \+ E007 свежие следы/);
+  await chooseFinal(page, /Какая пара материалов связывает нападение/, /E008 цепочка оригинала \+ E011 подлинная карта/);
+  await expect(synthesis).toContainText('6/6');
+  await synthesis.getByRole('button', { name: /Проверить доказательную цепочку/ }).click();
+
   await expect(page.locator('.act4-report-overlay')).toBeVisible();
   await expect(page.locator('.act4-report')).toContainText('РАССЛЕДОВАНИЕ ЗАВЕРШЕНО');
   await expect(page.locator('.act4-report')).toContainText('Следователь высшей категории');
