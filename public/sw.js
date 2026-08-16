@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-9-8-investigative-agency';
+const CACHE_NAME = 'dbr-v0-9-9-evidence-led-chain';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',
