@@ -34,6 +34,7 @@ import './premiumPass.css';
 import './buildMarker.css';
 import './interactiveInterrogation.css';
 import './interrogationGuidance.css';
+import './interrogationAgency.css';
 import './livingSuspect.css';
 import './actorStudio.css';
 import './actorStudioGuide.css';
