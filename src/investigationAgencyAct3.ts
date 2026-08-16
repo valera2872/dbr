@@ -270,16 +270,17 @@ function neutralizeGuidance(state: InvestigationSnapshot): void {
   if (strong) strong.textContent = archiveLeadActive(state) || archiveReceived(state)
     ? 'Следующее направление должно появиться из найденных фактов'
     : 'Не назначайте личность заранее — сначала получите основание';
-  if (paragraph) paragraph.textContent = 'Выберите проверку в рабочей панели. Интерфейс не назовёт правильный материал или человека заранее.';
+  if (paragraph) paragraph.textContent = 'Откройте рабочую панель и выберите проверку сами. Интерфейс не назовёт правильный материал или человека заранее.';
   if (progress) progress.textContent = 'Дедукция принадлежит игроку';
   if (next) {
-    next.disabled = true;
+    next.disabled = false;
+    next.dataset.evidenceLedRoute = 'case';
     const s = next.querySelector<HTMLElement>('small');
     const st = next.querySelector<HTMLElement>('strong');
     const b = next.querySelector<HTMLElement>('b');
-    if (s) s.textContent = 'Ваш ход';
-    if (st) st.textContent = 'Выберите следственную проверку';
-    if (b) b.textContent = '·';
+    if (s) s.textContent = 'Навигация';
+    if (st) st.textContent = 'Открыть рабочую панель';
+    if (b) b.textContent = '→';
   }
   if (explain) explain.style.display = 'none';
 }
@@ -294,7 +295,10 @@ function restoreChrome(state: InvestigationSnapshot): void {
   const explain = guide.querySelector<HTMLButtonElement>('.player-guide-explain');
   const guideNext = guide.querySelector<HTMLButtonElement>('.player-guide-next');
   if (explain) explain.style.display = '';
-  if (guideNext) guideNext.disabled = false;
+  if (guideNext) {
+    guideNext.disabled = false;
+    delete guideNext.dataset.evidenceLedRoute;
+  }
 }
 
 function panelMarkup(state: InvestigationSnapshot): string {
@@ -346,6 +350,16 @@ function scheduleApply(reason: string): void {
   }));
 }
 
+function handleGuideRoute(event: MouseEvent): void {
+  const target = event.target as Element | null;
+  const button = target?.closest<HTMLButtonElement>('.player-guide-next[data-evidence-led-route="case"]');
+  if (!button) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  clickTab('Дело');
+  scheduleApply('investigation-agency-act3:guide-route');
+}
+
 function handleAction(event: MouseEvent): void {
   const target = event.target as Element | null;
   const button = target?.closest<HTMLButtonElement>('[data-evidence-led-action]');
@@ -384,6 +398,7 @@ export function installInvestigationAgencyAct3(): void {
     scheduleApply('investigation-agency-act3:state');
   });
 
+  document.addEventListener('click', handleGuideRoute, true);
   document.addEventListener('click', handleAction);
   document.addEventListener('click', () => scheduleApply('investigation-agency-act3:click'), true);
   window.addEventListener('pageshow', () => scheduleApply('investigation-agency-act3:pageshow'));
