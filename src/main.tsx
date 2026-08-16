@@ -55,6 +55,7 @@ import './cameraMeaning';
 import './cameraFrames';
 import './premiumPassV2';
 import './interrogationGuidance';
+import './investigationAgencyInterrogation';
 import './interactiveInterrogation';
 import './livingSuspect';
 import './kirillVideoRuntime';
