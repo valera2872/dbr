@@ -63,6 +63,7 @@ import './interrogationGuidance';
 import './investigationAgencyInterrogation';
 import './interactiveInterrogation';
 import './investigationAgencyAccessibility';
+import './finalSynthesisGuidance';
 import './livingSuspect';
 import './kirillVideoRuntime';
 import './stabilityDiagnostics';
