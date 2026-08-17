@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-10-1-final-synthesis';
+const CACHE_NAME = 'dbr-v0-10-2-evidence-realism';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',
@@ -12,9 +12,15 @@ const APP_SHELL = [
   '/dbr/media/case-001/portraits/ilya.svg',
   '/dbr/media/case-001/portraits/elena.svg',
   '/dbr/media/case-001/evidence/e006-archive-plan.svg',
+  '/dbr/media/case-001/evidence/e007-room-312.svg',
   '/dbr/media/case-001/evidence/e008-archive-table.svg',
+  '/dbr/media/case-001/evidence/e009-identity-desk.svg',
   '/dbr/media/case-001/evidence/e010-service-room.svg',
   '/dbr/media/case-001/evidence/e011-card-lab.svg',
+  '/dbr/media/case-001/evidence/e006-plan-photo.svg',
+  '/dbr/media/case-001/evidence/e008-archive-photo.svg',
+  '/dbr/media/case-001/evidence/e010-service-photo.svg',
+  '/dbr/media/case-001/evidence/e011-forensic-photo.svg',
   '/dbr/media/case-001/evidence/final-case-report.svg'
 ];
 
