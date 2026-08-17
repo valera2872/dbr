@@ -1,13 +1,21 @@
 import { CASE_MEDIA } from './mediaCatalog';
 
+const EVIDENCE_REALISM_IDS = ['E006', 'E007', 'E008', 'E009', 'E010', 'E011'] as const;
+const REALISM_ATTRIBUTE = 'data-evidence-realism';
+const REALISM_VERSION = 'v2';
 const thumbnails = CASE_MEDIA.evidence.thumbnails;
 let scheduled = false;
 
+function mark(element: HTMLElement): void {
+  element.setAttribute(REALISM_ATTRIBUTE, REALISM_VERSION);
+}
+
 function applyCardMedia(): void {
-  (Object.entries(thumbnails) as Array<[keyof typeof thumbnails, string]>).forEach(([id, src]) => {
+  EVIDENCE_REALISM_IDS.forEach((id) => {
+    const src = thumbnails[id];
     const card = document.querySelector<HTMLElement>(`[data-evidence-id="${id}"]`);
     const image = card?.querySelector<HTMLImageElement>('img');
-    if (!card || !image) return;
+    if (!card || !image || !src) return;
 
     const absolute = new URL(src, window.location.href).href;
     if (image.src !== absolute) {
@@ -15,8 +23,8 @@ function applyCardMedia(): void {
       image.removeAttribute('srcset');
     }
     image.decoding = 'async';
-    image.dataset.evidenceRealism = 'v2';
-    card.dataset.evidenceRealism = 'v2';
+    mark(image);
+    mark(card);
   });
 }
 
@@ -24,26 +32,26 @@ function applySceneMedia(): void {
   const room312 = document.querySelector<HTMLElement>('.react-case-modal.evidence-e007 .act2-room-photo');
   if (room312) {
     room312.style.backgroundImage = `linear-gradient(rgba(4, 10, 11, .08), rgba(4, 10, 11, .28)), url("${CASE_MEDIA.evidence.room312}")`;
-    room312.dataset.evidenceRealism = 'v2';
+    mark(room312);
   }
 
   const archive = document.querySelector<HTMLElement>('.react-case-modal.evidence-e008 .archive-worktable');
   if (archive) {
     archive.style.backgroundImage = `linear-gradient(rgba(3, 8, 8, .06), rgba(3, 8, 8, .22)), url("${CASE_MEDIA.evidence.archiveTable}")`;
-    archive.dataset.evidenceRealism = 'v2';
+    mark(archive);
   }
 
   const identity = document.querySelector<HTMLElement>('.react-case-modal.evidence-e009 .identity-comparison');
   if (identity) {
     identity.style.setProperty('--identity-evidence-image', `url("${CASE_MEDIA.evidence.identityDesk}")`);
-    identity.dataset.evidenceRealism = 'v2';
+    mark(identity);
   }
 
   const serviceRoom = document.querySelector<HTMLElement>('.react-case-modal.evidence-e010 .act4-room-scene');
-  if (serviceRoom) serviceRoom.dataset.evidenceRealism = 'v2';
+  if (serviceRoom) mark(serviceRoom);
 
   const cardLab = document.querySelector<HTMLElement>('.react-case-modal.evidence-e011 .act4-card-lab');
-  if (cardLab) cardLab.dataset.evidenceRealism = 'v2';
+  if (cardLab) mark(cardLab);
 }
 
 function apply(): void {
