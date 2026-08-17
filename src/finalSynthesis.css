@@ -1,5 +1,6 @@
 html[data-final-synthesis="active"] .react-final-panel,
-html[data-final-synthesis="active"] .react-next-action {
+html[data-final-synthesis="active"] .react-next-action,
+html[data-final-synthesis="active"] .player-guide-explain {
   display: none !important;
 }
 
