@@ -16,7 +16,7 @@ const media = read('src/localMediaRuntime.ts');
 const localCss = read('src/localMedia.css');
 const test = read('tests/e2e/first-player-flow.spec.ts');
 
-check(['0.8.8','0.8.9','0.9.0','0.9.1','0.9.2','0.9.3','0.9.4','0.9.5','0.9.6','0.9.7','0.9.8','0.9.9','0.10.0','0.10.1'].includes(pkg.version), 'First-player fixes должны сохраняться в релизах 0.8.8+');
+check(['0.8.8','0.8.9','0.9.0','0.9.1','0.9.2','0.9.3','0.9.4','0.9.5','0.9.6','0.9.7','0.9.8','0.9.9','0.10.0','0.10.1','0.10.2'].includes(pkg.version), 'First-player fixes должны сохраняться в релизах 0.8.8+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(exists('src/firstPlayerFixes.ts'), 'Нет слоя исправлений первого прохождения');
 check(exists('src/firstPlayerFixes.css'), 'Нет стилей исправлений первого прохождения');
@@ -48,4 +48,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFirst-player smoke passed: E001 selection, meaningful bookmarks, E005 routing and realistic primary media are present.');
+console.log(`\nFirst-player smoke passed: E001 selection, meaningful bookmarks, E005 routing and realistic primary media are present in v${pkg.version}.`);
