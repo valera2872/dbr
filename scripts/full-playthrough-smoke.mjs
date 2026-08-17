@@ -14,7 +14,10 @@ const main = read('src/main.tsx');
 const returnBridge = read('src/completedCaseReturn.ts');
 const test = read('tests/e2e/full-playthrough.spec.ts');
 
-check(/^0\.(?:8\.[89]|9\.|10\.)/.test(pkg.version), 'Полный playthrough должен сохраняться в релизах 0.8.8+');
+const versionParts = String(pkg.version).split('.').map((part) => Number.parseInt(part, 10));
+const [major = 0, minor = 0, patch = 0] = versionParts;
+const supportsFullPlaythrough = major > 0 || minor > 8 || (minor === 8 && patch >= 8);
+check(supportsFullPlaythrough, 'Полный playthrough должен сохраняться в релизах 0.8.8+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(sw.includes(`dbr-v${pkg.version.replaceAll('.', '-')}`), 'Service worker не использует текущий cache key');
 check(exists('dist/index.html'), 'Production bundle не создан');
