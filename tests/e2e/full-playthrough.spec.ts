@@ -97,7 +97,7 @@ test('чистое расследование проходит весь марш
   await page.getByRole('button', { name: /Известные пути выхода не объясняют исчезновение/ }).click();
   await expect(page.locator('.checkpoint-panel')).toContainText('Вывод подтверждён');
 
-  // ACT II discovery — the investigator earns the old plan instead of receiving it as a scripted next step.
+  // ACT II — the player earns the historical topology and verifies present-day usability.
   const agency = page.locator('.investigation-agency-panel[data-agency-mode="lead"]');
   await expect(agency).toBeVisible();
   await expect(page.locator('.react-next-action')).toBeHidden();
@@ -114,40 +114,53 @@ test('чистое расследование проходит весь марш
   await page.locator('[data-evidence-id="E006"]').click();
   await expect(page.locator('.react-case-modal.evidence-e006')).toBeVisible();
   await clickEvery(page.locator('.react-case-modal.evidence-e006 .plan-hotspot'));
-  await expect(page.locator('.react-case-modal.evidence-e006')).toContainText('До реконструкции здесь был служебный проём');
+  await expect(page.locator('.react-case-modal.evidence-e006')).toContainText('Старая сеть связывала 312 / 314 со служебной зоной');
+  await expect(page.locator('.react-case-modal.evidence-e006')).toContainText('P3');
   await closeEvidence(page);
 
   await expect(page.locator('[data-evidence-id="E007"]')).toBeEnabled();
   await page.locator('[data-evidence-id="E007"]').click();
   await clickEvery(page.locator('.react-case-modal.evidence-e007 .act2-room-marker'));
-  await expect(page.locator('.react-case-modal.evidence-e007')).toContainText('Маршрут использовали этой ночью');
+  await expect(page.locator('.react-case-modal.evidence-e007')).toContainText('Сеть использовали этой ночью');
+  await expect(page.locator('.react-case-modal.evidence-e007')).toContainText('Кто именно вошёл в сеть — пока не доказано');
   await closeEvidence(page);
 
-  // ACT III discovery — the archive is requested because the 2015 envelope creates a reason to look there.
-  await expect(page.locator('[data-evidence-id="E008"]')).toBeHidden();
-  const guide = page.locator('.player-guide-floating');
-  await expect(guide).toContainText('Открыть рабочую панель');
-  await guide.getByRole('button', { name: /Открыть рабочую панель/ }).click();
+  // V2 branching — route discovery opens independent investigative questions instead of naming Kirill.
+  await openTab(page, 'Дело');
+  const branch = page.locator('.case001-v2-branch-panel');
+  await expect(branch).toBeVisible();
+  await expect(branch).toContainText('Маршрут найден. Исполнитель — ещё нет.');
 
-  const archiveLead = page.locator('.evidence-led-panel[data-evidence-led-mode="archive-lead"]');
-  await expect(archiveLead).toBeVisible();
-  await archiveLead.getByRole('button', { name: /Проверить следы инструмента на винтах/ }).click();
-  await expect(archiveLead).toContainText('инструмент типовой');
-  await archiveLead.getByRole('button', { name: /Изучить маркировку конверта 2015 года/ }).click();
-  await archiveLead.getByRole('button', { name: /Спросить Дениса о пометке/ }).click();
-  await expect(archiveLead).toContainText('BOX 15-B / CONTACT B');
-  await archiveLead.getByRole('button', { name: /Запросить BOX 15-B и журнал оцифровки/ }).click();
+  // Rescue is earned from E005 + E006 + E007 before any confession.
+  await branch.getByRole('button', { name: /Обыскать ветку P3 \/ S-3/ }).click();
+  const earlySearch = page.locator('.case001-v2-search-modal');
+  await expect(earlySearch).toBeVisible();
+  await clickEvery(earlySearch.locator('.case001-v2-search-point'));
+  await expect(earlySearch).toContainText('Илья жив. Но дело ещё не раскрыто.');
+  await expect(earlySearch).toContainText('Личность нападавшего');
+  await earlySearch.getByRole('button', { name: /Вернуться к параллельным версиям/ }).click();
 
-  const archiveReceived = page.locator('.evidence-led-panel[data-evidence-led-mode="archive-received"]');
-  await expect(archiveReceived).toContainText('Архив выдал BOX 15-B');
-  await archiveReceived.getByRole('button', { name: /Открыть полученный архивный материал/ }).click();
+  // Marina is a productive competing hypothesis: her building lie is real, but M3 did not open at night.
+  await branch.getByRole('button', { name: /Поднять акт реконструкции 2015/ }).click();
+  await expect(branch).toContainText('Старую сеть закрыли не полностью');
+  await branch.getByRole('button', { name: /Запросить журнал M3/ }).click();
+  await expect(branch).toContainText('M3 ночью не открывался');
+  await expect(branch).toContainText('не фиксирует ни одного открытия');
+
+  // The early wiped trace is preserved without prematurely naming its owner.
+  await branch.getByRole('button', { name: /Взять микрослед с затёртой зоны/ }).click();
+  await expect(branch).toContainText('Микрослед со стола сохранён для сравнения');
+
+  // Archive provenance is now justified by the empty case + Ilya's purpose + Denis's role, not an envelope in 312.
+  await branch.getByRole('button', { name: /Запросить BOX 15-B \/ журнал оцифровки/ }).click();
   await expect(page.locator('.react-case-modal.evidence-e008')).toBeVisible();
   await clickEvery(page.locator('.react-case-modal.evidence-e008 .react-point-list button'));
   await expect(page.locator('.react-case-modal.evidence-e008')).toContainText('Денис скрывал уникальный оригинал B-17');
   await closeEvidence(page);
 
-  // The Vera/Elena identity line must also be earned from the chain of custody, not announced by the UI.
+  // The Vera/Elena identity line remains earned from the chain of custody.
   await expect(page.locator('[data-evidence-id="E009"]')).toBeHidden();
+  const guide = page.locator('.player-guide-floating');
   await expect(guide).toContainText('Открыть рабочую панель');
   await guide.getByRole('button', { name: /Открыть рабочую панель/ }).click();
 
@@ -192,14 +205,10 @@ test('чистое расследование проходит весь марш
   await expect(page.locator('.interrogation-contradiction.complete')).toContainText('Алиби разрушено');
   await page.getByRole('button', { name: 'Закрыть допрос' }).click();
 
-  // ACT IV — E010 and E011 are causally grounded by Kirill's statement and Ilya's hidden-card lead.
+  // ACT IV — Ilya is already rescued; E011 now closes the still-unresolved B-17 evidence line.
   await openTab(page, 'Материалы');
-  await expect(page.locator('[data-evidence-id="E010"]')).toBeEnabled();
-  await page.locator('[data-evidence-id="E010"]').click();
-  await clickEvery(page.locator('.react-case-modal.evidence-e010 .act4-hotspot'));
-  await expect(page.locator('.react-case-modal.evidence-e010')).toContainText('Илья был спрятан живым');
-  await page.getByRole('button', { name: /Извлечь карту 314-17/ }).click();
-
+  await expect(page.locator('[data-evidence-id="E011"]')).toBeEnabled();
+  await page.locator('[data-evidence-id="E011"]').click();
   await expect(page.locator('.react-case-modal.evidence-e011')).toBeVisible();
   await clickEvery(page.locator('.react-case-modal.evidence-e011 .react-point-list button'));
   await expect(page.locator('.react-case-modal.evidence-e011')).toContainText('Старое дело стало мотивом нападения');
@@ -231,11 +240,14 @@ test('чистое расследование проходит весь марш
 
   expect(saved.core.act1Complete).toBe(true);
   expect(saved.core.checkpointAnswerId).toBe('other_route');
-  expect(saved.act2.questions).toEqual(expect.arrayContaining(['agency:wall', 'agency:renovation', 'agency:plan-requested']));
+  expect(saved.act2.questions).toEqual(expect.arrayContaining([
+    'agency:wall', 'agency:renovation', 'agency:plan-requested',
+    'v2:marina-closure', 'v2:m3-log'
+  ]));
   expect(saved.act2.plan).toEqual(['wall', 'stamp', 'width']);
   expect(saved.act2.room).toEqual(['panel', 'tracks', 'envelope', 'fibres']);
   expect(saved.act3.questions).toEqual(expect.arrayContaining([
-    'agency3:envelope', 'agency3:denis-envelope', 'agency3:archive-requested',
+    'agency3:archive-requested', 'v2:desk-sampled', 'v2:rescue-complete',
     'agency3:trace-custody', 'agency3:denis-family', 'agency3:id-kirill',
     'agency3:id-elena', 'agency3:identity-requested', 'd-original', 'v-name'
   ]));
