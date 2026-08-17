@@ -74,6 +74,7 @@ import './localMediaRuntime';
 import './evidenceRealism';
 import './firstPlayerFixes';
 import './act23Usability';
+import './case001V2ReactOverlay';
 import './versionGuard';
 
 const rootElement = document.getElementById('root');
