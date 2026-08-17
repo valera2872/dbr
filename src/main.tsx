@@ -58,6 +58,7 @@ import './stageHeaderConsistency.css';
 import './investigationAgency.css';
 import './investigationAgencyAct3.css';
 import './case001V2Runtime.css';
+import './case001V2ActorProof.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -76,6 +77,7 @@ import './firstPlayerFixes';
 import './act23Usability';
 import './case001V2ReactOverlay';
 import './case001V2NavigationStability';
+import './case001V2ActorProof';
 import './versionGuard';
 
 const rootElement = document.getElementById('root');
