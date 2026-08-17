@@ -24,12 +24,14 @@ const interrogationGuide = read('src/interrogationGuidance.ts');
 const act23 = read('src/act23Usability.ts');
 const playerGuide = read('src/PlayerGuidance.tsx');
 const mediaRuntime = read('src/localMediaRuntime.ts');
+const evidenceRealism = read('src/evidenceRealism.ts');
+const mediaCatalog = read('src/mediaCatalog.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.10.1', 'Коммерческая сборка должна иметь версию 0.10.1');
+check(pkg.version === '0.10.2', 'Коммерческая сборка должна иметь версию 0.10.2');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-10-1-final-synthesis'), 'Service worker не использует cache key v0.10.1');
+check(sw.includes('dbr-v0-10-2-evidence-realism'), 'Service worker не использует cache key v0.10.2');
 
 [
   'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/commercialMetadataConsistency.ts',
@@ -38,6 +40,13 @@ check(sw.includes('dbr-v0-10-1-final-synthesis'), 'Service worker не испо�
   'src/investigationAgencyAct3.ts', 'src/investigationAgencyAct3.css',
   'src/investigationAgencyInterrogation.ts', 'src/interrogationAgency.css',
   'src/FinalSynthesis.tsx', 'src/finalSynthesis.css',
+  'src/evidenceRealism.ts', 'src/evidenceRealism.css',
+  'public/media/case-001/evidence/e006-plan-photo.svg',
+  'public/media/case-001/evidence/e007-room-312.svg',
+  'public/media/case-001/evidence/e008-archive-photo.svg',
+  'public/media/case-001/evidence/e009-identity-desk.svg',
+  'public/media/case-001/evidence/e010-service-photo.svg',
+  'public/media/case-001/evidence/e011-forensic-photo.svg',
   'src/AppErrorBoundary.tsx', 'src/ReactCaseExtension.tsx', 'src/PlayerGuidance.tsx', 'src/playerGuidance.css',
   'src/firstPlayerFixes.ts', 'src/firstPlayerFixes.css', 'src/interrogationGuidance.ts',
   'src/interrogationGuidance.css', 'src/act23Usability.ts', 'src/act23Usability.css',
@@ -45,7 +54,7 @@ check(sw.includes('dbr-v0-10-1-final-synthesis'), 'Service worker не испо�
   'tests/e2e/stage-header.spec.ts', 'tests/e2e/stage-dashboard.spec.ts',
   'tests/e2e/progressive-navigation.spec.ts', 'tests/e2e/investigative-agency.spec.ts',
   'tests/e2e/evidence-led-chain.spec.ts', 'tests/e2e/interrogation-agency.spec.ts',
-  'tests/e2e/final-synthesis.spec.ts', 'tests/e2e/full-playthrough.spec.ts',
+  'tests/e2e/final-synthesis.spec.ts', 'tests/e2e/evidence-realism.spec.ts', 'tests/e2e/full-playthrough.spec.ts',
   'tests/e2e/first-player-flow.spec.ts', 'tests/e2e/interrogation-guidance.spec.ts',
   'tests/e2e/player-guidance.spec.ts', '.github/workflows/browser-e2e.yml'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
@@ -66,6 +75,8 @@ check(main.includes('installInvestigationAgencyAct3'), 'main.tsx не подкл
 check(main.includes("./investigationAgencyInterrogation"), 'main.tsx не подключает player-led interrogation agency');
 check(main.includes("./interrogationAgency.css"), 'main.tsx не подключает стили player-led interrogation');
 check(main.includes("./finalSynthesis.css"), 'main.tsx не подключает стили финальной реконструкции');
+check(main.includes("./evidenceRealism.css"), 'main.tsx не подключает стили realism-v2');
+check(main.includes("./evidenceRealism"), 'main.tsx не подключает runtime realism-v2');
 check(main.includes("./investigationAgency.css"), 'main.tsx не подключает стили investigative agency');
 check(main.includes("./investigationAgencyAct3.css"), 'main.tsx не подключает стили evidence-led Act III');
 check(main.includes("./focusedFirstAction.css"), 'main.tsx не подключает стили focused first action');
@@ -164,6 +175,19 @@ check(mediaRuntime.includes('case-001-hybrid-realistic-v1'), 'Гибридный
 check(!mediaRuntime.includes('new MutationObserver'), 'Медиаслой не должен создавать MutationObserver');
 check(!mediaRuntime.includes('setInterval'), 'Медиаслой не должен использовать polling');
 
+['E006', 'E007', 'E008', 'E009', 'E010', 'E011', 'data-evidence-realism', 'realism-v2']
+  .forEach((token) => check(evidenceRealism.includes(token), `Evidence realism runtime не содержит: ${token}`));
+[
+  'e006-plan-photo.svg',
+  'e007-room-312.svg',
+  'e008-archive-photo.svg',
+  'e009-identity-desk.svg',
+  'e010-service-photo.svg',
+  'e011-forensic-photo.svg'
+].forEach((token) => check(mediaCatalog.includes(token), `Media catalog не содержит realism-v2 asset: ${token}`));
+check(!evidenceRealism.includes('new MutationObserver'), 'Evidence realism не должен создавать MutationObserver');
+check(!evidenceRealism.includes('setInterval'), 'Evidence realism не должен использовать polling');
+
 check(fixes.includes('Следующий обязательный шаг'), 'После E005 нет понятного маршрута');
 check(fixes.includes('Закладки следователя'), 'Кнопка ключевого материала остаётся без объяснения');
 check(!fixes.includes('new MutationObserver'), 'First-player слой не должен создавать MutationObserver');
@@ -195,4 +219,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.10.1 keeps player-led investigation through the final accusation synthesis.');
+console.log('\nCommercial release smoke passed: v0.10.2 preserves player-led investigation and the six distinct realism-v2 evidence visuals.');

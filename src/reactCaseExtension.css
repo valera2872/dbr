@@ -265,25 +265,25 @@
   line-height: 1.55;
 }
 
-/* The final media pack remains the visual source. React owns interaction and state. */
+/* v0.10.2 realism-v2 is now the canonical visual source for late evidence. */
 .react-case-modal .archive-plan-sheet {
-  background-image: linear-gradient(rgba(2, 12, 14, .12), rgba(2, 12, 14, .36)), url('/dbr/media/case-001/evidence/e006-archive-plan.svg') !important;
+  background-image: linear-gradient(rgba(2, 12, 14, .08), rgba(2, 12, 14, .24)), url('/dbr/media/case-001/evidence/e006-plan-photo.svg') !important;
 }
 
 .react-case-modal .act2-room-photo {
-  background-image: linear-gradient(rgba(2, 12, 14, .08), rgba(2, 12, 14, .45)), url('/dbr/media/case-001/scenes/room-314.svg') !important;
+  background-image: linear-gradient(rgba(2, 12, 14, .08), rgba(2, 12, 14, .32)), url('/dbr/media/case-001/evidence/e007-room-312.svg') !important;
 }
 
 .react-case-modal .archive-worktable {
-  background-image: linear-gradient(rgba(2, 12, 14, .12), rgba(2, 12, 14, .46)), url('/dbr/media/case-001/evidence/e008-archive-table.svg') !important;
+  background-image: linear-gradient(rgba(2, 12, 14, .08), rgba(2, 12, 14, .3)), url('/dbr/media/case-001/evidence/e008-archive-photo.svg') !important;
 }
 
 .react-case-modal .act4-room-scene {
-  background-image: linear-gradient(rgba(2, 9, 11, .16), rgba(1, 6, 7, .5)), url('/dbr/media/case-001/evidence/e010-service-room.svg') !important;
+  background-image: linear-gradient(rgba(2, 9, 11, .08), rgba(1, 6, 7, .36)), url('/dbr/media/case-001/evidence/e010-service-photo.svg') !important;
 }
 
 .react-case-modal .act4-card-lab {
-  background-image: linear-gradient(rgba(2, 9, 11, .08), rgba(1, 6, 7, .32)), url('/dbr/media/case-001/evidence/e011-card-lab.svg') !important;
+  background-image: linear-gradient(rgba(2, 9, 11, .08), rgba(1, 6, 7, .38)), url('/dbr/media/case-001/evidence/e011-forensic-photo.svg') !important;
 }
 
 @media (max-width: 980px) {

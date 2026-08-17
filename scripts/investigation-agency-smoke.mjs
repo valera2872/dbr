@@ -21,9 +21,9 @@ const sw = read('public/sw.js');
 const interrogationTest = read('tests/e2e/interrogation-agency.spec.ts');
 const finalTest = read('tests/e2e/final-synthesis.spec.ts');
 
-check(pkg.version === '0.10.1', 'Investigative agency release должна иметь версию 0.10.1');
-check(build.includes("APP_BUILD = 'v0.10.1'"), 'APP_BUILD не обновлён до v0.10.1');
-check(sw.includes('dbr-v0-10-1-final-synthesis'), 'Service worker cache не обновлён до v0.10.1');
+check(pkg.version === '0.10.2', 'Investigative agency release должна иметь версию 0.10.2');
+check(build.includes("APP_BUILD = 'v0.10.2'"), 'APP_BUILD не обновлён до v0.10.2');
+check(sw.includes('dbr-v0-10-2-evidence-realism'), 'Service worker cache не обновлён до v0.10.2');
 [
   'src/investigationAgency.ts',
   'src/investigationAgencyAct3.ts',
@@ -106,4 +106,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nInvestigative agency smoke passed: deductions, interrogation and final accusation remain player-led in v0.10.1.');
+console.log(`\nInvestigative agency smoke passed: deductions, interrogation and final accusation remain player-led in v${pkg.version}.`);

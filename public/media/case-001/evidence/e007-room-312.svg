@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="t d">
+<title id="t">Осмотр номера 312</title><desc id="d">Полутёмный гостиничный номер с деревянным шкафом у общей стены, ковром, письменным столом и следственным светом.</desc>
+<defs>
+  <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#6c655b"/><stop offset=".55" stop-color="#514b44"/><stop offset="1" stop-color="#332f2c"/></linearGradient>
+  <linearGradient id="floor" x2="0" y2="1"><stop stop-color="#342b25"/><stop offset="1" stop-color="#171412"/></linearGradient>
+  <linearGradient id="wood" x2="1" y2="1"><stop stop-color="#47372c"/><stop offset=".48" stop-color="#2f241e"/><stop offset="1" stop-color="#171310"/></linearGradient>
+  <radialGradient id="lamp"><stop stop-color="#f5ddb0" stop-opacity=".5"/><stop offset=".42" stop-color="#d5b16f" stop-opacity=".16"/><stop offset="1" stop-color="#111" stop-opacity="0"/></radialGradient>
+  <radialGradient id="flash"><stop stop-color="#d8f1e9" stop-opacity=".34"/><stop offset=".5" stop-color="#a8d8cf" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+  <filter id="shadow"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity=".55"/></filter>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="3" seed="12" result="n"/><feColorMatrix in="n" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .055 0"/></filter>
+  <filter id="soft"><feGaussianBlur stdDeviation="12"/></filter>
+</defs>
+<rect width="1600" height="710" fill="url(#wall)"/><path d="M0 710h1600v290H0z" fill="url(#floor)"/>
+<rect width="1600" height="1000" filter="url(#grain)" opacity=".55"/>
+<path d="M0 704h1600" stroke="#1c1917" stroke-width="18"/><path d="M0 726h1600" stroke="#806b57" stroke-opacity=".18" stroke-width="3"/>
+<g opacity=".12" stroke="#b6a89a" stroke-width="2"><path d="M86 0v710M306 0v710M535 0v710M760 0v710M990 0v710M1216 0v710M1450 0v710"/></g>
+<!-- bed edge, foreground -->
+<g filter="url(#shadow)"><path d="M0 655h615l86 235H0z" fill="#1b2020"/><path d="M0 666h592l64 174H0z" fill="#4b5553"/><path d="M0 675h590l50 122H0z" fill="#737a73" opacity=".5"/></g>
+<!-- desk -->
+<g transform="translate(100 355)" filter="url(#shadow)"><rect x="0" y="0" width="390" height="27" rx="5" fill="#49392f"/><path d="M26 27h22v330H18zM338 27h25l20 330h-30z" fill="#211a16"/><rect x="40" y="-122" width="265" height="120" rx="6" fill="#272523" stroke="#514b44" stroke-width="4"/><rect x="54" y="-106" width="235" height="89" fill="#0c1010"/><path d="M180 -8h105" stroke="#1c1815" stroke-width="7"/><g transform="translate(255 -6) rotate(-7)"><rect width="105" height="68" rx="3" fill="#c4a979"/><path d="M8 14h83M8 26h72M8 38h85" stroke="#6f583d" stroke-width="2" opacity=".45"/><path d="M12 52h50" stroke="#7e352e" stroke-width="4" opacity=".72"/></g></g>
+<!-- wardrobe against common wall -->
+<g transform="translate(1010 120)" filter="url(#shadow)"><rect width="470" height="635" rx="6" fill="url(#wood)"/><rect x="18" y="18" width="434" height="599" rx="3" fill="none" stroke="#6e5847" stroke-opacity=".5" stroke-width="3"/><path d="M235 22v590" stroke="#75604e" stroke-opacity=".48" stroke-width="4"/><rect x="205" y="275" width="9" height="94" rx="5" fill="#8c806d"/><rect x="258" y="275" width="9" height="94" rx="5" fill="#8c806d"/>
+<path d="M82 60h305v502H82z" fill="#251c17" stroke="#5d493b" stroke-width="4" opacity=".22"/>
+</g>
+<!-- subtle wall seam and newer finish -->
+<path d="M984 94v650" stroke="#bba98f" stroke-opacity=".17" stroke-width="7"/><path d="M992 94v650" stroke="#211d19" stroke-opacity=".32" stroke-width="2"/>
+<rect x="945" y="150" width="74" height="490" fill="#aaa08e" opacity=".025"/>
+<!-- carpet -->
+<g transform="translate(470 700)"><path d="M0 0h690l205 300H-130z" fill="#2a3534"/><path d="M25 0h650l168 270H-96z" fill="#485451" opacity=".48"/><g opacity=".1" stroke="#d0d8cf" stroke-width="3"><path d="M0 45h713M-25 95h770M-53 150h835M-82 215h915"/></g>
+<!-- parallel compressed tracks, intentionally subtle -->
+<path d="M360 260C390 194 430 132 492 28" fill="none" stroke="#171d1c" stroke-opacity=".42" stroke-width="27"/><path d="M445 265C470 197 510 132 570 26" fill="none" stroke="#171d1c" stroke-opacity=".42" stroke-width="27"/>
+<path d="M360 260C390 194 430 132 492 28M445 265C470 197 510 132 570 26" fill="none" stroke="#88938d" stroke-opacity=".08" stroke-width="5"/></g>
+<!-- bedside lamp and practical light -->
+<g transform="translate(645 308)"><path d="M0 0h160l-28 118H28z" fill="#b69a68" opacity=".56"/><path d="M79 118v205" stroke="#483d32" stroke-width="12"/><ellipse cx="79" cy="330" rx="75" ry="14" fill="#332b24"/></g>
+<circle cx="725" cy="400" r="390" fill="url(#lamp)"/><circle cx="1210" cy="575" r="520" fill="url(#flash)"/>
+<!-- evidence scale card, foreground -->
+<g transform="translate(1180 812) rotate(-3)" filter="url(#shadow)"><rect width="270" height="90" rx="5" fill="#d8d1bd"/><g fill="#1b1b18"><rect x="18" y="42" width="24" height="20"/><rect x="66" y="42" width="24" height="20"/><rect x="114" y="42" width="24" height="20"/><rect x="162" y="42" width="24" height="20"/><rect x="210" y="42" width="24" height="20"/></g><text x="18" y="29" font-family="monospace" font-size="17" fill="#24231f">DBR / 312 / SCALE</text></g>
+<!-- vignette -->
+<rect width="1600" height="1000" fill="none" stroke="#000" stroke-width="120" opacity=".34"/>
+<text x="78" y="90" fill="#e4ddd2" font-family="monospace" font-size="23" letter-spacing="6" opacity=".82">ROOM 312 / SCENE PHOTOGRAPH / 07:46</text>
+<text x="79" y="124" fill="#b09b78" font-family="monospace" font-size="16" letter-spacing="3" opacity=".68">COMMON WALL 312 ↔ 314 · ORIGINAL FRAME</text>
+</svg>
