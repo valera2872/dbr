@@ -27,12 +27,14 @@ const mediaRuntime = read('src/localMediaRuntime.ts');
 const evidenceRealism = read('src/evidenceRealism.ts');
 const mediaCatalog = read('src/mediaCatalog.ts');
 const case001V2 = read('src/case001V2Runtime.ts');
+const v2Overlay = read('src/case001V2ReactOverlay.ts');
+const actorProof = read('src/case001V2ActorProof.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.11.0', 'Коммерческая сборка должна иметь версию 0.11.0');
+check(pkg.version === '0.11.1', 'Коммерческая сборка должна иметь версию 0.11.1');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-11-0-room314-v2'), 'Service worker не использует cache key v0.11.0');
+check(sw.includes('dbr-v0-11-1-evidence-actor-proof'), 'Service worker не использует cache key v0.11.1');
 
 [
   'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/commercialMetadataConsistency.ts',
@@ -43,6 +45,8 @@ check(sw.includes('dbr-v0-11-0-room314-v2'), 'Service worker не использ
   'src/FinalSynthesis.tsx', 'src/finalSynthesis.css',
   'src/evidenceRealism.ts', 'src/evidenceRealism.css',
   'src/case001V2Runtime.ts', 'src/case001V2Runtime.css',
+  'src/case001V2ReactOverlay.ts', 'src/case001V2ReactOverlay.css',
+  'src/case001V2ActorProof.ts', 'src/case001V2ActorProof.css',
   'public/media/case-001/evidence/e006-plan-photo.svg',
   'public/media/case-001/evidence/e007-room-312.svg',
   'public/media/case-001/evidence/e008-archive-photo.svg',
@@ -76,6 +80,8 @@ check(main.includes('installInvestigationAgency'), 'main.tsx не подключ
 check(main.includes('installInvestigationAgencyAct3'), 'main.tsx не подключает evidence-led Act III agency');
 check(main.includes('installCase001V2Runtime'), 'main.tsx не подключает Room 314 v2 runtime');
 check(main.includes("./case001V2Runtime.css"), 'main.tsx не подключает стили Room 314 v2');
+check(main.includes("./case001V2ActorProof"), 'main.tsx не подключает v2 actor proof runtime');
+check(main.includes("./case001V2ActorProof.css"), 'main.tsx не подключает v2 actor proof styles');
 check(main.includes("./investigationAgencyInterrogation"), 'main.tsx не подключает player-led interrogation agency');
 check(main.includes("./interrogationAgency.css"), 'main.tsx не подключает стили player-led interrogation');
 check(main.includes("./finalSynthesis.css"), 'main.tsx не подключает стили финальной реконструкции');
@@ -166,6 +172,25 @@ check(case001V2.includes('ACT4_STORAGE_KEY'), 'Ранний поиск S-3 не 
 check(case001V2.includes('subscribeInvestigationState'), 'Room 314 v2 runtime не подписан на единое состояние');
 
 [
+  'Неполная расшифровка конфликта',
+  'E008 ещё не доказывает, что этим человеком был Кирилл',
+  'Скрытая личность не равна виновности',
+  'обе лжи реальны, но пока не устанавливают человека'
+].forEach((token) => check(v2Overlay.includes(token), `V2 evidence semantics не содержит: ${token}`));
+
+[
+  'v2:injury-scan',
+  'v2:kirill-cut-observed',
+  'v2:trace-kirill-match',
+  'Свежий пластырь на правой кисти',
+  'ДНК-профиль микрокапли',
+  'Кирилл физически был в номере 314'
+].forEach((token) => check(actorProof.includes(token), `V2 actor proof не содержит: ${token}`));
+check(actorProof.includes('ACT3_STORAGE_KEY'), 'Actor proof не сохраняется в каноническом Act III state');
+check(actorProof.includes('subscribeInvestigationState'), 'Actor proof не подписан на единое состояние');
+check(!actorProof.includes('new MutationObserver'), 'Actor proof не должен создавать MutationObserver');
+
+[
   'Правильный порядок не показывается',
   'Если связка слаба, Кирилл объяснит, чего она не доказывает',
   'Будущие доказательства и их названия здесь не показываются',
@@ -237,4 +262,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('Commercial release smoke passed for v0.11.0 Room 314 v2 branching.');
+console.log('Commercial release smoke passed for v0.11.1 evidence semantics + actor proof.');

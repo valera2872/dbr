@@ -1,0 +1,216 @@
+.case001-v2-kirill-clue {
+  display: block;
+  margin-top: 8px;
+  padding: 6px 8px;
+  border: 1px solid rgba(214, 187, 126, 0.18);
+  border-radius: 9px;
+  color: rgba(226, 211, 177, 0.74);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.case001-v2-kirill-modal-clue {
+  display: grid;
+  gap: 4px;
+  margin: 12px 22px 0;
+  padding: 11px 13px;
+  border: 1px solid rgba(214, 187, 126, 0.2);
+  border-radius: 12px;
+  background: rgba(146, 112, 55, 0.06);
+}
+
+.case001-v2-kirill-modal-clue small {
+  color: rgba(216, 187, 126, 0.7);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.case001-v2-kirill-modal-clue strong {
+  font-size: 14px;
+}
+
+.case001-v2-kirill-modal-clue span {
+  color: rgba(218, 227, 232, 0.68);
+  font-size: 12px;
+  line-height: 1.42;
+}
+
+.case001-v2-actor-proof {
+  margin: 16px 0 24px;
+  overflow: hidden;
+  border: 1px solid rgba(193, 142, 116, 0.24);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(25, 19, 20, 0.97), rgba(10, 14, 18, 0.99));
+}
+
+.case001-v2-actor-proof > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: start;
+  padding: 20px 22px 17px;
+  border-bottom: 1px solid rgba(201, 167, 150, 0.12);
+}
+
+.case001-v2-actor-proof > header p {
+  margin: 0 0 5px;
+  color: rgba(218, 168, 139, 0.72);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.case001-v2-actor-proof > header h2 {
+  margin: 0;
+  font-size: clamp(20px, 2.5vw, 29px);
+}
+
+.case001-v2-actor-proof > header > span {
+  padding: 7px 10px;
+  border: 1px solid rgba(206, 176, 157, 0.18);
+  border-radius: 999px;
+  color: rgba(227, 212, 202, 0.76);
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.case001-v2-proof-premise,
+.case001-v2-observation-note,
+.case001-v2-proof-result {
+  margin: 18px;
+  padding: 15px 16px;
+  border: 1px solid rgba(203, 180, 165, 0.13);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.case001-v2-proof-premise p,
+.case001-v2-observation-note p,
+.case001-v2-proof-result p {
+  margin: 0;
+  color: rgba(220, 229, 234, 0.72);
+  line-height: 1.52;
+}
+
+.case001-v2-proof-premise button {
+  margin-top: 13px;
+  padding: 10px 13px;
+  border: 1px solid rgba(218, 168, 139, 0.24);
+  border-radius: 11px;
+  background: rgba(164, 94, 62, 0.08);
+  color: rgba(241, 230, 224, 0.92);
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.case001-v2-observation-note strong,
+.case001-v2-proof-result strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.case001-v2-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 18px 18px;
+}
+
+.case001-v2-comparison {
+  display: grid;
+  align-content: space-between;
+  gap: 12px;
+  min-height: 164px;
+  padding: 14px;
+  border: 1px solid rgba(203, 180, 165, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.case001-v2-comparison small {
+  color: rgba(228, 213, 203, 0.88);
+  font-weight: 800;
+}
+
+.case001-v2-comparison p {
+  margin: 6px 0 0;
+  color: rgba(213, 224, 230, 0.66);
+  font-size: 12px;
+  line-height: 1.43;
+}
+
+.case001-v2-comparison button {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 10px;
+  border: 1px solid rgba(180, 167, 159, 0.17);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(234, 239, 242, 0.86);
+  font-weight: 730;
+  cursor: pointer;
+}
+
+.case001-v2-comparison-result {
+  display: grid;
+  gap: 5px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(211, 192, 180, 0.1);
+}
+
+.case001-v2-comparison-result strong {
+  color: rgba(164, 205, 190, 0.82);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.case001-v2-comparison-result span {
+  color: rgba(213, 224, 230, 0.7);
+  font-size: 12px;
+  line-height: 1.42;
+}
+
+.case001-v2-comparison.match {
+  border-color: rgba(213, 121, 90, 0.36);
+  background: rgba(133, 50, 37, 0.07);
+}
+
+.case001-v2-comparison.match .case001-v2-comparison-result strong {
+  color: rgba(240, 160, 128, 0.94);
+}
+
+.case001-v2-actor-proof.matched {
+  border-color: rgba(213, 121, 90, 0.32);
+}
+
+.case001-v2-proof-result {
+  border-color: rgba(213, 121, 90, 0.22);
+  background: rgba(133, 50, 37, 0.06);
+}
+
+.case001-v2-proof-result small {
+  display: block;
+  margin-top: 9px;
+  color: rgba(225, 202, 191, 0.72);
+  line-height: 1.42;
+}
+
+@media (max-width: 760px) {
+  .case001-v2-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .case001-v2-actor-proof > header {
+    display: grid;
+  }
+
+  .case001-v2-actor-proof > header > span {
+    width: fit-content;
+  }
+}
