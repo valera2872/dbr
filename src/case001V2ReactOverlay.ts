@@ -6,13 +6,17 @@ function setText(node: Element | null, value: string): void {
   if (node && node.textContent !== value) node.textContent = value;
 }
 
+function setData(node: HTMLElement, key: string, value: string): void {
+  if (node.dataset[key] !== value) node.dataset[key] = value;
+}
+
 function cardSummary(id: 'E006' | 'E007', value: string): void {
   const card = document.querySelector<HTMLElement>(`[data-evidence-id="${id}"]`);
   const copy = card?.querySelector<HTMLElement>('.evidence-card-copy');
   const original = copy?.querySelector<HTMLElement>('p:not(.case001-v2-card-summary)');
   if (!copy || !original) return;
 
-  original.dataset.case001V2LegacyCopy = '1';
+  setData(original, 'case001V2LegacyCopy', '1');
   let summary = copy.querySelector<HTMLElement>('.case001-v2-card-summary');
   if (!summary) {
     summary = document.createElement('p');
@@ -27,7 +31,7 @@ function modalSummary(modal: HTMLElement, value: string): void {
   const original = copy?.querySelector<HTMLElement>('p:last-of-type');
   if (!copy || !original) return;
 
-  original.dataset.case001V2LegacyCopy = '1';
+  setData(original, 'case001V2LegacyCopy', '1');
   let summary = copy.querySelector<HTMLElement>('.case001-v2-modal-summary');
   if (!summary) {
     summary = document.createElement('span');
@@ -48,7 +52,7 @@ function patchPointButton(button: HTMLElement | undefined, label: string, select
 function findingOverride(modal: HTMLElement, kicker: string, title: string, body: string): void {
   const finding = modal.querySelector<HTMLElement>('.react-finding.success');
   if (!finding) return;
-  finding.dataset.case001V2Finding = '1';
+  setData(finding, 'case001V2Finding', '1');
 
   let override = finding.querySelector<HTMLElement>('.case001-v2-finding-override');
   if (!override) {
@@ -93,7 +97,7 @@ function patchE006(): void {
 
   const modal = document.querySelector<HTMLElement>('.react-case-modal.evidence-e006');
   if (!modal) return;
-  modal.dataset.case001V2Evidence = 'E006';
+  setData(modal, 'case001V2Evidence', 'E006');
   modalSummary(modal, 'Сопоставьте старую топологию этажа с современной схемой. Ищите возможные пути перемещения, а не виновного.');
 
   const hotspots = Array.from(modal.querySelectorAll<HTMLElement>('.plan-hotspot'));
@@ -143,7 +147,7 @@ function patchE007(): void {
 
   const modal = document.querySelector<HTMLElement>('.react-case-modal.evidence-e007');
   if (!modal) return;
-  modal.dataset.case001V2Evidence = 'E007';
+  setData(modal, 'case001V2Evidence', 'E007');
   modalSummary(modal, 'Проверьте, сохранилась ли сеть физически и использовалась ли этой ночью. Сам маршрут ещё не устанавливает человека.');
 
   const markers = Array.from(modal.querySelectorAll<HTMLElement>('.act2-room-marker'));
@@ -191,7 +195,6 @@ function schedule(): void {
   }));
 }
 
-new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
 document.addEventListener('click', schedule, true);
 ['dbr:runtime-settled', 'dbr:act2-updated', 'dbr:act3-updated', 'pageshow'].forEach((event) => window.addEventListener(event, schedule));
 schedule();
