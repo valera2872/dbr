@@ -2,7 +2,9 @@ const BASE = `${import.meta.env.BASE_URL}media/case-001`;
 
 const evidence = {
   e006ArchivePlan: `${BASE}/evidence/e006-archive-plan.svg`,
+  e007Room312: `${BASE}/evidence/e007-room-312.svg`,
   e008ArchiveTable: `${BASE}/evidence/e008-archive-table.svg`,
+  e009IdentityDesk: `${BASE}/evidence/e009-identity-desk.svg`,
   e010ServiceRoom: `${BASE}/evidence/e010-service-room.svg`,
   e011CardLab: `${BASE}/evidence/e011-card-lab.svg`,
   finalCaseReport: `${BASE}/evidence/final-case-report.svg`
@@ -24,7 +26,9 @@ export const CASE_MEDIA = {
   evidence: {
     ...evidence,
     archivePlan: evidence.e006ArchivePlan,
+    room312: evidence.e007Room312,
     archiveTable: evidence.e008ArchiveTable,
+    identityDesk: evidence.e009IdentityDesk,
     serviceRoom: evidence.e010ServiceRoom,
     cardLab: evidence.e011CardLab,
     finalReport: evidence.finalCaseReport
