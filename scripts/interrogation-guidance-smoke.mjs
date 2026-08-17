@@ -16,7 +16,7 @@ const css = read('src/interrogationGuidance.css');
 const test = read('tests/e2e/interrogation-guidance.spec.ts');
 const agencyTest = read('tests/e2e/interrogation-agency.spec.ts');
 
-check(['0.8.8','0.8.9','0.9.0','0.9.1','0.9.2','0.9.3','0.9.4','0.9.5','0.9.6','0.9.7','0.9.8','0.9.9','0.10.0','0.10.1'].includes(pkg.version), 'Interrogation premise guidance должна сохраняться в релизах 0.8.8+');
+check(['0.8.8','0.8.9','0.9.0','0.9.1','0.9.2','0.9.3','0.9.4','0.9.5','0.9.6','0.9.7','0.9.8','0.9.9','0.10.0','0.10.1','0.10.2'].includes(pkg.version), 'Interrogation premise guidance должна сохраняться в релизах 0.8.8+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(exists('src/interrogationGuidance.ts'), 'Нет runtime-проверки предпосылок допроса');
 check(exists('src/investigationAgencyInterrogation.ts'), 'Нет player-led слоя допроса');
@@ -62,4 +62,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nInterrogation guidance smoke passed: factual premises remain protected while the evidence strategy belongs to the player in v0.10.1.');
+console.log(`\nInterrogation guidance smoke passed: factual premises remain protected while the evidence strategy belongs to the player in v${pkg.version}.`);
