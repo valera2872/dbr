@@ -18,7 +18,8 @@ const progressive = read('src/progressiveNavigation.ts');
 const test = read('tests/e2e/player-guidance.spec.ts');
 const progressiveTest = read('tests/e2e/progressive-navigation.spec.ts');
 
-check(/^0\.(?:9|10)\./.test(pkg.version), 'Player Guidance должен сохраняться в релизах 0.9.x–0.10.x');
+const [major = 0, minor = 0] = String(pkg.version).split('.').map((part) => Number.parseInt(part, 10));
+check(major > 0 || minor >= 9, 'Player Guidance должен сохраняться в релизах 0.9.0+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 [
   'src/PlayerGuidance.tsx',
