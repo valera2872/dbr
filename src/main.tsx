@@ -21,6 +21,7 @@ import { installFocusedFirstAction } from './focusedFirstAction';
 import { installProgressiveNavigation } from './progressiveNavigation';
 import { installInvestigationAgency } from './investigationAgency';
 import { installInvestigationAgencyAct3 } from './investigationAgencyAct3';
+import { installCase001V2Runtime } from './case001V2Runtime';
 import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
@@ -56,6 +57,7 @@ import './focusedFirstAction.css';
 import './stageHeaderConsistency.css';
 import './investigationAgency.css';
 import './investigationAgencyAct3.css';
+import './case001V2Runtime.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -102,6 +104,7 @@ if (actorStudio.mounted) {
   installProgressiveNavigation();
   installInvestigationAgency();
   installInvestigationAgencyAct3();
+  installCase001V2Runtime();
 }
 
 if ('serviceWorker' in navigator) {
