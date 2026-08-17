@@ -203,11 +203,14 @@ function setText(node: Element | null, value: string): void {
 }
 
 function patchEvidenceCards(): void {
-  const e006 = document.querySelector<HTMLElement>('[data-evidence-id="E006"] .evidence-card-copy p');
-  if (e006) e006.textContent = 'Сопоставьте V314, старый доступ из 312 и продолжение сети к служебной зоне.';
-
-  const e007 = document.querySelector<HTMLElement>('[data-evidence-id="E007"] .evidence-card-copy p');
-  if (e007) e007.textContent = 'Проверьте, сохранился ли доступ из 312 и соединяется ли он с независимой служебной веткой.';
+  setText(
+    document.querySelector<HTMLElement>('[data-evidence-id="E006"] .evidence-card-copy p'),
+    'Сопоставьте V314, старый доступ из 312 и продолжение сети к служебной зоне.'
+  );
+  setText(
+    document.querySelector<HTMLElement>('[data-evidence-id="E007"] .evidence-card-copy p'),
+    'Проверьте, сохранился ли доступ из 312 и соединяется ли он с независимой служебной веткой.'
+  );
 }
 
 function patchE006(): void {
@@ -267,7 +270,7 @@ function patchE007(): void {
   const result = modal.querySelector<HTMLElement>('.act2-result');
   if (latest === 'envelope') {
     setText(result?.querySelector('h3'), 'V314 не является приватным тоннелем номера 312');
-    setText(result?.querySelector('p'), 'За старой коробкой проходит ответвление P3. Оно соединяет V314 со служебным входом M3 и направлением к служебному лифту / S-3.');
+    setText(result?.querySelector('p:last-of-type'), 'За старой коробкой проходит ответвление P3. Оно соединяет V314 со служебным входом M3 и направлением к служебному лифту / S-3.');
   }
 
   const conclusion = result?.querySelector<HTMLElement>('.act2-final-conclusion');
