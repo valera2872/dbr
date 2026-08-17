@@ -1,0 +1,99 @@
+html[data-dbr-evidence-media="realism-v2"] .react-evidence-card[data-evidence-realism="v2"] {
+  isolation: isolate;
+  border-color: rgba(218, 202, 170, .18);
+  background: #0b0d0f;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, .24);
+}
+
+html[data-dbr-evidence-media="realism-v2"] .react-evidence-card[data-evidence-realism="v2"] img {
+  transform: scale(1.015);
+  filter: saturate(.78) contrast(1.08) brightness(.86);
+  transition: transform .28s ease, filter .28s ease;
+}
+
+html[data-dbr-evidence-media="realism-v2"] .react-evidence-card[data-evidence-realism="v2"]:hover img {
+  transform: scale(1.045);
+  filter: saturate(.9) contrast(1.08) brightness(.94);
+}
+
+html[data-dbr-evidence-media="realism-v2"] .react-evidence-card[data-evidence-realism="v2"] .evidence-card-shade {
+  background:
+    linear-gradient(180deg, rgba(4, 7, 9, .16) 0%, rgba(4, 7, 9, .08) 32%, rgba(4, 7, 9, .76) 76%, rgba(4, 7, 9, .96) 100%),
+    linear-gradient(90deg, rgba(5, 8, 10, .3), transparent 52%);
+}
+
+html[data-dbr-evidence-media="realism-v2"] .react-evidence-card[data-evidence-realism="v2"] .evidence-card-icon {
+  opacity: .68;
+  border-color: rgba(227, 206, 166, .22);
+  color: #c8b48d;
+  background: rgba(11, 13, 15, .7);
+  backdrop-filter: blur(7px);
+}
+
+html[data-dbr-evidence-media="realism-v2"] .react-evidence-card[data-evidence-realism="v2"] .evidence-card-copy small {
+  color: #b8a37d;
+}
+
+html[data-dbr-evidence-media="realism-v2"] [data-evidence-id="E006"] img,
+html[data-dbr-evidence-media="realism-v2"] [data-evidence-id="E008"] img,
+html[data-dbr-evidence-media="realism-v2"] [data-evidence-id="E009"] img,
+html[data-dbr-evidence-media="realism-v2"] [data-evidence-id="E011"] img {
+  object-position: center 48%;
+}
+
+html[data-dbr-evidence-media="realism-v2"] [data-evidence-id="E007"] img {
+  object-position: center 55%;
+}
+
+html[data-dbr-evidence-media="realism-v2"] [data-evidence-id="E010"] img {
+  object-position: center 47%;
+}
+
+.react-case-modal.evidence-e007 .act2-room-photo[data-evidence-realism="v2"] {
+  background-position: center 54% !important;
+  background-size: cover !important;
+  box-shadow: inset 0 0 0 1px rgba(236, 224, 199, .06), inset 0 -120px 160px rgba(0, 0, 0, .22);
+}
+
+.react-case-modal.evidence-e008 .archive-worktable[data-evidence-realism="v2"] {
+  background-position: center !important;
+  background-size: cover !important;
+  box-shadow: inset 0 -120px 160px rgba(0, 0, 0, .26);
+}
+
+.react-case-modal.evidence-e009 .identity-comparison[data-evidence-realism="v2"] {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.react-case-modal.evidence-e009 .identity-comparison[data-evidence-realism="v2"]::before {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background-image: var(--identity-evidence-image);
+  background-position: center;
+  background-size: cover;
+  opacity: .14;
+  filter: saturate(.6) contrast(1.05);
+}
+
+.react-case-modal.evidence-e009 .identity-comparison[data-evidence-realism="v2"]::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(5, 16, 18, .72), rgba(5, 16, 18, .94));
+}
+
+.react-case-modal.evidence-e009 .identity-current-card,
+.react-case-modal.evidence-e009 .identity-archive-card {
+  backdrop-filter: blur(7px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-dbr-evidence-media="realism-v2"] .react-evidence-card[data-evidence-realism="v2"] img {
+    transition: none;
+  }
+}
