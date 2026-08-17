@@ -26,12 +26,13 @@ const playerGuide = read('src/PlayerGuidance.tsx');
 const mediaRuntime = read('src/localMediaRuntime.ts');
 const evidenceRealism = read('src/evidenceRealism.ts');
 const mediaCatalog = read('src/mediaCatalog.ts');
+const case001V2 = read('src/case001V2Runtime.ts');
 const sw = read('public/sw.js');
 const manifest = JSON.parse(read('public/manifest.webmanifest'));
 
-check(pkg.version === '0.10.2', 'Коммерческая сборка должна иметь версию 0.10.2');
+check(pkg.version === '0.11.0', 'Коммерческая сборка должна иметь версию 0.11.0');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
-check(sw.includes('dbr-v0-10-2-evidence-realism'), 'Service worker не использует cache key v0.10.2');
+check(sw.includes('dbr-v0-11-0-room314-v2'), 'Service worker не использует cache key v0.11.0');
 
 [
   'dist/index.html', 'src/internalMode.ts', 'src/commercialLaunch.ts', 'src/commercialMetadataConsistency.ts',
@@ -41,6 +42,7 @@ check(sw.includes('dbr-v0-10-2-evidence-realism'), 'Service worker не испо
   'src/investigationAgencyInterrogation.ts', 'src/interrogationAgency.css',
   'src/FinalSynthesis.tsx', 'src/finalSynthesis.css',
   'src/evidenceRealism.ts', 'src/evidenceRealism.css',
+  'src/case001V2Runtime.ts', 'src/case001V2Runtime.css',
   'public/media/case-001/evidence/e006-plan-photo.svg',
   'public/media/case-001/evidence/e007-room-312.svg',
   'public/media/case-001/evidence/e008-archive-photo.svg',
@@ -72,6 +74,8 @@ check(main.includes('installFocusedFirstAction'), 'main.tsx не подключ�
 check(main.includes('installProgressiveNavigation'), 'main.tsx не подключает progressive navigation');
 check(main.includes('installInvestigationAgency'), 'main.tsx не подключает investigative agency');
 check(main.includes('installInvestigationAgencyAct3'), 'main.tsx не подключает evidence-led Act III agency');
+check(main.includes('installCase001V2Runtime'), 'main.tsx не подключает Room 314 v2 runtime');
+check(main.includes("./case001V2Runtime.css"), 'main.tsx не подключает стили Room 314 v2');
 check(main.includes("./investigationAgencyInterrogation"), 'main.tsx не подключает player-led interrogation agency');
 check(main.includes("./interrogationAgency.css"), 'main.tsx не подключает стили player-led interrogation');
 check(main.includes("./finalSynthesis.css"), 'main.tsx не подключает стили финальной реконструкции');
@@ -148,6 +152,20 @@ check(!investigationAgencyAct3.includes('new MutationObserver'), 'Evidence-led A
 check(!investigationAgencyAct3.includes('setInterval'), 'Evidence-led Act III не должен использовать polling');
 
 [
+  'v2:marina-closure',
+  'v2:m3-log',
+  'v2:desk-sampled',
+  'v2:rescue-complete',
+  'agency3:archive-requested',
+  'Маршрут найден. Исполнитель — ещё нет.',
+  'Обыскать ветку P3 / S-3',
+  'контроллер M3 не фиксирует ни одного открытия',
+  'Поиск решил задачу спасения'
+].forEach((token) => check(case001V2.includes(token), `Room 314 v2 runtime не содержит: ${token}`));
+check(case001V2.includes('ACT4_STORAGE_KEY'), 'Ранний поиск S-3 не использует каноническое состояние Act IV');
+check(case001V2.includes('subscribeInvestigationState'), 'Room 314 v2 runtime не подписан на единое состояние');
+
+[
   'Правильный порядок не показывается',
   'Если связка слаба, Кирилл объяснит, чего она не доказывает',
   'Будущие доказательства и их названия здесь не показываются',
@@ -219,4 +237,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nCommercial release smoke passed: v0.10.2 preserves player-led investigation and the six distinct realism-v2 evidence visuals.');
+console.log('Commercial release smoke passed for v0.11.0 Room 314 v2 branching.');
