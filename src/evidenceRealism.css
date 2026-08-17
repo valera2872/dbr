@@ -92,6 +92,29 @@ html[data-dbr-evidence-media="realism-v2"] [data-evidence-id="E010"] img {
   backdrop-filter: blur(7px);
 }
 
+.react-case-modal.evidence-e010 .act4-room-scene[data-evidence-realism="v2"] {
+  background-position: center 52% !important;
+  background-size: cover !important;
+  box-shadow: inset 0 0 0 1px rgba(235, 226, 207, .05), inset 0 -120px 180px rgba(0, 0, 0, .3);
+}
+
+.react-case-modal.evidence-e010 .act4-room-scene[data-evidence-realism="v2"]::before,
+.react-case-modal.evidence-e010 .act4-room-scene[data-evidence-realism="v2"]::after {
+  display: none;
+}
+
+.react-case-modal.evidence-e011 .act4-card-lab[data-evidence-realism="v2"] {
+  background-position: center !important;
+  background-size: cover !important;
+  box-shadow: inset 0 0 0 1px rgba(210, 226, 224, .04), inset 0 -140px 190px rgba(0, 0, 0, .28);
+}
+
+.react-case-modal.evidence-e011 .act4-card-lab[data-evidence-realism="v2"] .act4-reader::before,
+.react-case-modal.evidence-e011 .act4-card-lab[data-evidence-realism="v2"] .act4-terminal {
+  background-color: rgba(3, 10, 12, .86);
+  backdrop-filter: blur(5px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html[data-dbr-evidence-media="realism-v2"] .react-evidence-card[data-evidence-realism="v2"] img {
     transition: none;
