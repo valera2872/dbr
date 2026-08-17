@@ -1,8 +1,11 @@
+import { ACT3_STORAGE_KEY } from './build';
 import './case001V2ReactOverlay.css';
 
 let scheduled = false;
 
-function setText(node: Element | null, value: string): void {
+type EvidenceOverlayId = 'E006' | 'E007' | 'E008' | 'E009';
+
+function setText(node: Element | null | undefined, value: string): void {
   if (node && node.textContent !== value) node.textContent = value;
 }
 
@@ -10,7 +13,7 @@ function setData(node: HTMLElement, key: string, value: string): void {
   if (node.dataset[key] !== value) node.dataset[key] = value;
 }
 
-function cardSummary(id: 'E006' | 'E007', value: string): void {
+function cardSummary(id: EvidenceOverlayId, value: string): void {
   const card = document.querySelector<HTMLElement>(`[data-evidence-id="${id}"]`);
   const copy = card?.querySelector<HTMLElement>('.evidence-card-copy');
   const original = copy?.querySelector<HTMLElement>('p:not(.case001-v2-card-summary)');
@@ -64,6 +67,14 @@ function findingOverride(modal: HTMLElement, kicker: string, title: string, body
   setText(override.querySelector('small'), kicker);
   setText(override.querySelector('strong'), title);
   setText(override.querySelector('span'), body);
+}
+
+function patchLegacyFinding(modal: HTMLElement, needle: string, title: string, body: string): void {
+  const finding = modal.querySelector<HTMLElement>('.react-finding:not(.success)');
+  const heading = finding?.querySelector<HTMLElement>('h3');
+  if (!finding || !heading?.textContent?.includes(needle)) return;
+  setText(heading, title);
+  setText(finding.querySelector('p:last-child'), body);
 }
 
 function patchGuide(modal: HTMLElement, title: string, body: string, actionLabel?: string, action?: () => void): void {
@@ -181,9 +192,105 @@ function patchE007(): void {
   }
 }
 
+function patchE008(): void {
+  cardSummary('E008', 'Восстановите происхождение B-17 и выясните, что именно скрыли при оцифровке — без преждевременного назначения виновного.');
+
+  const modal = document.querySelector<HTMLElement>('.react-case-modal.evidence-e008');
+  if (!modal) return;
+  setData(modal, 'case001V2Evidence', 'E008');
+  modalSummary(modal, 'Сопоставьте опись, контактный лист, неполную расшифровку конфликта и журнал носителей. E008 устанавливает происхождение и старый конфликт, но не окончательную личность ответственного.');
+
+  const list = Array.from(modal.querySelectorAll<HTMLElement>('.react-point-list > button'));
+  patchPointButton(list[2], 'Неполная расшифровка конфликта', 'Антон спорил с человеком, имевшим полномочия по мероприятию; личность голоса здесь не подтверждена');
+
+  patchLegacyFinding(
+    modal,
+    'Антон спорил с Кириллом',
+    'Антон спорил с представителем организатора',
+    'Фрагмент подтверждает спор об опасной служебной зоне и решение не останавливать работу. По этой копии нельзя надёжно установить личность второго участника разговора.'
+  );
+
+  findingOverride(
+    modal,
+    'Вывод по E008',
+    'B-17 существовал и был намеренно исключён из общей цифровой копии',
+    'Денис действительно скрывал уникальный оригинал. Материалы подтверждают старый спор о безопасности и участие человека с операционными полномочиями, но E008 ещё не доказывает, что этим человеком был Кирилл. Полная историческая атрибуция должна опираться на восстановленный оригинал E011.'
+  );
+}
+
+function checkpointAnswer(): string | null {
+  try {
+    const raw = JSON.parse(localStorage.getItem(ACT3_STORAGE_KEY) ?? '{}') as { checkpointAnswer?: unknown };
+    return typeof raw.checkpointAnswer === 'string' ? raw.checkpointAnswer : null;
+  } catch {
+    return null;
+  }
+}
+
+function patchE009Checkpoint(modal: HTMLElement): void {
+  const checkpoint = modal.querySelector<HTMLElement>('.react-checkpoint');
+  if (!checkpoint) return;
+  const buttons = Array.from(checkpoint.querySelectorAll<HTMLButtonElement>('button'));
+  const labels = [
+    'Вера скрыла имя, привезла B-17 и могла попытаться вернуть оригинал после конфликта с Ильёй.',
+    'Денис скрывал B-17 и мог попытаться остановить публикацию, несмотря на заявленное алиби.',
+    'Денис скрывал архив, Вера — личность и источник; обе лжи реальны, но пока не устанавливают человека, находившегося в 314.',
+    'Все участники заранее договорились об общей инсценировке исчезновения.'
+  ];
+  buttons.forEach((button, index) => setText(button.querySelector('strong'), labels[index] ?? button.textContent ?? ''));
+
+  const feedback = checkpoint.querySelector<HTMLElement>('p:not(.premium-kicker)');
+  if (!feedback) return;
+  const answer = checkpointAnswer();
+  const text = answer === 'separate_lies'
+    ? 'Верно. Денис скрывал архив, Вера — своё имя, источник и условия публикации. Обе лжи содержательны, но ни одна сама не устанавливает человека, физически находившегося в 314. Теперь отдельно проверяйте возможность доступа, критическое время и следы присутствия.'
+    : answer === 'vera_attack'
+      ? 'Вера действительно скрывала личность, привезла оригинал и спорила с Ильёй о публикации. Это делает версию разумной для проверки, но пока не доказывает её физическую возможность попасть в 314 в критическое окно.'
+      : answer === 'denis_route'
+        ? 'Денис действительно манипулировал архивом и имел мотив бояться публикации. Но версия нападения должна выдержать независимую проверку его критического времени и физического доступа.'
+        : answer === 'common_plot'
+          ? 'Материалы показывают несколько разных настоящих секретов, а не доказанный общий сговор.'
+          : '';
+  if (text) setText(feedback, text);
+}
+
+function patchE009(): void {
+  cardSummary('E009', 'Докажите, кто скрывается под именем Елены, что она принесла Илье и почему действительно спорила с ним. Скрытая личность не равна виновности.');
+
+  const modal = document.querySelector<HTMLElement>('.react-case-modal.evidence-e009');
+  if (!modal) return;
+  setData(modal, 'case001V2Evidence', 'E009');
+  modalSummary(modal, 'Сопоставьте документы и переписку. Цель E009 — установить настоящую личность Веры, её роль источника и реальную причину лжи, а не автоматически исключить её из подозреваемых.');
+
+  const list = Array.from(modal.querySelectorAll<HTMLElement>('.react-point-list > button'));
+  patchPointButton(list[2], 'Черновик о защищённом источнике', 'Илья знал имя Веры; она привезла оригинал и требовала согласовать публикацию семейного материала');
+
+  const questions = Array.from(modal.querySelectorAll<HTMLElement>('.react-question-block button'));
+  const denisAnswer = questions[0]?.querySelector<HTMLElement>('span');
+  if (questions[0]?.classList.contains('done')) {
+    setText(denisAnswer, '«Я убрал B-17 из общей цифровой копии. Боялся последствий. Но оригинал Илье привезла семья Антона». ✓');
+  }
+  const veraAnswer = questions[1]?.querySelector<HTMLElement>('span');
+  if (questions[1]?.classList.contains('done')) {
+    setText(veraAnswer, '«Да. Я Вера Белова. Привезла оригинал и спорила с Ильёй: не хотела публикации, пока он не проверит копию и не согласует, что можно раскрывать». ✓');
+  }
+
+  const identityLayout = modal.querySelector<HTMLElement>('.identity-comparison');
+  if (identityLayout && !identityLayout.querySelector('.case001-v2-vera-context')) {
+    const note = document.createElement('div');
+    note.className = 'case001-v2-vera-context';
+    note.innerHTML = '<small>Почему это важно</small><strong>Вера скрывала реальную связь с делом — и имела собственный конфликт с Ильёй</strong><span>Она привезла B-17 как источник семьи Белова и требовала контролировать публикацию. Это объясняет ложь и создаёт мотив для проверки, но не доказывает нападение.</span>';
+    identityLayout.append(note);
+  }
+
+  patchE009Checkpoint(modal);
+}
+
 function apply(): void {
   patchE006();
   patchE007();
+  patchE008();
+  patchE009();
 }
 
 function schedule(): void {
