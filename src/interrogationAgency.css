@@ -61,13 +61,34 @@
   font-size: 25px;
 }
 
-.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence:not(:disabled) {
+/* Agency mode must not inherit the old prescribed-next-card motion or badge. */
+.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence,
+.interrogation-shell[data-investigation-agency="mid"] .interrogation-evidence {
   outline: none;
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
 }
 
-.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence.next-guided-evidence {
+.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence:hover,
+.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence:focus-visible,
+.interrogation-shell[data-investigation-agency="mid"] .interrogation-evidence:hover,
+.interrogation-shell[data-investigation-agency="mid"] .interrogation-evidence:focus-visible {
+  transform: none !important;
+}
+
+.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence.next-guided-evidence,
+.interrogation-shell[data-investigation-agency="mid"] .interrogation-evidence.next-guided-evidence {
+  animation: none !important;
+  transition: none !important;
   box-shadow: none !important;
   transform: none !important;
+}
+
+.interrogation-shell[data-investigation-agency="key"] .interrogation-evidence.next-guided-evidence::after,
+.interrogation-shell[data-investigation-agency="mid"] .interrogation-evidence.next-guided-evidence::after {
+  content: none !important;
+  display: none !important;
 }
 
 @media (max-width: 760px) {

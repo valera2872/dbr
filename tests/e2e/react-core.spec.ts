@@ -36,6 +36,11 @@ async function continueCase(page: Page) {
   await expect(page.locator('.premium-app')).toBeVisible();
 }
 
+async function chooseFinal(page: Page, groupTitle: RegExp, option: RegExp) {
+  const group = page.locator('.final-synthesis-group').filter({ hasText: groupTitle });
+  await group.getByRole('button', { name: option }).click();
+}
+
 test('E006 и E007 принадлежат React и сохраняют прежний ключ акта II', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -68,7 +73,7 @@ test('E006 и E007 принадлежат React и сохраняют прежн
   expect(errors).toEqual([]);
 });
 
-test('финальное обвинение и отчёт работают в React без legacy акта IV', async ({ page }) => {
+test('React Core сохраняет акт IV, а финальное обвинение собирается отдельным React synthesis', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
 
@@ -81,11 +86,21 @@ test('финальное обвинение и отчёт работают в Re
   });
   await continueCase(page);
 
-  await expect(page.locator('[data-react-case-core="v0.8.5"]')).toBeVisible();
-  await expect(page.locator('.react-final-panel')).toBeVisible();
+  // React Core remains mounted and owns the compatible Act IV state, but its old
+  // pre-written final answer has no visible surface while FinalSynthesis owns the finale.
+  await expect(page.locator('[data-react-case-core="v0.8.5"]')).toHaveCount(1);
+  await expect(page.locator('.final-synthesis')).toBeVisible();
+  await expect(page.locator('.react-final-panel')).toBeHidden();
   await expect(page.locator('.act4-final-panel:not(.react-final-panel)')).toHaveCount(0);
 
-  await page.getByRole('button', { name: /Кирилл пришёл за картой через скрытый проход/ }).click();
+  await chooseFinal(page, /Кто совершил действия/, /Кирилл Бессонов/);
+  await chooseFinal(page, /Как был преодолён/, /служебный проём между 312 и 314/);
+  await chooseFinal(page, /Зачем нападавшему/, /Получить носитель B-17/);
+  await chooseFinal(page, /доказанная роль Кирилла/, /знал об опасном открытом служебном маршруте/);
+  await chooseFinal(page, /Какая пара материалов доказывает способ/, /E006 старый план \+ E007 свежие следы/);
+  await chooseFinal(page, /Какая пара материалов связывает нападение/, /E008 цепочка оригинала \+ E011 подлинная карта/);
+  await page.locator('.final-synthesis').getByRole('button', { name: /Проверить доказательную цепочку/ }).click();
+
   await expect(page.locator('.act4-report-overlay')).toBeVisible();
   await expect(page.locator('.act4-report')).toContainText('РАССЛЕДОВАНИЕ ЗАВЕРШЕНО');
 

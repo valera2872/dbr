@@ -10,6 +10,7 @@ import ReactDOM from 'react-dom/client';
 import PremiumApp from './PremiumApp';
 import { ReactCaseExtension } from './ReactCaseExtension';
 import { PlayerGuidance } from './PlayerGuidance';
+import { FinalSynthesis } from './FinalSynthesis';
 import { AppErrorBoundary } from './AppErrorBoundary';
 import { mountActorStudio } from './actorStudio';
 import { mountActorStudioGuide } from './actorStudioGuide';
@@ -45,6 +46,7 @@ import './commercialMobile.css';
 import './localMedia.css';
 import './finalMedia.css';
 import './reactCaseExtension.css';
+import './finalSynthesis.css';
 import './firstPlayerFixes.css';
 import './act23Usability.css';
 import './playerGuidance.css';
@@ -61,6 +63,7 @@ import './interrogationGuidance';
 import './investigationAgencyInterrogation';
 import './interactiveInterrogation';
 import './investigationAgencyAccessibility';
+import './finalSynthesisGuidance';
 import './livingSuspect';
 import './kirillVideoRuntime';
 import './stabilityDiagnostics';
@@ -85,6 +88,7 @@ if (actorStudio.mounted) {
         <PremiumApp />
         <ReactCaseExtension />
         <PlayerGuidance />
+        <FinalSynthesis />
       </AppErrorBoundary>
     </React.StrictMode>
   );

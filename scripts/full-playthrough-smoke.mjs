@@ -43,7 +43,10 @@ for (let index = 1; index <= 11; index += 1) {
   'Денис скрывал оригинал, Вера — личность',
   'data-conclusion="route"',
   'Извлечь карту 314-17',
-  'Кирилл пришёл за картой через скрытый проход',
+  'final-synthesis',
+  'E006 старый план \\+ E007 свежие следы',
+  'E008 цепочка оригинала \\+ E011 подлинная карта',
+  'Проверить доказательную цепочку',
   'РАССЛЕДОВАНИЕ ЗАВЕРШЕНО',
   'Открыть итог дела',
   'page.close()',
@@ -57,6 +60,7 @@ for (let index = 1; index <= 11; index += 1) {
 
 check(main.includes("from './completedCaseReturn'"), 'main.tsx не подключает возврат к итоговому отчёту');
 check(main.includes('installCompletedCaseReturn()'), 'Мост завершённого дела не установлен');
+check(main.includes('FinalSynthesis'), 'main.tsx не монтирует player-built final synthesis');
 check(returnBridge.includes(".react-final-panel button"), 'Мост не открывает React-отчёт');
 check(returnBridge.includes("'.premium-sidebar button, .premium-mobile-nav button'"), 'Мост не умеет вернуться в раздел «Дело»');
 check(returnBridge.includes('MAX_FRAMES = 90'), 'Ожидание React-отчёта не ограничено');
@@ -74,4 +78,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFull playthrough smoke passed: a clean browser route earns E006/E008/E009 through investigation, then covers interrogation, rescue, accusation, epilogue and return.');
+console.log('\nFull playthrough smoke passed: a clean browser route earns major evidence, builds the final accusation from six parts, and reaches the epilogue.');
