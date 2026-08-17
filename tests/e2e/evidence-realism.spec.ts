@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const CORE = 'dbr:dbr_001_room_314:0.2.0';
 const ACT2 = 'dbr:dbr_001_room_314:act2:v0.5.0';
@@ -6,7 +6,7 @@ const ACT3 = 'dbr:dbr_001_room_314:act3:v0.6.0';
 const ACT4 = 'dbr:dbr_001_room_314:act4:v0.7.0';
 const INTERROGATION = 'dbr:dbr_001_room_314:interrogation:kirill:v0.6.2';
 
-async function seedEvidenceState(page: Parameters<typeof test>[0] extends never ? never : any) {
+async function seedEvidenceState(page: Page) {
   await page.addInitScript(({ core, act2, act3, act4, interrogation }) => {
     localStorage.setItem(core, JSON.stringify({
       phase: 'hq', prologueIndex: 3, activeTab: 'case',
