@@ -27,8 +27,15 @@ function apply(state: InvestigationSnapshot): void {
   active = shouldOwn;
   if (!guide) return;
 
+  const explain = guide.querySelector<HTMLButtonElement>('.player-guide-explain');
+  const next = guide.querySelector<HTMLButtonElement>('.player-guide-next');
+
   if (!shouldOwn) {
-    if (guide.dataset.finalSynthesisGuidance === '1') delete guide.dataset.finalSynthesisGuidance;
+    if (guide.dataset.finalSynthesisGuidance === '1') {
+      delete guide.dataset.finalSynthesisGuidance;
+      if (explain) explain.style.display = '';
+      if (next) delete next.dataset.finalSynthesisRoute;
+    }
     return;
   }
 
@@ -37,8 +44,6 @@ function apply(state: InvestigationSnapshot): void {
   const strong = guide.querySelector<HTMLElement>('.player-guide-floating-copy > strong');
   const paragraph = guide.querySelector<HTMLElement>('.player-guide-floating-copy > p');
   const progress = guide.querySelector<HTMLElement>('.player-guide-floating-copy > span');
-  const next = guide.querySelector<HTMLButtonElement>('.player-guide-next');
-  const explain = guide.querySelector<HTMLButtonElement>('.player-guide-explain');
 
   if (small) small.textContent = 'Финальная реконструкция';
   if (strong) strong.textContent = 'Соберите собственную доказательную цепочку';
@@ -79,9 +84,8 @@ function captureRoute(event: MouseEvent): void {
 
 subscribeInvestigationState((state) => window.requestAnimationFrame(() => window.requestAnimationFrame(() => apply(state))));
 document.addEventListener('click', captureRoute, true);
-document.addEventListener('click', () => schedule('final-synthesis-guidance:click'), true);
-window.addEventListener('dbr:act4-updated', () => schedule('final-synthesis-guidance:act4'));
-window.addEventListener('dbr:runtime-settled', () => schedule('final-synthesis-guidance:runtime'));
+window.addEventListener('dbr:act4-updated', () => { if (active) schedule('final-synthesis-guidance:act4'); });
+window.addEventListener('dbr:runtime-settled', () => { if (active) schedule('final-synthesis-guidance:runtime'); });
 window.addEventListener('pageshow', () => schedule('final-synthesis-guidance:pageshow'));
 
 schedule('final-synthesis-guidance:install');
