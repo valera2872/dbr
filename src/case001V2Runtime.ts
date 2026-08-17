@@ -198,7 +198,7 @@ function v2Active(state: InvestigationSnapshot): boolean {
     && !state.act3.complete;
 }
 
-function setText(node: Element | null, value: string): void {
+function setText(node: Element | null | undefined, value: string): void {
   if (node && node.textContent !== value) node.textContent = value;
 }
 
