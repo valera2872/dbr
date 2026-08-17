@@ -82,17 +82,19 @@ test('старый план появляется только как резул�
   await received.getByRole('button', { name: /Перейти к полученному материалу/ }).click();
   await expect(planCard).toBeVisible();
   await expect(planCard).toBeEnabled();
-  await expect(planCard).toContainText('Обмерный план третьего этажа до реконструкции');
+  await expect(planCard).toContainText('V314');
+  await expect(planCard).toContainText('служебной зоне');
   await planCard.click();
 
   const modal = page.locator('.react-case-modal.evidence-e006');
   await expect(modal).toBeVisible();
-  await expect(modal).toContainText('Сопоставьте его с нынешней схемой');
+  await expect(modal).toContainText('Ищите не виновного, а возможные пути перемещения');
 
   const hotspots = modal.locator('.plan-hotspot');
   await expect(hotspots).toHaveCount(3);
   for (let index = 0; index < 3; index += 1) await hotspots.nth(index).click();
 
-  await expect(modal).toContainText('До реконструкции здесь был служебный проём');
+  await expect(modal).toContainText('Старая сеть связывала 312 / 314 со служебной зоной');
+  await expect(modal).toContainText('P3');
   await expect(modal).not.toContainText('Проход сохранился за панелями');
 });
