@@ -48,10 +48,16 @@ function applySceneMedia(): void {
   }
 
   const serviceRoom = document.querySelector<HTMLElement>('.react-case-modal.evidence-e010 .act4-room-scene');
-  if (serviceRoom) mark(serviceRoom);
+  if (serviceRoom) {
+    serviceRoom.style.backgroundImage = `linear-gradient(90deg, rgba(1, 5, 6, .46), rgba(1, 5, 6, .12) 48%, rgba(1, 5, 6, .38)), linear-gradient(180deg, rgba(2, 7, 8, .08), rgba(2, 7, 8, .38)), url("${CASE_MEDIA.evidence.serviceRoom}")`;
+    mark(serviceRoom);
+  }
 
   const cardLab = document.querySelector<HTMLElement>('.react-case-modal.evidence-e011 .act4-card-lab');
-  if (cardLab) mark(cardLab);
+  if (cardLab) {
+    cardLab.style.backgroundImage = `linear-gradient(90deg, rgba(2, 7, 9, .88), rgba(2, 7, 9, .68) 47%, rgba(2, 7, 9, .86)), url("${CASE_MEDIA.evidence.cardLab}")`;
+    mark(cardLab);
+  }
 }
 
 function apply(): void {
