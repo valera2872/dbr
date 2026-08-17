@@ -14,17 +14,20 @@ const main = read('src/main.tsx');
 const returnBridge = read('src/completedCaseReturn.ts');
 const test = read('tests/e2e/full-playthrough.spec.ts');
 
-check(/^0\.(?:8\.[89]|9\.|10\.)/.test(pkg.version), 'Полный playthrough должен сохраняться в релизах 0.8.8+');
+const versionParts = String(pkg.version).split('.').map((part) => Number.parseInt(part, 10));
+const [major = 0, minor = 0, patch = 0] = versionParts;
+const supportsFullPlaythrough = major > 0 || minor > 8 || (minor === 8 && patch >= 8);
+check(supportsFullPlaythrough, 'Полный playthrough должен сохраняться в релизах 0.8.8+');
 check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
 check(sw.includes(`dbr-v${pkg.version.replaceAll('.', '-')}`), 'Service worker не использует текущий cache key');
 check(exists('dist/index.html'), 'Production bundle не создан');
 check(exists('tests/e2e/full-playthrough.spec.ts'), 'Отсутствует полный браузерный маршрут');
 check(exists('src/completedCaseReturn.ts'), 'Отсутствует механизм возврата к итоговому отчёту');
 
-for (let index = 1; index <= 11; index += 1) {
-  const id = `E${String(index).padStart(3, '0')}`;
+for (const id of ['E001','E002','E003','E004','E005','E006','E007','E008','E009','E011']) {
   check(test.includes(id), `Полный маршрут не фиксирует ${id}`);
 }
+check(test.includes("saved.act4.search"), 'V2 rescue / E010-equivalent search state не проверяется');
 
 [
   'Начать расследование',
@@ -36,13 +39,18 @@ for (let index = 1; index <= 11; index += 1) {
   'Уточнить историю ремонтов этажа',
   'Запросить обмерный план до реконструкции',
   'agency:plan-requested',
-  'До реконструкции здесь был служебный проём',
-  'Запросить BOX 15-B и журнал оцифровки',
+  'Старая сеть связывала 312 / 314 со служебной зоной',
+  'Маршрут найден. Исполнитель — ещё нет.',
+  'Обыскать ветку P3 \\/ S-3',
+  'Илья жив. Но дело ещё не раскрыто.',
+  'Поднять акт реконструкции 2015',
+  'Запросить журнал M3',
+  'Взять микрослед с затёртой зоны',
+  'Запросить BOX 15-B \\/ журнал оцифровки',
   'Проверить Елену Ветрову',
   'agency3:identity-requested',
   'Денис скрывал оригинал, Вера — личность',
   'data-conclusion="route"',
-  'Извлечь карту 314-17',
   'final-synthesis',
   'E006 старый план \\+ E007 свежие следы',
   'E008 цепочка оригинала \\+ E011 подлинная карта',
@@ -78,4 +86,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFull playthrough smoke passed: a clean browser route earns major evidence, builds the final accusation from six parts, and reaches the epilogue.');
+console.log('\nFull playthrough smoke passed: a clean browser route earns the v2 parallel branches, rescues Ilya before confession, builds the final accusation and reaches the epilogue.');

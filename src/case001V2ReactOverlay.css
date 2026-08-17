@@ -1,0 +1,47 @@
+[data-evidence-id="E006"] .evidence-card-copy > p[data-case001-v2-legacy-copy="1"],
+[data-evidence-id="E007"] .evidence-card-copy > p[data-case001-v2-legacy-copy="1"] {
+  display: none !important;
+}
+
+.case001-v2-card-summary {
+  display: block !important;
+  margin: 0;
+}
+
+.react-case-modal[data-case001-v2-evidence] .premium-modal-header > div > p[data-case001-v2-legacy-copy="1"] {
+  display: none !important;
+}
+
+.case001-v2-modal-summary {
+  display: block;
+  margin-top: 8px;
+  color: rgba(220, 230, 237, 0.72);
+  line-height: 1.52;
+}
+
+.react-finding.success[data-case001-v2-finding="1"] > :not(.case001-v2-finding-override) {
+  display: none !important;
+}
+
+.case001-v2-finding-override {
+  display: grid;
+  gap: 7px;
+}
+
+.case001-v2-finding-override small {
+  color: rgba(151, 201, 229, 0.82);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.case001-v2-finding-override strong {
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.case001-v2-finding-override span {
+  color: rgba(221, 231, 237, 0.74);
+  line-height: 1.5;
+}

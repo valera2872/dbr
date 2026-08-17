@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dbr-v0-10-2-evidence-realism';
+const CACHE_NAME = 'dbr-v0-11-0-room314-v2';
 const APP_SHELL = [
   '/dbr/',
   '/dbr/manifest.webmanifest',

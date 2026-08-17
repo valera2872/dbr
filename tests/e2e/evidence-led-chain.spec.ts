@@ -42,37 +42,29 @@ async function continueCase(page: Page) {
   await expect(page.locator('.premium-app')).toBeVisible();
 }
 
-test('E008 появляется только после самостоятельного выхода на архив 2015 года', async ({ page }) => {
+test('E008 запрашивается из v2-развилки без случайного конверта в 312', async ({ page }) => {
   await seedAfterRoom312(page);
   await continueCase(page);
 
-  const panel = page.locator('.evidence-led-panel[data-evidence-led-mode="archive-lead"]');
-  await expect(panel).toBeVisible();
-  await expect(panel).toContainText('Почему след из 312 ведёт дальше?');
-  await expect(page.locator('.react-next-action')).toBeHidden();
+  const branch = page.locator('.case001-v2-branch-panel');
+  await expect(branch).toBeVisible();
+  await expect(branch).toContainText('Маршрут найден. Исполнитель — ещё нет.');
+  await expect(branch).toContainText('Пустой футляр');
+
+  const legacyArchiveLead = page.locator('.evidence-led-panel[data-evidence-led-mode="archive-lead"]');
+  await expect(legacyArchiveLead).toBeHidden();
 
   await page.getByRole('button', { name: /Материалы/ }).first().click();
   await expect(page.locator('[data-evidence-id="E008"]')).toBeHidden();
+  await page.getByRole('button', { name: /Дело/ }).first().click();
 
-  const guide = page.locator('.player-guide-floating');
-  await expect(guide).toContainText('Открыть рабочую панель');
-  await guide.getByRole('button', { name: /Открыть рабочую панель/ }).click();
-  await expect(panel).toBeVisible();
-
-  await panel.getByRole('button', { name: /Отправить волокна на экспресс-анализ/ }).click();
-  await expect(panel).toContainText('массового типа');
-  await expect(panel.getByRole('button', { name: /Запросить BOX 15-B/ })).toHaveCount(0);
-
-  await panel.getByRole('button', { name: /Изучить маркировку конверта 2015 года/ }).click();
-  await panel.getByRole('button', { name: /Спросить Дениса о пометке/ }).click();
-  await expect(panel).toContainText('BOX 15-B / CONTACT B');
-  await expect(panel).toContainText('Антон Белов');
-
-  await panel.getByRole('button', { name: /Запросить BOX 15-B и журнал оцифровки/ }).click();
-  const received = page.locator('.evidence-led-panel[data-evidence-led-mode="archive-received"]');
-  await expect(received).toContainText('Архив выдал BOX 15-B');
-  await received.getByRole('button', { name: /Открыть полученный архивный материал/ }).click();
+  await branch.getByRole('button', { name: /Запросить BOX 15-B \/ журнал оцифровки/ }).click();
   await expect(page.locator('.react-case-modal.evidence-e008')).toBeVisible();
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), ACT3);
+  expect(saved.questions).toContain('agency3:archive-requested');
+  expect(saved.questions).not.toContain('agency3:envelope');
+  expect(saved.questions).not.toContain('agency3:denis-envelope');
 });
 
 test('E009 появляется только после восстановления Веры в цепочке хранения и проверки кандидата', async ({ page }) => {
@@ -81,7 +73,7 @@ test('E009 появляется только после восстановлен
     localStorage.setItem(key, JSON.stringify({
       archive: ['catalog', 'contact', 'audio', 'custody'],
       identity: [],
-      questions: ['agency3:envelope', 'agency3:denis-envelope', 'agency3:archive-requested'],
+      questions: ['agency3:archive-requested'],
       checkpointAnswer: null,
       complete: false
     }));

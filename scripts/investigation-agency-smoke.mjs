@@ -21,9 +21,10 @@ const sw = read('public/sw.js');
 const interrogationTest = read('tests/e2e/interrogation-agency.spec.ts');
 const finalTest = read('tests/e2e/final-synthesis.spec.ts');
 
-check(pkg.version === '0.10.2', 'Investigative agency release должна иметь версию 0.10.2');
-check(build.includes("APP_BUILD = 'v0.10.2'"), 'APP_BUILD не обновлён до v0.10.2');
-check(sw.includes('dbr-v0-10-2-evidence-realism'), 'Service worker cache не обновлён до v0.10.2');
+const [major = 0, minor = 0] = String(pkg.version).split('.').map((part) => Number.parseInt(part, 10));
+check(major > 0 || minor >= 10, 'Investigative agency должна сохраняться в релизах 0.10.0+');
+check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен совпадать с package version');
+check(sw.includes(`dbr-v${pkg.version.replaceAll('.', '-')}`), 'Service worker cache не соответствует текущему релизу');
 [
   'src/investigationAgency.ts',
   'src/investigationAgencyAct3.ts',
