@@ -88,7 +88,7 @@ test('старый план появляется только как резул�
 
   const modal = page.locator('.react-case-modal.evidence-e006');
   await expect(modal).toBeVisible();
-  await expect(modal).toContainText('Ищите не виновного, а возможные пути перемещения');
+  await expect(modal).toContainText('Ищите возможные пути перемещения, а не виновного');
 
   const hotspots = modal.locator('.plan-hotspot');
   await expect(hotspots).toHaveCount(3);
