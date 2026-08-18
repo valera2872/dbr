@@ -158,7 +158,7 @@ test('чистое расследование проходит весь марш
   await expect(page.locator('.react-case-modal.evidence-e008')).toContainText('Денис скрывал уникальный оригинал B-17');
   await closeEvidence(page);
 
-  // The Vera/Elena identity line remains earned from the chain of custody.
+  // The Vera/Elena line is earned from B-17 custody, then identity and opportunity are tested separately.
   await expect(page.locator('[data-evidence-id="E009"]')).toBeHidden();
   const guide = page.locator('.player-guide-floating');
   await expect(guide).toContainText('Открыть рабочую панель');
@@ -179,14 +179,24 @@ test('чистое расследование проходит весь марш
   const identityReceived = page.locator('.evidence-led-panel[data-evidence-led-mode="identity-received"]');
   await expect(identityReceived).toContainText('Получены документы Елены');
   await identityReceived.getByRole('button', { name: /Провести документальную сверку/ }).click();
-  await expect(page.locator('.react-case-modal.evidence-e009')).toBeVisible();
-  await clickEvery(page.locator('.react-case-modal.evidence-e009 .react-point-list button'));
-  await page.getByRole('button', { name: /Денис: почему отсутствует B-17/ }).click();
-  await page.getByRole('button', { name: /Елена: ваше настоящее имя — Вера Белова/ }).click();
-  await page.locator('.react-case-modal.evidence-e009 .react-checkpoint').getByRole('button', {
-    name: /Денис скрывал оригинал, Вера — личность/
+
+  const e009 = page.locator('.react-case-modal.evidence-e009[data-e009-identity-v2="1"]');
+  await expect(e009).toBeVisible();
+  await expect(e009).toContainText('Кто она?');
+  await expect(e009).toContainText('могла ли она совершить нападение?');
+  await clickEvery(e009.locator('.identity-v2-source-list > button'));
+  await expect(e009).toContainText('«Елена Ветрова» и Вера Белова — один человек');
+  await e009.getByRole('button', { name: /Предъявить сопоставление Елене/ }).click();
+  await expect(e009).toContainText('секрет, источник и конфликт');
+  await expect(e009).toContainText('ещё не отвечает, где Вера была во время нападения');
+
+  await clickEvery(e009.locator('.identity-v2-opportunity-list button'));
+  await expect(e009).toContainText('выход из 307 в гостевой коридор не зафиксирован');
+  await expect(e009).toContainText('Связи с номером 307 нет');
+  await e009.locator('.identity-v2-checkpoint').getByRole('button', {
+    name: /Вера — реальный источник B-17/
   }).click();
-  await expect(page.locator('.react-case-modal.evidence-e009 .react-checkpoint')).toContainText('Верно');
+  await expect(e009.locator('.identity-v2-checkpoint')).toContainText('Верно');
   await closeEvidence(page);
 
   // Evidence-driven interrogation of Kirill.
@@ -249,7 +259,8 @@ test('чистое расследование проходит весь марш
   expect(saved.act3.questions).toEqual(expect.arrayContaining([
     'agency3:archive-requested', 'v2:desk-sampled', 'v2:rescue-complete',
     'agency3:trace-custody', 'agency3:denis-family', 'agency3:id-kirill',
-    'agency3:id-elena', 'agency3:identity-requested', 'd-original', 'v-name'
+    'agency3:id-elena', 'agency3:identity-requested', 'd-original', 'v-name',
+    'e009:vera-corridor', 'e009:vera-device', 'e009:vera-route'
   ]));
   expect(saved.act3.complete).toBe(true);
   expect(saved.act3.checkpointAnswer).toBe('separate_lies');
