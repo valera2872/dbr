@@ -22,6 +22,7 @@ import { installProgressiveNavigation } from './progressiveNavigation';
 import { installInvestigationAgency } from './investigationAgency';
 import { installInvestigationAgencyAct3 } from './investigationAgencyAct3';
 import { installCase001V2Runtime } from './case001V2Runtime';
+import { installArchiveEvidenceV2 } from './ArchiveEvidenceV2';
 import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
@@ -107,6 +108,7 @@ if (actorStudio.mounted) {
   installInvestigationAgency();
   installInvestigationAgencyAct3();
   installCase001V2Runtime();
+  installArchiveEvidenceV2();
 }
 
 if ('serviceWorker' in navigator) {

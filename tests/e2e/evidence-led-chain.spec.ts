@@ -42,7 +42,7 @@ async function continueCase(page: Page) {
   await expect(page.locator('.premium-app')).toBeVisible();
 }
 
-test('E008 запрашивается из v2-развилки без случайного конверта в 312', async ({ page }) => {
+test('E008 запрашивается из v2-развилки и исследуется как архив, а не готовый ответ', async ({ page }) => {
   await seedAfterRoom312(page);
   await continueCase(page);
 
@@ -59,12 +59,27 @@ test('E008 запрашивается из v2-развилки без случа
   await page.getByRole('button', { name: /Дело/ }).first().click();
 
   await branch.getByRole('button', { name: /Запросить BOX 15-B \/ журнал оцифровки/ }).click();
-  await expect(page.locator('.react-case-modal.evidence-e008')).toBeVisible();
+  const archive = page.locator('.react-case-modal.evidence-e008[data-e008-archive-v2="1"]');
+  await expect(archive).toBeVisible();
+  await expect(archive).toContainText('БУМАЖНАЯ ОПИСЬ');
+  await expect(archive).toContainText('48');
+  await expect(archive).toContainText('47');
+  await expect(archive).not.toContainText('Антон спорил с Кириллом');
+  await expect(archive).not.toContainText('Кирилл');
+
+  const sources = archive.locator('.react-point-list > button');
+  await expect(sources).toHaveCount(4);
+  for (let index = 0; index < 4; index += 1) await sources.nth(index).click();
+
+  await expect(archive).toContainText('Денис скрывал уникальный оригинал B-17 из цифрового набора');
+  await expect(archive).toContainText('Что ещё не доказано');
+  await expect(archive).toContainText('E008 не устанавливает ни точную историческую ответственность конкретного человека, ни исполнителя нынешнего нападения');
 
   const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), ACT3);
   expect(saved.questions).toContain('agency3:archive-requested');
   expect(saved.questions).not.toContain('agency3:envelope');
   expect(saved.questions).not.toContain('agency3:denis-envelope');
+  expect(saved.archive).toEqual(expect.arrayContaining(['catalog', 'contact', 'audio', 'custody']));
 });
 
 test('E009 появляется только после восстановления Веры в цепочке хранения и проверки кандидата', async ({ page }) => {
