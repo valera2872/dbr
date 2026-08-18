@@ -197,7 +197,8 @@ test('чистое расследование проходит весь марш
     name: /Вера — реальный источник B-17/
   }).click();
   await expect(e009.locator('.identity-v2-checkpoint')).toContainText('Верно');
-  await closeEvidence(page);
+  await e009.getByRole('button', { name: 'Закрыть' }).click();
+  await expect(page.locator('.identity-v2-backdrop')).toHaveCount(0);
 
   // Evidence-driven interrogation of Kirill.
   await openTab(page, 'Люди');
