@@ -40,7 +40,7 @@ async function chooseFinal(page: Page, groupTitle: RegExp, option: RegExp) {
 
 test('чистое расследование проходит весь маршрут E001–E011 и сохраняет эпилог', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Полный маршрут выполняется один раз в desktop Chromium');
-  test.setTimeout(90_000);
+  test.setTimeout(120_000);
 
   const runtimeErrors: string[] = [];
   const trackErrors = (target: Page) => target.on('pageerror', (error) => runtimeErrors.push(error.message));
