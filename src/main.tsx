@@ -23,6 +23,7 @@ import { installInvestigationAgency } from './investigationAgency';
 import { installInvestigationAgencyAct3 } from './investigationAgencyAct3';
 import { installCase001V2Runtime } from './case001V2Runtime';
 import { installArchiveEvidenceV2 } from './ArchiveEvidenceV2';
+import { installIdentityEvidenceV2 } from './IdentityEvidenceV2';
 import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
@@ -109,6 +110,7 @@ if (actorStudio.mounted) {
   installInvestigationAgencyAct3();
   installCase001V2Runtime();
   installArchiveEvidenceV2();
+  installIdentityEvidenceV2();
 }
 
 if ('serviceWorker' in navigator) {
