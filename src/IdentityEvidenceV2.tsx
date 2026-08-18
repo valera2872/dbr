@@ -13,13 +13,8 @@ type Act3State = {
 
 type IdentitySourceId = 'registration' | 'festival' | 'message';
 type OpportunityMarker = 'e009:vera-corridor' | 'e009:vera-device' | 'e009:vera-route';
-
-type IdentitySource = {
-  id: IdentitySourceId;
-  code: string;
-  label: string;
-  subtitle: string;
-};
+type IdentitySource = { id: IdentitySourceId; code: string; label: string; subtitle: string };
+type CheckpointOption = { id: string; text: string; feedback: string; correct?: boolean };
 
 const SOURCES: IdentitySource[] = [
   { id: 'registration', code: 'REG', label: 'Карточка гостя 307', subtitle: 'Проверить данные Елены Ветровой' },
@@ -122,7 +117,7 @@ function SourceBody({ source }: { source: IdentitySourceId }) {
   return <MessageSource />;
 }
 
-const CHECKPOINT = [
+const CHECKPOINT: CheckpointOption[] = [
   {
     id: 'vera_attack',
     text: 'Вера скрывала имя и спорила с Ильёй из-за B-17, значит именно она напала на него.',
@@ -144,7 +139,7 @@ const CHECKPOINT = [
     text: 'Скрытая личность Веры доказывает общий сговор всех участников встречи.',
     feedback: 'Нет. Документы объясняют отдельный секрет Веры; общего плана между участниками они не устанавливают.'
   }
-] as const;
+];
 
 function IdentityEvidenceV2({ onClose }: { onClose: () => void }) {
   const [state, setState] = useState<Act3State>(() => readState());
