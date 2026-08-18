@@ -241,6 +241,10 @@ function derive(
   const interrogationComplete = interrogation.complete === true;
   const act4Complete = act4.complete === true;
 
+  // Case 001 v2 is no longer a strictly linear stage machine: the S-3 rescue
+  // may be completed before Act III and before Kirill's key interrogation.
+  // Early rescue contributes progress, but must not skip the unresolved proof
+  // gates when deciding what the player should resume after a restart.
   let stage: RouteStage = 'act1-evidence';
   if (coreEvidenceCount === CORE_EVIDENCE_IDS.length) stage = 'act1-report';
   if (act1Complete) stage = 'act2-plan';
@@ -250,9 +254,11 @@ function derive(
   if (identityCount === IDENTITY_IDS.length) stage = 'act3-interviews';
   if (act3QuestionCount === ACT3_QUESTION_IDS.length) stage = 'act3-report';
   if (act3Complete) stage = 'kirill-interrogation';
-  if (interrogationComplete) stage = 'act4-search';
-  if (searchCount === SEARCH_IDS.length) stage = 'act4-card';
-  if (cardCount === CARD_IDS.length) stage = 'act4-report';
+  if (interrogationComplete) {
+    stage = 'act4-search';
+    if (searchCount === SEARCH_IDS.length) stage = 'act4-card';
+    if (cardCount === CARD_IDS.length) stage = 'act4-report';
+  }
   if (act4Complete) stage = 'complete';
 
   const completedUnits = coreEvidenceCount
@@ -280,8 +286,11 @@ function derive(
   if (interrogationComplete && !act3Complete) {
     issues.push({ code: 'INTERROGATION_PREREQUISITES', message: 'Допрос Кирилла завершён до промежуточного отчёта №2.', severity: 'error' });
   }
-  if ((searchCount > 0 || cardCount > 0 || act4Complete) && !interrogationComplete) {
-    issues.push({ code: 'ACT4_PREREQUISITES', message: 'Финальная операция содержит прогресс без доказанного противоречия Кирилла.', severity: 'error' });
+  // Search progress alone is legal before interrogation in v2: finding Ilya is
+  // an independent rescue branch. Digital examination / case closure still
+  // require the interrogation proof gate.
+  if ((cardCount > 0 || act4Complete) && !interrogationComplete) {
+    issues.push({ code: 'ACT4_PREREQUISITES', message: 'Финальная экспертиза или закрытие дела начаты до доказанного противоречия Кирилла.', severity: 'error' });
   }
   if (act4Complete && (searchCount < 4 || cardCount < 4)) {
     issues.push({ code: 'ACT4_INCOMPLETE_EVIDENCE', message: 'Дело закрыто без полного изучения E010 и E011.', severity: 'error' });
