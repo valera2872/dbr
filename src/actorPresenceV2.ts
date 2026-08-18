@@ -39,7 +39,8 @@ function has(marker: string): boolean {
 
 function writeMarker(marker: string): void {
   const current = readState();
-  const nextQuestions = has(marker) ? questions() : [...questions(), marker];
+  const currentQuestions = questions();
+  const nextQuestions = currentQuestions.includes(marker) ? currentQuestions : [...currentQuestions, marker];
   localStorage.setItem(ACT3_STORAGE_KEY, JSON.stringify({ ...current, questions: nextQuestions }));
   window.dispatchEvent(new CustomEvent('dbr:act3-updated', { detail: { source: 'actor-presence-v2', marker } }));
   refreshInvestigationState(`actor-presence-v2:${marker}`);
@@ -56,17 +57,32 @@ function decorateCard(): void {
   const card = kirillCard();
   if (!card) return;
 
+  const proven = has(PRESENCE_PROVEN);
+  const signature = proven ? 'proven' : 'injury-visible';
   let clue = card.querySelector<HTMLElement>('.actor-presence-card-clue');
+  if (clue?.dataset.signature === signature) return;
+
   if (!clue) {
     clue = document.createElement('span');
     clue.className = 'actor-presence-card-clue';
     card.append(clue);
   }
 
-  clue.classList.toggle('proven', has(PRESENCE_PROVEN));
-  clue.innerHTML = has(PRESENCE_PROVEN)
+  clue.dataset.signature = signature;
+  clue.classList.toggle('proven', proven);
+  clue.innerHTML = proven
     ? '<b>✓</b><span>Присутствие в 314 доказано</span>'
     : '<b>+</b><span>На правой ладони свежая повязка</span>';
+}
+
+function proofSignature(): string {
+  return JSON.stringify({
+    observed: has(INJURY_OBSERVED),
+    sampled: has(DESK_SAMPLED),
+    requested: has(COMPARISON_REQUESTED),
+    proven: has(PRESENCE_PROVEN),
+    feedback: localFeedback
+  });
 }
 
 function observationMarkup(): string {
@@ -137,12 +153,16 @@ function decorateInterrogation(): void {
   const control = shell?.querySelector<HTMLElement>('.interrogation-control');
   if (!shell || !control) return;
 
-  shell.querySelector('.actor-presence-v2')?.remove();
+  const signature = proofSignature();
+  const existing = shell.querySelector<HTMLElement>('.actor-presence-v2');
+  if (existing?.dataset.signature === signature) return;
+  existing?.remove();
+
   const wrapper = document.createElement('div');
   wrapper.innerHTML = observationMarkup();
   const panel = wrapper.firstElementChild as HTMLElement | null;
   if (!panel) return;
-
+  panel.dataset.signature = signature;
   control.insertAdjacentElement('afterbegin', panel);
 }
 
