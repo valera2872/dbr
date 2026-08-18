@@ -215,7 +215,7 @@ function handleAction(action: string): void {
   }
 }
 
-function onDocumentClick(event: Event): void {
+function onWindowClick(event: Event): void {
   const target = event.target instanceof Element ? event.target : null;
   const action = target?.closest<HTMLElement>('[data-actor-presence-action]')?.dataset.actorPresenceAction;
   if (action) {
@@ -231,7 +231,7 @@ function onDocumentClick(event: Event): void {
 export function installActorPresenceV2(): void {
   if (installed) return;
   installed = true;
-  document.addEventListener('click', onDocumentClick, true);
+  window.addEventListener('click', onWindowClick, true);
   window.addEventListener('dbr:act3-updated', schedule);
   window.addEventListener('dbr:interrogation-updated', schedule);
   window.addEventListener('dbr:runtime-settled', schedule);
