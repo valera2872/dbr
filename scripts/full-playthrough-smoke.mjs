@@ -49,7 +49,13 @@ check(test.includes("saved.act4.search"), 'V2 rescue / E010-equivalent search st
   'Запросить BOX 15-B \\/ журнал оцифровки',
   'Проверить Елену Ветрову',
   'agency3:identity-requested',
-  'Денис скрывал оригинал, Вера — личность',
+  'data-e009-identity-v2',
+  'Предъявить сопоставление Елене',
+  'identity-v2-opportunity-list',
+  'e009:vera-corridor',
+  'e009:vera-device',
+  'e009:vera-route',
+  'Вера — реальный источник B-17',
   'data-conclusion="route"',
   'final-synthesis',
   'E006 старый план \\+ E007 свежие следы',
@@ -69,6 +75,7 @@ check(test.includes("saved.act4.search"), 'V2 rescue / E010-equivalent search st
 check(main.includes("from './completedCaseReturn'"), 'main.tsx не подключает возврат к итоговому отчёту');
 check(main.includes('installCompletedCaseReturn()'), 'Мост завершённого дела не установлен');
 check(main.includes('FinalSynthesis'), 'main.tsx не монтирует player-built final synthesis');
+check(main.includes('installIdentityEvidenceV2()'), 'main.tsx не устанавливает E009 v2 identity workspace');
 check(returnBridge.includes(".react-final-panel button"), 'Мост не открывает React-отчёт');
 check(returnBridge.includes("'.premium-sidebar button, .premium-mobile-nav button'"), 'Мост не умеет вернуться в раздел «Дело»');
 check(returnBridge.includes('MAX_FRAMES = 90'), 'Ожидание React-отчёта не ограничено');
@@ -77,7 +84,7 @@ check(!returnBridge.includes('setInterval'), 'Мост возврата не д�
 
 check(!test.includes('addInitScript'), 'Полный маршрут не должен подменять исходное состояние через addInitScript');
 check(!test.includes('localStorage.setItem'), 'Полный маршрут не должен предварительно записывать прогресс');
-check(test.includes('test.setTimeout(90_000)'), 'Полный маршрут не имеет собственного лимита времени');
+check(test.includes('test.setTimeout(120_000)'), 'Полный маршрут не имеет собственного лимита времени');
 check(test.includes('desktop-chromium'), 'Полный маршрут не закреплён за детерминированным desktop-профилем');
 
 if (failures.length) {
@@ -86,4 +93,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFull playthrough smoke passed: a clean browser route earns the v2 parallel branches, rescues Ilya before confession, builds the final accusation and reaches the epilogue.');
+console.log('\nFull playthrough smoke passed: a clean browser route earns the v2 parallel branches, resolves Vera through identity + opportunity evidence, rescues Ilya before confession, builds the final accusation and reaches the epilogue.');

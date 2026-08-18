@@ -7,8 +7,12 @@ import {
 let scheduled = false;
 
 function keyInterrogation(state: InvestigationSnapshot): boolean {
+  // Case 001 v2 allows Ilya to be rescued before Kirill is confronted. That can
+  // populate Act IV search state early, so the legacy linear derived.stage may
+  // already read as an Act IV stage. The interrogation mode must follow the
+  // actual proof gate instead: Act III is complete, Kirill is not.
   return state.core.phase === 'hq'
-    && state.derived.stage === 'kirill-interrogation'
+    && state.act3.complete
     && !state.interrogation.complete;
 }
 
