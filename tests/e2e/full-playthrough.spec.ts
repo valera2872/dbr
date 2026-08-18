@@ -147,9 +147,30 @@ test('чистое расследование проходит весь марш
   await expect(branch).toContainText('M3 ночью не открывался');
   await expect(branch).toContainText('не фиксирует ни одного открытия');
 
-  // The early wiped trace is preserved without prematurely naming its owner.
+  // The wiped trace first becomes a preserved unknown sample. The player must then notice a separate comparison source.
   await branch.getByRole('button', { name: /Взять микрослед с затёртой зоны/ }).click();
-  await expect(branch).toContainText('Микрослед со стола сохранён для сравнения');
+  await expect(branch).toContainText('Микрослед сохранён. Нужен источник для сравнения');
+  await branch.getByRole('button', { name: /Проверить участников на свежие повреждения/ }).click();
+
+  const kirillCard = page.locator('.premium-person-card').filter({ hasText: 'Кирилл Бессонов' });
+  await expect(kirillCard).toContainText('На правой кисти узкий свежий пластырь');
+  await kirillCard.click();
+  await expect(page.locator('.interrogation-shell')).toBeVisible();
+  await page.getByRole('button', { name: 'Уточнить повреждение' }).click();
+  await expect(page.locator('.kirill-hand-observation')).toContainText('металлическую кромку чемодана');
+  await page.getByRole('button', { name: 'Закрыть допрос' }).click();
+
+  await openTab(page, 'Дело');
+  await expect(branch).toContainText('Есть основание для сравнительного анализа');
+  await branch.getByRole('button', { name: /Сопоставить микрослед с образцом Кирилла/ }).click();
+  const actorProof = page.locator('[data-kirill-actor-proof-v2="1"]');
+  await expect(actorProof).toBeVisible();
+  await actorProof.getByRole('button', { name: /Запросить контрольный образец и STR-анализ/ }).click();
+  await expect(actorProof).toContainText('STR PROFILE');
+  await actorProof.getByRole('button', { name: /физически контактировал с местом этой ночи/ }).click();
+  await expect(actorProof).toContainText('Физическое присутствие индивидуализировано');
+  await actorProof.getByRole('button', { name: /Вернуться к расследованию/ }).click();
+  await expect(branch).toContainText('Кирилл физически связан с затёртой зоной 314');
 
   // Archive provenance is now justified by the empty case + Ilya's purpose + Denis's role, not an envelope in 312.
   await branch.getByRole('button', { name: /Запросить BOX 15-B \/ журнал оцифровки/ }).click();
@@ -200,7 +221,7 @@ test('чистое расследование проходит весь марш
   await e009.getByRole('button', { name: 'Закрыть' }).click();
   await expect(page.locator('.identity-v2-backdrop')).toHaveCount(0);
 
-  // Evidence-driven interrogation of Kirill.
+  // Evidence-driven interrogation of Kirill only becomes conclusive after Act III has actor identity proof.
   await openTab(page, 'Люди');
   await page.locator('.premium-person-card').filter({ hasText: 'Кирилл Бессонов' }).click();
   await expect(page.locator('.interrogation-shell')).toBeVisible();
@@ -259,6 +280,7 @@ test('чистое расследование проходит весь марш
   expect(saved.act2.room).toEqual(['panel', 'tracks', 'envelope', 'fibres']);
   expect(saved.act3.questions).toEqual(expect.arrayContaining([
     'agency3:archive-requested', 'v2:desk-sampled', 'v2:rescue-complete',
+    'actor:kirill-hand-observed', 'actor:kirill-str-match', 'actor:kirill-presence-proven',
     'agency3:trace-custody', 'agency3:denis-family', 'agency3:id-kirill',
     'agency3:id-elena', 'agency3:identity-requested', 'd-original', 'v-name',
     'e009:vera-corridor', 'e009:vera-device', 'e009:vera-route'
