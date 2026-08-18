@@ -84,7 +84,7 @@ check(!returnBridge.includes('setInterval'), 'Мост возврата не д�
 
 check(!test.includes('addInitScript'), 'Полный маршрут не должен подменять исходное состояние через addInitScript');
 check(!test.includes('localStorage.setItem'), 'Полный маршрут не должен предварительно записывать прогресс');
-check(test.includes('test.setTimeout(90_000)'), 'Полный маршрут не имеет собственного лимита времени');
+check(test.includes('test.setTimeout(120_000)'), 'Полный маршрут не имеет собственного лимита времени');
 check(test.includes('desktop-chromium'), 'Полный маршрут не закреплён за детерминированным desktop-профилем');
 
 if (failures.length) {
