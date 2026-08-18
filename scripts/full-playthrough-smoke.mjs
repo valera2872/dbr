@@ -12,7 +12,9 @@ const build = read('src/build.ts');
 const sw = read('public/sw.js');
 const main = read('src/main.tsx');
 const returnBridge = read('src/completedCaseReturn.ts');
+const actorProof = read('src/KirillActorProofV2.tsx');
 const test = read('tests/e2e/full-playthrough.spec.ts');
+const actorTest = read('tests/e2e/kirill-actor-proof.spec.ts');
 
 const versionParts = String(pkg.version).split('.').map((part) => Number.parseInt(part, 10));
 const [major = 0, minor = 0, patch = 0] = versionParts;
@@ -22,6 +24,8 @@ check(build.includes(`APP_BUILD = 'v${pkg.version}'`), 'APP_BUILD должен �
 check(sw.includes(`dbr-v${pkg.version.replaceAll('.', '-')}`), 'Service worker не использует текущий cache key');
 check(exists('dist/index.html'), 'Production bundle не создан');
 check(exists('tests/e2e/full-playthrough.spec.ts'), 'Отсутствует полный браузерный маршрут');
+check(exists('tests/e2e/kirill-actor-proof.spec.ts'), 'Отсутствует браузерная регрессия actor proof');
+check(exists('src/KirillActorProofV2.tsx'), 'Отсутствует individualized actor proof Кирилла');
 check(exists('src/completedCaseReturn.ts'), 'Отсутствует механизм возврата к итоговому отчёту');
 
 for (const id of ['E001','E002','E003','E004','E005','E006','E007','E008','E009','E011']) {
@@ -46,6 +50,14 @@ check(test.includes("saved.act4.search"), 'V2 rescue / E010-equivalent search st
   'Поднять акт реконструкции 2015',
   'Запросить журнал M3',
   'Взять микрослед с затёртой зоны',
+  'Проверить участников на свежие повреждения',
+  'Уточнить повреждение',
+  'Сопоставить микрослед с образцом Кирилла',
+  'Запросить контрольный образец и STR-анализ',
+  'actor:kirill-hand-observed',
+  'actor:kirill-str-match',
+  'actor:kirill-presence-proven',
+  'Физическое присутствие индивидуализировано',
   'Запросить BOX 15-B \\/ журнал оцифровки',
   'Проверить Елену Ветрову',
   'agency3:identity-requested',
@@ -68,6 +80,23 @@ check(test.includes("saved.act4.search"), 'V2 rescue / E010-equivalent search st
   'runtimeErrors'
 ].forEach((token) => check(test.includes(token), `Полный маршрут не содержит контроль: ${token}`));
 
+[
+  'HAND_OBSERVED',
+  'STR_MATCH',
+  'PRESENCE_PROVEN',
+  "detail?.source !== 'e009-v2'",
+  'state.checkpointAnswer === VERA_CHECKPOINT',
+  'не устанавливает маршрут',
+  'не формулирует обвинение'
+].forEach((token) => check(actorProof.includes(token), `Actor proof не содержит контроль: ${token}`));
+
+[
+  'микрослед индивидуализирует Кирилла только после наблюдения и сравнительного анализа',
+  'новый отчёт E009 не закрывает Act III без actor proof',
+  'actor:kirill-presence-proven',
+  'expect(stored.complete).toBe(false)'
+].forEach((token) => check(actorTest.includes(token), `Actor proof E2E не проверяет: ${token}`));
+
 ['CORE', 'ACT2', 'ACT3', 'INTERROGATION', 'ACT4'].forEach((token) => {
   check(test.includes(token), `Полный маршрут не проверяет сохранение ${token}`);
 });
@@ -76,6 +105,7 @@ check(main.includes("from './completedCaseReturn'"), 'main.tsx не подклю
 check(main.includes('installCompletedCaseReturn()'), 'Мост завершённого дела не установлен');
 check(main.includes('FinalSynthesis'), 'main.tsx не монтирует player-built final synthesis');
 check(main.includes('installIdentityEvidenceV2()'), 'main.tsx не устанавливает E009 v2 identity workspace');
+check(main.includes('installKirillActorProofV2()'), 'main.tsx не устанавливает individualized actor proof');
 check(returnBridge.includes(".react-final-panel button"), 'Мост не открывает React-отчёт');
 check(returnBridge.includes("'.premium-sidebar button, .premium-mobile-nav button'"), 'Мост не умеет вернуться в раздел «Дело»');
 check(returnBridge.includes('MAX_FRAMES = 90'), 'Ожидание React-отчёта не ограничено');
@@ -93,4 +123,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFull playthrough smoke passed: a clean browser route earns the v2 parallel branches, resolves Vera through identity + opportunity evidence, rescues Ilya before confession, builds the final accusation and reaches the epilogue.');
+console.log('\nFull playthrough smoke passed: the clean route now earns Kirill identity proof from an observed injury + E001 microtrace before the key interrogation and still reaches the epilogue.');
