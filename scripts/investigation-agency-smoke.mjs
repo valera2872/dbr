@@ -19,6 +19,7 @@ const interrogationCss = read('src/interrogationAgency.css');
 const finalCss = read('src/finalSynthesis.css');
 const sw = read('public/sw.js');
 const interrogationTest = read('tests/e2e/interrogation-agency.spec.ts');
+const earlyRescueInterrogationTest = read('tests/e2e/early-rescue-interrogation.spec.ts');
 const finalTest = read('tests/e2e/final-synthesis.spec.ts');
 
 const [major = 0, minor = 0] = String(pkg.version).split('.').map((part) => Number.parseInt(part, 10));
@@ -36,6 +37,7 @@ check(sw.includes(`dbr-v${pkg.version.replaceAll('.', '-')}`), 'Service worker c
   'tests/e2e/investigative-agency.spec.ts',
   'tests/e2e/evidence-led-chain.spec.ts',
   'tests/e2e/interrogation-agency.spec.ts',
+  'tests/e2e/early-rescue-interrogation.spec.ts',
   'tests/e2e/final-synthesis.spec.ts'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
 
@@ -66,7 +68,9 @@ check(main.includes("./finalSynthesis.css"), 'main.tsx не подключает
   'next-guided-evidence',
   'agencyFutureHidden'
 ].forEach((token) => check(interrogationAgency.includes(token), `Interrogation agency не содержит: ${token}`));
-check(interrogationAgency.includes("stage === 'kirill-interrogation'"), 'Interrogation agency не различает ключевой допрос');
+check(interrogationAgency.includes('state.act3.complete'), 'Interrogation agency не использует фактический proof gate Act III');
+check(interrogationAgency.includes('!state.interrogation.complete'), 'Interrogation agency не различает незавершённый ключевой допрос');
+check(!interrogationAgency.includes("stage === 'kirill-interrogation'"), 'Interrogation agency снова зависит от линейного stage и ломает раннее спасение');
 check(interrogationAgency.includes('button.disabled'), 'Будущие доказательства не скрываются по фактической доступности');
 check(!interrogationAgency.includes('new MutationObserver'), 'Interrogation agency не должен создавать MutationObserver');
 check(!interrogationAgency.includes('setInterval'), 'Interrogation agency не должен использовать polling');
@@ -92,6 +96,12 @@ check(finalCss.includes('html[data-final-synthesis="active"] .react-final-panel'
   'ранний повторный допрос не раскрывает названия ещё не найденных доказательств',
   'toBeHidden()'
 ].forEach((token) => check(interrogationTest.includes(token), `Браузерный тест допроса не проверяет: ${token}`));
+[
+  'раннее спасение Ильи не возвращает предписанный порядок доказательств',
+  "toHaveAttribute('data-investigation-agency', 'key')",
+  'next-guided-evidence',
+  'data-present="plan"'
+].forEach((token) => check(earlyRescueInterrogationTest.includes(token), `Регрессия раннего спасения не проверяет: ${token}`));
 [
   'финальное обвинение собирается из шести частей',
   'не доказывает сам путь проникновения',
