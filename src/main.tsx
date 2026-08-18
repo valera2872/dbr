@@ -24,6 +24,7 @@ import { installInvestigationAgencyAct3 } from './investigationAgencyAct3';
 import { installCase001V2Runtime } from './case001V2Runtime';
 import { installArchiveEvidenceV2 } from './ArchiveEvidenceV2';
 import { installIdentityEvidenceV2 } from './IdentityEvidenceV2';
+import { installActorPresenceV2 } from './actorPresenceV2';
 import { installCompletedCaseReturn } from './completedCaseReturn';
 import './premium.css';
 import './premium-fix.css';
@@ -60,6 +61,7 @@ import './stageHeaderConsistency.css';
 import './investigationAgency.css';
 import './investigationAgencyAct3.css';
 import './case001V2Runtime.css';
+import './actorPresenceV2.css';
 import './premiumEnhancements';
 import './cameraMeaning';
 import './cameraFrames';
@@ -111,6 +113,7 @@ if (actorStudio.mounted) {
   installCase001V2Runtime();
   installArchiveEvidenceV2();
   installIdentityEvidenceV2();
+  installActorPresenceV2();
 }
 
 if ('serviceWorker' in navigator) {
