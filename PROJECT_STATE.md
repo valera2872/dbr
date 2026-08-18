@@ -8,52 +8,58 @@ Branch: `main`
 
 Current numbered release: **`v0.11.0 — Room 314 v2 parallel investigation`**
 
-Latest gameplay checkpoint: **`E008 v2 — diegetic archive workspace`**
+Latest gameplay checkpoint: **`E009 v2 — identity, opportunity and early-rescue state`**
 
 Production base URL:
 - `https://valera2872.github.io/dbr/`
 
 Latest gameplay merge:
-- merged PR: `#66 — E008 v2 — diegetic archive workspace`
-- PR head: `cb1b4134514b8dda4e9d500cae11c365ae8d05cf`
-- merge commit: `8ac18901fe69243958708345ef561ba116971749`
-- Validate DBR prototype run `32109066710` — success
-- Browser Playthrough run `32109066701` — success (`50 passed`, `2 skipped`, no failures/flakes)
+- merged PR: `#67 — E009 v2 — identity, opportunity and early-rescue state`
+- PR head: `fbc6466303981175f2344532d294201fea5fc7b6`
+- merge commit: `9813e3cccffebc742a2ac559b9b18f624a233d2c`
+- Validate DBR prototype run `32119467431` — success
+- Browser Playthrough run `32119467480` — success (`52 passed`, `2 skipped`, no failures/retries/flakes)
+- dedicated early-rescue interrogation regression passes on desktop and mobile
+- clean full route reaches the epilogue on the first run
 
-Previous numbered release:
-- PR `#63 — v0.11.0 Room 314 v2 parallel investigation`
-- merge commit `416e4588435fd5dc22042087d82e1e96dd1cb4e1`
-- final PR browser suite: `50 passed`, `2 skipped`, no failures/flakes
-- Pages deployment succeeded.
+Previous gameplay slice:
+- PR `#66 — E008 v2 — diegetic archive workspace`
+- merge commit `8ac18901fe69243958708345ef561ba116971749`
 
 ## Canonical methodology
 
 Project-wide standards already merged:
 - `DETECTIVE_DESIGN_BIBLE.md` — investigation / fair-play design standard;
 - `COMPETITIVE_QUALITY_GATE.md` — permanent competitor-quality gate;
-- `CASE_001_COMPETITIVE_AUDIT.md` — point-by-point competitive audit of «Номер 314»;
+- `CASE_001_COMPETITIVE_AUDIT.md` — competitive audit of «Номер 314»;
 - `CASE_001_ARCHITECTURE.md` — Case 001 v2 investigation architecture;
 - `CASE_001_TRUE_TIMELINE.md` — author-only true chronology;
 - `CASE_001_SPATIAL_CANON.md` — author-only geometry / access model.
 
-Permanent product question for competitor-inspired mechanics:
+Governing principle:
+
+> **The interface must be obvious. The investigation must not be obvious.**
+
+For every major discovery ask:
+1. What factual contradiction gave the investigator a reason to check this direction?
+2. What player action caused the new information to enter the case?
+
+If the answer is “the game told the player” / “clicked Next”, treat the segment as defective.
+
+Target loop:
+
+**fact → contradiction → hypothesis → chosen investigative action → evidence → revised hypothesis → verification**
+
+Operational help may explain controls and navigation. It must not choose the suspect, theory, evidence order, deduction or conclusion.
+
+Permanent competitor question:
 
 > **What will the player feel because of this mechanic, and can we create that feeling more simply?**
 
-Every proposed upgrade must be classified:
+Upgrade classes:
 - **A** — cheap/reusable, high impact: do;
 - **B** — meaningful gain with real cost: select highest leverage;
 - **C** — expensive spectacle / low leverage: defer or simulate more cheaply.
-
-Target product formula:
-
-> **psychologically convincing story + authentic investigation feeling + freedom of action + bounded-author-truth AI + high-quality digital evidence + minimal technical friction**
-
-Desired post-game reaction:
-
-> **«Я несколько часов расследовал настоящее дело».**
-
-Not: «я прошёл викторину / визуальную новеллу».
 
 ## Product
 
@@ -66,34 +72,19 @@ Canonical parameters:
 - about 90 minutes;
 - 1–4 players.
 
-## Governing investigation principle
+Target player reaction:
 
-> **The interface must be obvious. The investigation must not be obvious.**
+> **«Я несколько часов расследовал настоящее дело».**
 
-Operational help may explain controls, navigation and how a mechanic works. It must not choose the theory, suspect, evidence order, deduction or conclusion for the player.
-
-For every major discovery ask:
-1. **What factual contradiction gave the investigator a reason to check this direction?**
-2. **What player action caused the new information to enter the case?**
-
-If the answer is “the game told the player” / “clicked Next”, treat the segment as defective.
-
-Target loop:
-
-**fact → contradiction → hypothesis → chosen investigative action → evidence → revised hypothesis → verification**
-
-Not:
-
-**read → Next → read → Next**.
+Not: «я прошёл викторину / визуальную новеллу».
 
 ## Canonical v2 truth
 
-The redesign preserves the identity of the case:
-- Ilya disappears from locked room 314 and is ultimately found alive;
-- Kirill is the current-night attacker;
-- the 2015 case proves Kirill knew of an unsafe operational condition and chose continuation / concealment; it does **not** prove a premeditated murder of Anton;
-- Denis really hid B-17 from the common digital archive but did not attack Ilya;
-- Vera / Elena really hid her identity, preserved the original and had a real conflict about publication but did not attack Ilya;
+- Ilya disappears from locked room 314 and is found alive.
+- Kirill is the current-night attacker.
+- The 2015 material proves Kirill knew of an unsafe operational condition and chose continuation / concealment; it does **not** prove premeditated murder of Anton.
+- Denis really hid B-17 from the common digital archive but did not attack Ilya.
+- Vera / Elena really hid her identity, preserved the original and had a real conflict about publication but did not attack Ilya.
 - Marina really concealed the incomplete/cosmetic closure of the old service network but did not attack Ilya.
 
 Canonical topology:
@@ -104,177 +95,122 @@ and:
 
 **V314 → P3 → M3 / SL3 / S-3 / ST3**
 
-`M3` is an independent staff-side access point. Therefore finding the route proves topology/opportunity, not actor identity.
+`M3` is an independent staff-side access point. Finding the route proves topology/opportunity, not actor identity.
 
 ## Implemented v2 investigation structure
 
 ### E006 — topology, not culprit
 
-The player earns E006 by independently checking wall / renovation history and explicitly requesting the pre-renovation plan.
+The player earns E006 by checking the wall / renovation history and explicitly requesting the pre-renovation plan.
 
-E006 establishes:
-- `V314` between 312 and 314;
-- continuation into `P3`;
-- service branch toward `M3 / SL3 / S-3`.
-
-Proof limit: historical route/topology only; not proof that Kirill used it.
+E006 establishes V314 and the service-network branches. It does not prove Kirill used them.
 
 ### E007 — current usability, not culprit
 
-The old archive-envelope bridge in room 312 is removed from the v2 route.
-
-E007 establishes:
-- the route physically survives;
-- it was used recently/current night;
-- V314 continues into P3 and is not exclusive to 312.
-
-Proof limit: current usability/recent use; not user identity.
+E007 establishes that the network physically survives and was used recently/current night. It does not identify the user.
 
 ### Parallel investigation after E007
 
-The game opens concurrent questions rather than one content queue:
+The player can pursue several questions rather than one evidence queue:
 1. **Where is Ilya?** — search P3 / S-3 from E005 + E006 + E007.
 2. **What was the target?** — audit B-17 provenance.
 3. **Could Marina/staff have used the route?** — closure records + M3 controller.
 4. **Who was physically inside 314?** — preserve the wiped desk microtrace.
 
-These lines can be worked in different orders.
-
 ### Early rescue before confession
 
-Ilya can be found in S-3 before Kirill confesses.
-
-The search premise comes from:
-- E005 staged phone near service lift;
-- E006 network topology;
-- E007 recent use.
+Ilya can be found in S-3 before Kirill confesses and before the other parallel branches are complete.
 
 The rescue deliberately does not identify the attacker. Saving Ilya and proving the attacker are separate problems.
 
+The canonical Act IV `search` state may therefore contain valid progress before the Kirill interrogation is complete.
+
+### Parallel-state runtime invariant
+
+The old state engine assumed all Act IV progress happened after interrogation. v2 invalidated that assumption.
+
+As of PR #67:
+- early S-3 rescue is a valid state, not save corruption;
+- reopening the game after early rescue preserves the search progress instead of offering destructive recovery;
+- route stage does not jump past unresolved Act III/interrogation proof gates merely because the rescue branch is complete;
+- digital E011/final closure still require the later proof gates;
+- the key Kirill interrogation is recognized by the factual gate `act3.complete && !interrogation.complete`, not by the obsolete linear `derived.stage` assumption.
+
 ### Marina / M3 productive false lead
 
-Marina is a serious current-night hypothesis because her building lie is real, her institutional motive is real and she has staff access.
-
-The M3 controller log later shows no M3 opening during the critical window. Her lie remains meaningful while the attack hypothesis weakens through evidence.
+Marina remains a serious hypothesis because her building lie and institutional motive are real. The M3 controller shows no M3 opening during the critical window, weakening the current-night actor hypothesis through evidence rather than narration.
 
 ### Desk microtrace
 
-The wiped trace first seen in E001 can be deliberately sampled after multiple actor hypotheses exist.
+The wiped trace first seen in E001 can be deliberately sampled after several plausible actor hypotheses exist.
 
 Current state:
 - microtrace preserved;
 - owner not yet named.
 
-Next actor-proof slice must plant Kirill's fresh hand injury and create a justified comparison that independently proves his physical presence in 314.
+This is the next actor-proof line to complete.
 
 ## E008 v2 — diegetic archive workspace
 
-E008 is no longer primarily a four-button prose explanation.
+E008 is a React-owned source-comparison workspace using the existing Act III save key and the same archive IDs (`catalog`, `contact`, `audio`, `custody`).
 
-It is now a separate React-owned archive workspace using the existing canonical Act III save key and the same archive progress IDs (`catalog`, `contact`, `audio`, `custody`).
+Sources:
+1. **Digitization inventory** — 48 physical positions vs 47 exported files; B-17 excluded from common export; Denis handled digitization.
+2. **B-series contact sheet** — B-17 demonstrably existed and carries the 314-17 marking.
+3. **Partial recorder transcript** — a real safety dispute, but the surviving fragment contains no names.
+4. **Media custody ledger** — 314-17 leaves common digitization and goes to `В. Белова / семья потерпевшего`; serial matches the empty case from Ilya's bag.
 
-Four source families are presented as raw in-world records:
+E008 can prove provenance, deliberate archive incompleteness and a historical safety conflict. It does **not** establish Kirill's exact historical responsibility or the current-night attacker.
 
-1. **Digitization inventory**
-   - paper inventory: 48 physical positions;
-   - digital export: 47 files;
-   - B-17 marked `ORIGINAL OUT / в общий экспорт не включать`;
-   - Denis is the digitization operator.
+## E009 v2 — identity and opportunity proof
 
-2. **B-series contact sheet**
-   - B-16 → B-17 → B-18 sequence;
-   - B-17 definitely existed;
-   - it carries the 314-17 marking;
-   - the sheet itself does not identify the person responsible for the historical decision.
+E009 no longer reveals and clears Vera in one author-written step.
 
-3. **Partial recorder transcript**
-   - one voice warns that the technical branch is unsafe and must be closed;
-   - another insists the program will not stop;
-   - the surviving fragment contains **no names**.
+### Identity acquisition
 
-4. **Media custody ledger**
-   - 314-17 is removed from common digitization;
-   - Denis handles the removal;
-   - it is transferred to `В. Белова / семья потерпевшего`;
-   - no return into the digital archive is registered;
-   - its serial matches the empty media case from Ilya's bag.
+The player first earns the right to investigate the missing Belov-family custodian through the B-17 custody chain, then chooses whom to check. E009 itself compares three independent in-world sources using the existing canonical identity IDs:
+- `registration` — room 307 registration for Elena Vetrova;
+- `festival` — Belov family archive identifying Vera Belova, Anton's younger sister;
+- `message` — Ilya's draft asking `В.` to arrive under her mother's surname until the original is copied.
 
-### E008 proof boundary
+Only after comparing all three may the player establish:
 
-After all four source families are compared, the player may establish:
-- B-17 existed;
-- the digital set is deliberately incomplete;
-- Denis manipulated the archive chain;
-- 314-17 moved to the Belov family;
-- a real historical safety dispute existed;
-- B-17 is a plausible object of current suppression.
+**«Елена Ветрова» = Вера Белова.**
 
-E008 **does not** establish:
-- the exact historical responsibility of Kirill;
-- the identity of the current-night attacker;
-- that motive alone proves execution.
+### Vera's admission
 
-Full historical attribution remains reserved for E011 / verified original.
+When confronted with the comparison, Vera admits:
+- her real identity;
+- Anton was her brother;
+- she brought Ilya the original 314-17;
+- she had a real dispute with Ilya about publication and did not want Anton's death turned into spectacle again.
 
-The E008 card now describes source comparison rather than announcing the intended conclusion.
+This establishes a real secret, source relationship and motive for conflict. It does **not** establish innocence.
 
-## Competitive quality gate — current Case 001 priorities
+### Opportunity check
 
-The audit conclusion remains: do **not** restart the plot. The logical skeleton is stronger than the current presentation.
+The player must separately test whether Vera could physically explain the attack around 00:22.
 
-Preserve:
-- locked-room hook;
-- “everyone lies, but about different things”;
-- B-17 historical layer;
-- service-network ambiguity;
-- rescue independent of confession;
-- player-built proof;
-- low-friction browser/PWA start.
+Three earned checks are stored inside the existing Act III questions array:
+- `e009:vera-corridor` — C3 records her return to 307 at 23:04 and no guest-corridor exit during the critical 00:18–00:31 window;
+- `e009:vera-device` — Ilya's message is opened on Vera's device at 00:19 while it remains on the room-307 sector access point; useful corroboration, explicitly not an absolute alibi alone;
+- `e009:vera-route` — E006 topology contains 312/314/staff branches but no connection from room 307.
 
-Highest-value gaps still remaining:
-- E009 still feels too much like a game checklist and author-exonerates Vera too quickly;
-- actor identity still lacks the finalized individualized current-night presence proof;
-- E011 still compresses provenance/integrity/content into a scripted conclusion;
-- final report is still too small for the complexity of the case;
-- free conversational interrogation is not yet implemented;
-- player-facing case world/map is still compactly contained inside the HQ.
+Only after these checks may the player accept checkpoint `separate_lies`: Vera is the real B-17 source and a real conflict participant, but the current-night attack hypothesis fails on opportunity/topology.
 
-Do not jump to AI/map spectacle before proof semantics are finished.
+### E009 proof boundary
 
-## Transitional elements still to rewrite
+E009 proves:
+- Elena/Vera identity;
+- family link to Anton;
+- B-17 source relationship;
+- real publication conflict;
+- evidence-based elimination of Vera as the current-night actor.
 
-1. **E009 v2** — identity/source must establish Vera's real secret and publication conflict without automatically clearing her; innocence should emerge from timing/opportunity evidence.
-2. **Forensic actor proof** — visibly plant Kirill's fresh cut/bandage and let the player earn a comparison with the E001 microtrace.
-3. **Kirill interrogation v2** — confrontation should test an already assembled constellation: route + staff-route elimination + physical presence + motive.
-4. **E011 v2 / final synthesis** — card serial, checksum/integrity and B-17 content must become distinct proof sources; final graph must reflect actor proof and M3 elimination.
-5. **Debrief v2** — true chronology, route reconstruction, each person's lie, proof links used/missed and unsupported claims.
-6. **Legacy source cleanup** — once each v2 replacement is stable, remove obsolete duplicate semantics rather than accumulating permanent compatibility layers.
-
-## Retained earlier releases
-
-### v0.9.6 — Focused first action
-Fresh player starts with one concrete action instead of the full HQ.
-
-### v0.9.7 — Progressive HQ disclosure
-Guided newcomers see only needed sections; repeat players can skip guided reveal.
-
-### v0.9.8 — Investigative agency
-The old-plan idea became player-owned.
-
-### v0.9.9 — Evidence-led chain
-Archive and identity materials became causally acquired.
-
-### v0.10.0 — Player-led interrogation
-No prescribed evidence recipe; weak evidence receives meaningful objections.
-
-### v0.10.1 — Player-built final accusation
-The player assembles proof links instead of selecting a ready-made answer.
-
-### v0.10.2 — Evidence realism
-E006–E011 use distinct local/owned stylized-realism visual compositions.
-
-### v0.11.0 — Room 314 v2 parallel investigation
-Service network, Marina/M3 competing hypothesis, post-E007 parallel branches, early rescue and microtrace branch entered production.
+E009 does **not** prove:
+- Kirill's physical presence in 314;
+- Kirill's full 2015 historical responsibility;
+- that eliminating Vera automatically proves another suspect.
 
 ## Canonical save contract
 
@@ -286,48 +222,46 @@ Do not rename casually:
 - Act IV: `dbr:dbr_001_room_314:act4:v0.7.0`
 - living suspect: `dbr:dbr_001_room_314:living-suspect:kirill:v0.6.3`
 
-UX keys:
+UX-only keys:
 - onboarding: `dbr:player-guidance:onboarding:v1`
-- guided first run: `dbr:player-guidance:guided-first-run:v1`
+- progressive guided run: `dbr:player-guidance:guided-first-run:v1`
 
-No E008 v2 save-key migration was introduced.
+New v2 milestones continue to live inside the existing Act II/III/IV state instead of adding a parallel save system.
 
 ## Verification
 
-Latest E008 v2 PR head:
-- Validate DBR prototype `32109066710` — success;
-- Browser Playthrough `32109066701` — success;
-- Playwright summary: `50 passed`, `2 skipped`, no failures/flakes;
-- desktop + mobile specifically verify E008 as an archive rather than a ready answer;
-- clean full route still reaches E001–E011 and epilogue;
-- canonical Act III markers remain compatible.
+PR #67 final head passed:
+- Validate DBR prototype `32119467431` — success;
+- Browser Playthrough `32119467480` — success;
+- Playwright: `54` collected, `52 passed`, `2 skipped`, no failures, retries or flakes;
+- early-rescue → restart → Kirill interrogation regression passes on desktop and mobile;
+- the clean full route passes on its first execution and reaches the epilogue;
+- canonical saved state remains compatible.
 
-Automated success proves route/state integrity. It does not prove mystery quality; zero-coaching human testing remains mandatory after the v2 proof graph is coherent enough to test as a whole.
+Automated success proves route/state integrity, not optimal mystery difficulty. A zero-coaching human playtest remains mandatory after the v2 proof graph is coherent enough to test as a whole.
 
 ## Immediate next work
 
-1. Rewrite **E009 v2** into a document/source comparison that reveals Vera's identity and real conflict without auto-exoneration.
-2. Add visible **Kirill hand injury** and player-earned comparison with the sampled E001 microtrace.
-3. Upgrade **Kirill interrogation** around separate proof families.
-4. Rewrite **E011** as provenance + integrity + content verification and update final synthesis.
-5. Build **debrief v2**.
-6. Then run a fresh **zero-coaching human playtest** and fix observed agency/usability defects.
-7. After proof semantics are stable, consider B-class upgrades: compact case map/notebook and bounded-AI Kirill pilot.
+1. **Forensic actor proof** — visibly plant Kirill's fresh hand cut/bandage and let the player notice it before a comparison is offered.
+2. Let the player earn a comparison between that fresh injury and the already sampled E001 desk microtrace; this should independently prove Kirill's physical presence in 314.
+3. Upgrade **Kirill interrogation v2** so it tests an already assembled constellation: route + M3 elimination + physical-presence proof + motive.
+4. Upgrade **E011 v2 / final synthesis** so serial, integrity/checksum and B-17 content are distinct proof sources and the final graph uses the new actor-proof family.
+5. Build **Debrief v2** with chronology, route reconstruction, each person's lie, proof links used/missed and unsupported claims.
+6. Then run a fresh **zero-coaching human playtest** and change only observed agency/usability defects.
+
+Do not reintroduce a linear evidence queue or UI copy that names the deduction before the player earns it.
 
 ## Known technical debt
 
 - npm install reports 2 vulnerabilities (1 moderate, 1 high); investigate rather than blindly force-upgrading.
-- GitHub Actions requests Node 20 while hosted actions force Node 24; update workflow separately.
-- some temporary external/Unsplash primary media must be replaced before fully offline paid release.
+- GitHub Actions Node 20 deprecation warning remains; update workflows separately.
+- some external/Unsplash media still need replacement before a fully offline paid release.
 - no genuine Kirill video exists; do not imply otherwise.
 - payment/access/purchase-recovery remains outside this gameplay checkpoint.
+- the global state model still exposes a legacy single `RouteStage`; PR #67 makes it parallel-safe for early rescue, but a future cleanup may replace more stage-based assumptions with proof-gate capabilities.
 
 ## Instruction for next chat
 
-When the user says `продолжаем ДБР с последней контрольной точки`, start from **v0.11.0 + merged E008 v2 archive workspace** on `main`.
+When the user says `продолжаем ДБР с последней контрольной точки`, start from **v0.11.0 + E008 v2 + E009 v2** on `main`.
 
-Current priority: **E009 v2 → individualized actor proof → interrogation/E011/final proof graph → debrief, then zero-coaching human test.**
-
-Always apply `DETECTIVE_DESIGN_BIBLE.md` and `COMPETITIVE_QUALITY_GATE.md` before proposing new mechanics.
-
-Do not reintroduce a linear evidence queue, detective-GPS wording, or competitor mechanics whose player effect can be achieved more cheaply.
+Current priority: **forensic actor proof — Kirill fresh hand injury → player-earned comparison with E001 microtrace → independent proof of physical presence in 314.**
