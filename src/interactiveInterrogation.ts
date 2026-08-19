@@ -1,6 +1,7 @@
 import {
   ACT2_STORAGE_KEY,
   ACT3_STORAGE_KEY,
+  CORE_STORAGE_KEY,
   INTERROGATION_STORAGE_KEY
 } from './build';
 
@@ -24,14 +25,20 @@ type InterrogationState = {
   complete: boolean;
 };
 
+type CoreState = {
+  seenEvidenceIds?: string[];
+};
+
 type Act2State = {
   plan?: string[];
   room?: string[];
+  questions?: string[];
 };
 
 type Act3State = {
   archive?: string[];
   identity?: string[];
+  questions?: string[];
 };
 
 type EvidenceDefinition = {
@@ -39,8 +46,11 @@ type EvidenceDefinition = {
   code: string;
   title: string;
   note: string;
-  isUnlocked: (act2: Act2State, act3: Act3State) => boolean;
+  isUnlocked: (core: CoreState, act2: Act2State, act3: Act3State) => boolean;
 };
+
+const M3_LOG = 'v2:m3-log';
+const PRESENCE_PROVEN = 'actor:k:presence-proven';
 
 const STAGE_LABELS: Record<Stage, string> = {
   calm: 'Спокоен',
@@ -58,46 +68,74 @@ const STAGE_INDEX: Record<Stage, number> = {
 
 const EVIDENCE: EvidenceDefinition[] = [
   {
+    id: 'opportunity',
+    code: 'E004',
+    title: 'Камера C3 · номер 312',
+    note: 'В 23:41 Кирилл входит в 312 и не появляется в гостевом коридоре в критическое окно.',
+    isUnlocked: (core) => Boolean(core.seenEvidenceIds?.includes('E004'))
+  },
+  {
     id: 'plan',
     code: 'E006',
-    title: 'Архивный план этажа',
-    note: 'Проход между 312 и 314 существовал и не был окончательно заделан.',
-    isUnlocked: (act2) => ['wall', 'stamp', 'width'].every((id) => act2.plan?.includes(id))
+    title: 'Старая служебная сеть',
+    note: 'V314 связывал 312/314 с технической веткой P3. План доказывает возможность маршрута, не пользователя.',
+    isUnlocked: (_core, act2) => ['wall', 'stamp', 'width'].every((id) => act2.plan?.includes(id))
   },
   {
     id: 'panel',
     code: 'E007-A',
-    title: 'Свежие винты панели',
-    note: 'Внутреннюю стенку шкафа номера 312 открывали недавно.',
-    isUnlocked: (act2) => Boolean(act2.room?.includes('panel'))
+    title: 'Свежие следы на панели 312',
+    note: 'Доступ из 312 открывали недавно. Сам по себе след не устанавливает человека.',
+    isUnlocked: (_core, act2) => Boolean(act2.room?.includes('panel'))
   },
   {
     id: 'tracks',
     code: 'E007-B',
-    title: 'Совпадающие следы на ковре',
-    note: 'Полосы в номерах 312 и 314 образуют единый маршрут.',
-    isUnlocked: (act2) => Boolean(act2.room?.includes('tracks'))
+    title: 'Следы движения по V314',
+    note: 'Физические следы связывают 312, V314 и 314 и подтверждают недавнее использование маршрута.',
+    isUnlocked: (_core, act2) => Boolean(act2.room?.includes('tracks'))
   },
   {
     id: 'fibres',
     code: 'E007-C',
-    title: 'Волокна у скрытого проёма',
-    note: 'Тёмная ткань зацепилась за решётку при недавнем проходе.',
-    isUnlocked: (act2) => Boolean(act2.room?.includes('fibres'))
+    title: 'Свежий контакт у проёма',
+    note: 'Волокна подтверждают недавний проход, но не индивидуализируют пользователя.',
+    isUnlocked: (_core, act2) => Boolean(act2.room?.includes('fibres'))
+  },
+  {
+    id: 'm3',
+    code: 'M3',
+    title: 'Журнал служебного входа M3',
+    note: 'В критическое окно M3 не открывался. Версия входа через staff-ветку ослабевает отдельной проверкой.',
+    isUnlocked: (_core, act2) => Boolean(act2.questions?.includes(M3_LOG))
+  },
+  {
+    id: 'presence',
+    code: 'K-02',
+    title: 'STR-профиль микроследа из 314',
+    note: '16/16 локусов связывают Кирилла с биологическим микроследом со стола в 314. Это присутствие, не нападение.',
+    isUnlocked: (_core, _act2, act3) => Boolean(act3.questions?.includes(PRESENCE_PROVEN))
+  },
+  {
+    id: 'threat',
+    code: 'E002',
+    title: 'Сообщение Ильи · 00:17',
+    note: 'После сообщения о доказательствах возникает непосредственный триггер, но сообщение получили несколько участников.',
+    isUnlocked: (core) => Boolean(core.seenEvidenceIds?.includes('E002'))
+  },
+  {
+    id: 'card',
+    code: 'E008',
+    title: 'Происхождение B-17 / 314-17',
+    note: 'Архив подтверждает существование скрытого оригинала и реальные ставки публикации. Мотив не равен личности нападавшего.',
+    isUnlocked: (_core, _act2, act3) => ['catalog', 'contact', 'audio', 'custody'].every((id) => act3.archive?.includes(id))
   },
   {
     id: 'audio',
     code: 'E008-C',
-    title: 'Запись разговора Антона',
-    note: 'Перед гибелью Антон спорил с Кириллом о незакрытом служебном проходе.',
-    isUnlocked: (_act2, act3) => Boolean(act3.archive?.includes('audio'))
-  },
-  {
-    id: 'card',
-    code: 'E008-D',
-    title: 'Цепочка карты 314-17',
-    note: 'На носителе находился оригинальный материал старого дела.',
-    isUnlocked: (_act2, act3) => ['catalog', 'contact', 'audio', 'custody'].every((id) => act3.archive?.includes(id))
+    title: 'Фрагмент разговора 2015 года',
+    note: 'Сохранился спор о безопасности и продолжении работ, но в фрагменте нет имён. Это контекст, а не атрибуция Кириллу.',
+    isUnlocked: (_core, _act2, act3) => Boolean(act3.archive?.includes('audio'))
   }
 ];
 
@@ -105,7 +143,7 @@ const initialTranscript: TranscriptEntry[] = [
   {
     id: 'intro',
     speaker: 'system',
-    text: 'Допрос фиксируется. Кирилл уверен, что журнал замка и камера подтверждают его алиби.'
+    text: 'Допрос фиксируется. Кирилл опирается на камеру и журнал замка: через гостевой коридор он после 23:41 не выходил.'
   }
 ];
 
@@ -168,6 +206,10 @@ function addExchange(question: string, answer: string): void {
   ];
 }
 
+function readCore(): CoreState {
+  return loadJson<CoreState>(CORE_STORAGE_KEY);
+}
+
 function readAct2(): Act2State {
   return loadJson<Act2State>(ACT2_STORAGE_KEY);
 }
@@ -177,19 +219,40 @@ function readAct3(): Act3State {
 }
 
 function evidenceUnlocked(definition: EvidenceDefinition): boolean {
-  return definition.isUnlocked(readAct2(), readAct3());
+  return definition.isUnlocked(readCore(), readAct2(), readAct3());
 }
 
 function has(id: string): boolean {
   return state.presented.includes(id);
 }
 
-function routePhysicallyProven(): boolean {
-  return has('panel') && (has('tracks') || has('fibres'));
+function routeUsedProven(): boolean {
+  return has('plan') && has('panel') && (has('tracks') || has('fibres'));
+}
+
+function motiveShown(): boolean {
+  return has('threat') && has('card');
 }
 
 function canFixContradiction(): boolean {
-  return state.asked.includes('alibi') && has('plan') && routePhysicallyProven() && has('audio');
+  return state.asked.includes('alibi')
+    && has('opportunity')
+    && routeUsedProven()
+    && has('m3')
+    && has('presence')
+    && motiveShown();
+}
+
+function updatePressure(): void {
+  if (state.complete) {
+    state.stage = 'broken';
+    return;
+  }
+  if (has('presence') && routeUsedProven() && has('opportunity')) {
+    state.stage = 'cornered';
+    return;
+  }
+  state.stage = state.presented.length > 0 ? 'guarded' : 'calm';
 }
 
 function ask(id: string): void {
@@ -199,29 +262,27 @@ function ask(id: string): void {
     state.asked = unique(state.asked, id);
     addExchange(
       'После 23:41 вы покидали номер 312?',
-      has('plan')
-        ? 'Через коридор — нет. Я уже сказал: камера не зафиксировала моего выхода.'
-        : 'Нет. Я вошёл в 312-й и оставался там до утра. Камера это подтверждает.'
+      'Через гостевой коридор — нет. Я вошёл в 312-й и оставался там. Камера это подтверждает.'
     );
   }
 
   if (id === 'passage') {
     state.asked = unique(state.asked, id);
     addExchange(
-      'Вы знали о старом проходе между номерами?',
+      'Вы знали о старой служебной сети за 312?',
       has('plan')
-        ? 'Я видел старые схемы при реконструкции. Но проём должны были закрыть — пользоваться им было невозможно.'
-        : 'Никакого прохода нет. Современная планировка это подтверждает.'
+        ? 'Старые схемы я видел. Но существование схемы ещё не означает, что я пользовался этим маршрутом.'
+        : 'Я не понимаю, о какой сети вы говорите. Покажите основание для такого вопроса.'
     );
   }
 
   if (id === 'anton') {
     state.asked = unique(state.asked, id);
     addExchange(
-      'О чём вы спорили с Антоном Беловым в 2015 году?',
-      has('audio')
-        ? 'Он обвинял меня в нарушении регламента. Это был рабочий конфликт, а не причина его гибели.'
-        : 'Мы почти не общались. Денис и Вера пытаются связать обычный несчастный случай с этой ночью.'
+      'Почему материалы B-17 могли быть для вас опасны?',
+      has('card')
+        ? 'Опасны были не только для меня. Денис скрывал оригинал, Вера приехала под другой фамилией, отель не хотел нового скандала.'
+        : 'Вы сначала установите, что именно было на этом носителе и кому оно угрожало.'
     );
   }
 
@@ -229,93 +290,72 @@ function ask(id: string): void {
   renderModal();
 }
 
+function responseForEvidence(id: string): { question: string; answer: string } {
+  switch (id) {
+    case 'opportunity':
+      return {
+        question: 'Камера фиксирует: в 23:41 вы вошли в 312 и через гостевой коридор больше не выходили.',
+        answer: 'Именно. Это моё алиби. Камера показывает, где я был, а не то, что я заходил в 314-й.'
+      };
+    case 'plan':
+      return {
+        question: 'Старый план показывает связь 312 → V314 → 314 и продолжение к P3.',
+        answer: 'Он показывает старую топологию. Не показывает, что этим путём пользовался я.'
+      };
+    case 'panel':
+      return {
+        question: 'Панель доступа из 312 открывали недавно.',
+        answer: 'Служебная сеть не принадлежит мне. У отеля есть персонал и технический доступ. Кто сказал, что панель открывал я?'
+      };
+    case 'tracks':
+      return {
+        question: 'Следы движения связывают 312, V314 и номер 314.',
+        answer: 'Тогда вы доказали, что маршрутом пользовались. Но пока не доказали, кто именно.'
+      };
+    case 'fibres':
+      return {
+        question: 'У проёма сохранился свежий контактный след.',
+        answer: 'Массовое волокно не имеет имени. Это подтверждает проход, но не связывает его со мной.'
+      };
+    case 'm3':
+      return {
+        question: 'Контроллер M3 не фиксирует ни одного открытия служебного входа в критическое окно.',
+        answer: 'Вы исключили один вход персонала. Это всё ещё не доказывает, что из 312 вышел именно я.'
+      };
+    case 'presence':
+      return {
+        question: 'STR-профиль микроследа со стола в 314 совпал с вашим: 16 из 16 локусов.',
+        answer: 'Это доказывает контакт со столом. Но экспертиза не говорит, когда я там был, как вошёл и что произошло с Ильёй.'
+      };
+    case 'threat':
+      return {
+        question: 'В 00:17 Илья написал, что утром передаст доказательства. Вы получили это сообщение.',
+        answer: 'Получили все. У каждого в этой компании были причины нервничать после такого сообщения.'
+      };
+    case 'card':
+      return {
+        question: 'B-17 существовал, был скрыт из общей оцифровки и находился в центре встречи Ильи.',
+        answer: 'Да. Но происхождение B-17 объясняет ставки, а не делает меня единственным человеком с мотивом.'
+      };
+    case 'audio':
+      return {
+        question: 'В архиве сохранился фрагмент спора о небезопасной зоне и требовании продолжить работы.',
+        answer: 'В этом фрагменте нет имён. Вы можете доказать сам спор, но не приписать реплики мне только потому, что вам подходит версия.'
+      };
+    default:
+      return { question: 'Предъявляю материал.', answer: 'Поясните, что именно он доказывает.' };
+  }
+}
+
 function presentEvidence(id: string): void {
   if (state.complete) return;
   const definition = EVIDENCE.find((item) => item.id === id);
   if (!definition || !evidenceUnlocked(definition) || has(id)) return;
 
-  if (id === 'panel' && !has('plan')) {
-    addExchange(
-      `Предъявляю ${definition.code}: ${definition.title}.`,
-      'Старая панель могла быть плохо закреплена годами. Сначала докажите, что за ней вообще существовал проход.'
-    );
-    state.wrongConclusions = unique(state.wrongConclusions, 'panel-before-plan');
-    saveState();
-    renderModal();
-    return;
-  }
-
-  if ((id === 'tracks' || id === 'fibres') && !has('panel')) {
-    addExchange(
-      `Предъявляю ${definition.code}: ${definition.title}.`,
-      'Вы показываете отдельный след, но не связываете его с доступом из моего номера.'
-    );
-    state.wrongConclusions = unique(state.wrongConclusions, `${id}-before-panel`);
-    saveState();
-    renderModal();
-    return;
-  }
-
-  if (id === 'audio' && !routePhysicallyProven()) {
-    addExchange(
-      `Предъявляю ${definition.code}: ${definition.title}.`,
-      'Старая запись не доказывает, что я куда-либо ходил этой ночью.'
-    );
-    state.wrongConclusions = unique(state.wrongConclusions, 'audio-before-route');
-    saveState();
-    renderModal();
-    return;
-  }
-
   state.presented = unique(state.presented, id);
-
-  if (id === 'plan') {
-    state.stage = 'guarded';
-    addExchange(
-      `На архивном плане есть проход между 312 и 314. Вы знали о нём?`,
-      'Да, видел схему во время реконструкции. Но по акту проём закрыли. Моё алиби от этого не меняется.'
-    );
-  }
-
-  if (id === 'panel') {
-    state.stage = 'guarded';
-    addExchange(
-      'Панель в вашем шкафу держится на свежих винтах.',
-      'Я заметил, что она отходит, уже утром. Возможно, персонал проверял коммуникации.'
-    );
-  }
-
-  if (id === 'tracks') {
-    state.stage = 'cornered';
-    addExchange(
-      'Следы от шкафа в 312 совпадают со следами в номере Ильи.',
-      'Совпадающая ширина ещё не устанавливает время. Эти вещи могли передвигать раньше.'
-    );
-  }
-
-  if (id === 'fibres') {
-    state.stage = 'cornered';
-    addExchange(
-      'У проёма найдены свежие волокна тёмной ткани.',
-      'В отеле десятки тёмных курток. Вы не доказали, что волокна принадлежат мне.'
-    );
-  }
-
-  if (id === 'audio') {
-    state.stage = 'cornered';
-    addExchange(
-      'На записи Антон обращается к вам по имени и требует закрыть проход.',
-      'Хорошо. Я отвечал за площадку и знал об этом маршруте. Но это не означает, что я причастен к его гибели или исчезновению Ильи.'
-    );
-  }
-
-  if (id === 'card') {
-    addExchange(
-      'Карта 314-17 содержала оригинальный материал старого дела.',
-      'Именно за этим Илья всех собрал. Но карту искал не только я — Денис скрывал её существование, а Вера приехала под чужой фамилией.'
-    );
-  }
-
+  const exchange = responseForEvidence(id);
+  addExchange(exchange.question, exchange.answer);
+  updatePressure();
   saveState();
   renderModal();
 }
@@ -325,13 +365,29 @@ function submitContradiction(id: string): void {
 
   if (id !== 'route') {
     state.wrongConclusions = unique(state.wrongConclusions, id);
+    const copy: Record<string, { detective: string; kirill: string; system: string }> = {
+      presence: {
+        detective: 'Ваш STR-профиль в 314 доказывает, что вы напали на Илью.',
+        kirill: 'Нет. Он доказывает контакт и присутствие. Действие против Ильи из одного микроследа не следует.',
+        system: 'Слишком сильный вывод: физическое присутствие нельзя автоматически превращать в доказательство нападения.'
+      },
+      motive: {
+        detective: 'Вы боялись B-17, значит именно вы напали на Илью.',
+        kirill: 'Мотив был не только у меня. Вы уже нашли реальные секреты других участников.',
+        system: 'Мотив объясняет возможное действие, но не индивидуализирует исполнителя.'
+      },
+      marina: {
+        detective: 'M3 не открывался, значит Марина помогла вам через другой вход.',
+        kirill: 'Вы только что исключили один маршрут. Никакого доказательства сговора с Мариной у вас нет.',
+        system: 'Вывод добавляет неподтверждённого сообщника и не нужен для объяснения доказанных фактов.'
+      }
+    };
+    const selected = copy[id] ?? copy.presence;
     state.transcript = [
       ...state.transcript,
-      entry('detective', id === 'denis'
-        ? 'Денис передал вам карту и попросил спрятать Илью.'
-        : 'Вера вошла через проход и подставила вас.'),
-      entry('kirill', 'Это предположение. Ни один из предъявленных материалов не подтверждает такую связь.'),
-      entry('system', 'Вывод не связывает алиби Кирилла с физическими следами маршрута.')
+      entry('detective', selected.detective),
+      entry('kirill', selected.kirill),
+      entry('system', selected.system)
     ];
     saveState();
     renderModal();
@@ -342,9 +398,9 @@ function submitContradiction(id: string): void {
   state.stage = 'broken';
   state.transcript = [
     ...state.transcript,
-    entry('detective', 'Вы не выходили в коридор — потому что использовали проход. Свежая панель, совпадающие следы и ваша осведомлённость о маршруте опровергают алиби.'),
-    entry('kirill', 'Я вошёл в 314-й после сообщения. Хотел забрать карту и заставить Илью отказаться от публикации. Он ударился во время борьбы. Я перенёс его через проход в старую служебную комнату. Он был жив.'),
-    entry('system', 'ПРОТИВОРЕЧИЕ ДОКАЗАНО: Кирилл использовал скрытый маршрут после 00:17. Открыто направление поиска — старая служебная комната.')
+    entry('detective', 'Камера фиксирует вас в 312. Старая сеть из 312 была проходима и использовалась этой ночью. M3 в критическое окно не открывался. Ваш STR-профиль найден на столе в 314. А сразу после сообщения Ильи B-17 давал вам конкретную причину попасть туда. То, что вы не вышли в коридор, больше не алиби — это объяснение маршрута.'),
+    entry('kirill', 'Да. После сообщения я прошёл из 312-го в 314-й. Я хотел забрать B-17 и остановить публикацию. Мы сцепились, Илья ударился. Я запаниковал и попытался убрать следы. Дальше — только в присутствии адвоката.'),
+    entry('system', 'КЛЮЧЕВОЕ ПРОТИВОРЕЧИЕ ДОКАЗАНО: Кирилл признал вход в 314 и конфликт после 00:17. Местонахождение Ильи, маршрут поиска S-3 и полная ответственность за события 2015 года не создаются этим признанием и проверяются отдельными ветками.')
   ];
   saveState();
   renderModal();
@@ -370,11 +426,7 @@ function evidenceMarkup(): string {
   return EVIDENCE.map((definition) => {
     const unlocked = evidenceUnlocked(definition);
     const presented = has(definition.id);
-    const orderBlocked =
-      (definition.id === 'panel' && !has('plan')) ||
-      ((definition.id === 'tracks' || definition.id === 'fibres') && !has('panel')) ||
-      (definition.id === 'audio' && !routePhysicallyProven());
-    const status = presented ? 'Предъявлено' : unlocked ? (orderBlocked ? 'Нужна связка' : 'Доступно') : 'Не найдено';
+    const status = presented ? 'Предъявлено' : unlocked ? 'Доступно' : 'Не найдено';
     return `
       <button class="interrogation-evidence ${presented ? 'presented' : ''} ${!unlocked ? 'locked' : ''}" data-present="${definition.id}" ${!unlocked || presented ? 'disabled' : ''}>
         <span>${definition.code}</span>
@@ -386,6 +438,7 @@ function evidenceMarkup(): string {
 
 function renderModal(): void {
   if (!modal) return;
+  updatePressure();
   const stageIndex = STAGE_INDEX[state.stage];
   const ready = canFixContradiction();
 
@@ -406,34 +459,35 @@ function renderModal(): void {
 
       <div class="interrogation-workspace">
         <section class="interrogation-dialogue">
-          <div class="interrogation-dialogue-head"><span>ПРОТОКОЛ ДОПРОСА / LIVE</span><small>${state.transcript.length - 1} реплик зафиксировано</small></div>
+          <div class="interrogation-dialogue-head"><span>ПРОТОКОЛ ДОПРОСА / LIVE</span><small>${Math.max(0, state.transcript.length - 1)} реплик зафиксировано</small></div>
           <div class="interrogation-transcript">${renderTranscript()}</div>
           <div class="interrogation-questions">
             <p>Линия вопросов</p>
             <button data-ask="alibi" class="${state.asked.includes('alibi') ? 'used' : ''}">После 23:41 вы покидали 312?</button>
-            <button data-ask="passage" class="${state.asked.includes('passage') ? 'used' : ''}">Вы знали о старом проходе?</button>
-            <button data-ask="anton" class="${state.asked.includes('anton') ? 'used' : ''}">О чём вы спорили с Антоном?</button>
+            <button data-ask="passage" class="${state.asked.includes('passage') ? 'used' : ''}">Вы знали о старой служебной сети?</button>
+            <button data-ask="anton" class="${state.asked.includes('anton') ? 'used' : ''}">Почему B-17 мог быть опасен для вас?</button>
           </div>
         </section>
 
         <aside class="interrogation-control">
-          <div class="interrogation-control-title"><span>Материалы для предъявления</span><small>Улика работает только в логической связке</small></div>
+          <div class="interrogation-control-title"><span>Материалы для предъявления</span><small>Сильная версия должна пережить возражения по каждой доказательной семье</small></div>
           <div class="interrogation-evidence-list">${evidenceMarkup()}</div>
           <section class="interrogation-contradiction ${ready ? 'ready' : ''} ${state.complete ? 'complete' : ''}">
             <small>ФИКСАЦИЯ ПРОТИВОРЕЧИЯ</small>
-            <h2>${state.complete ? 'Алиби разрушено' : ready ? 'Данных достаточно' : 'Соберите логическую цепочку'}</h2>
+            <h2>${state.complete ? 'Версия Кирилла разрушена' : ready ? 'Связка замкнулась' : 'Проверяйте версию, а не одну улику'}</h2>
             <p>${state.complete
-              ? 'Кирилл признал использование скрытого маршрута и указал место, куда перенёс Илью.'
+              ? 'Вход Кирилла в 314 и конфликт после 00:17 подтверждены. Признание не заменяет отдельные доказательства маршрута, спасения Ильи или событий 2015 года.'
               : ready
-                ? 'Выберите вывод, который одновременно объясняет камеру, следы и знания Кирилла.'
-                : 'Сначала зафиксируйте алиби, докажите существование маршрута, его недавнее использование и связь Кирилла со старым проходом.'}</p>
+                ? 'Теперь выберите только тот вывод, который одновременно выдерживает проверку возможности, маршрута, альтернативного доступа, физического присутствия и мотива.'
+                : 'Одного маршрута, мотива или микроследа недостаточно. Предъявляйте уже добытые материалы в любом порядке и проверяйте, какие возражения остаются.'}</p>
             ${ready && !state.complete ? `
               <div class="interrogation-conclusions">
-                <button data-conclusion="route">Кирилл использовал проход и поэтому не появился в коридоре</button>
-                <button data-conclusion="denis">Денис поручил Кириллу спрятать Илью</button>
-                <button data-conclusion="vera">Вера прошла через 312 и подставила Кирилла</button>
+                <button data-conclusion="route">Кирилл вошёл в 314 через сеть из 312; его «не выходил в коридор» объясняет механизм, а не алиби</button>
+                <button data-conclusion="presence">STR-профиль сам по себе доказывает нападение Кирилла</button>
+                <button data-conclusion="motive">Мотив вокруг B-17 сам по себе доказывает, что напал Кирилл</button>
+                <button data-conclusion="marina">Журнал M3 доказывает, что Марина помогала Кириллу</button>
               </div>` : ''}
-            ${state.complete ? '<div class="interrogation-unlocked"><span>✓</span><div><strong>Новое направление</strong><p>Старая служебная комната за техническим коридором.</p></div></div>' : ''}
+            ${state.complete ? '<div class="interrogation-unlocked"><span>✓</span><div><strong>Граница доказательства сохранена</strong><p>Допрос подтверждает вход Кирилла в 314 и конфликт. Поиск Ильи и историческая ответственность закрываются собственными доказательными ветками.</p></div></div>' : ''}
           </section>
         </aside>
       </div>
@@ -456,6 +510,7 @@ function renderModal(): void {
 
 function openModal(): void {
   if (modal) return;
+  state = loadState();
   modal = document.createElement('div');
   modal.className = 'interrogation-backdrop';
   modal.addEventListener('mousedown', (event) => {
@@ -497,10 +552,16 @@ function decorateInterface(): void {
     if (list && !list.querySelector('.kirill-interrogation-fact')) {
       const item = document.createElement('li');
       item.className = 'kirill-interrogation-fact';
-      item.innerHTML = '<span>K-01</span><p>Кирилл использовал скрытый проход после 00:17 и перенёс Илью в старую служебную комнату.</p>';
+      item.innerHTML = '<span>K-01</span><p>После замкнутой доказательной связки Кирилл признал вход из 312 в номер 314 после 00:17 и конфликт с Ильёй. Его присутствие уже было независимо установлено STR-сравнением.</p>';
       list.append(item);
     }
   }
+}
+
+function rerenderForEvidenceUpdate(): void {
+  state = loadState();
+  if (modal) renderModal();
+  decorateInterface();
 }
 
 function interceptKirillCard(event: Event): void {
@@ -518,6 +579,8 @@ document.addEventListener('keydown', (event) => {
 });
 window.addEventListener('dbr:runtime-settled', decorateInterface);
 window.addEventListener('dbr:interrogation-updated', decorateInterface);
+window.addEventListener('dbr:act2-updated', rerenderForEvidenceUpdate);
+window.addEventListener('dbr:act3-updated', rerenderForEvidenceUpdate);
 document.addEventListener('click', () => window.setTimeout(decorateInterface, 60));
 
 if (document.readyState === 'loading') {

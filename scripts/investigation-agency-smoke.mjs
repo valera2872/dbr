@@ -66,10 +66,12 @@ check(main.includes("./finalSynthesis.css"), 'main.tsx не подключает
   'Если связка слаба, Кирилл объяснит, чего она не доказывает',
   'Будущие доказательства и их названия здесь не показываются',
   'next-guided-evidence',
-  'agencyFutureHidden'
+  'agencyFutureHidden',
+  'key-complete',
+  'Признание подтверждает, а не создаёт доказательства'
 ].forEach((token) => check(interrogationAgency.includes(token), `Interrogation agency не содержит: ${token}`));
 check(interrogationAgency.includes('state.act3.complete'), 'Interrogation agency не использует фактический proof gate Act III');
-check(interrogationAgency.includes('!state.interrogation.complete'), 'Interrogation agency не различает незавершённый ключевой допрос');
+check(interrogationAgency.includes('!state.interrogation.complete'), 'Interrogation agency не различает незавершённый ранний допрос');
 check(!interrogationAgency.includes("stage === 'kirill-interrogation'"), 'Interrogation agency снова зависит от линейного stage и ломает раннее спасение');
 check(interrogationAgency.includes('button.disabled'), 'Будущие доказательства не скрываются по фактической доступности');
 check(!interrogationAgency.includes('new MutationObserver'), 'Interrogation agency не должен создавать MutationObserver');
@@ -90,9 +92,10 @@ check(!finalSynthesis.includes('setInterval'), 'Final synthesis не долже�
 check(finalCss.includes('html[data-final-synthesis="active"] .react-final-panel'), 'Старый готовый финальный ответ остаётся видимым');
 
 [
-  'ключевой допрос не показывает правильный порядок доказательств',
-  'Старая запись не доказывает, что я куда-либо ходил этой ночью',
-  'audio-before-route',
+  'ключевой допрос не показывает правильный порядок и требует замкнуть независимые доказательные семьи',
+  'В этом фрагменте нет имён',
+  'data-present="presence"',
+  'Версия Кирилла разрушена',
   'ранний повторный допрос не раскрывает названия ещё не найденных доказательств',
   'toBeHidden()'
 ].forEach((token) => check(interrogationTest.includes(token), `Браузерный тест допроса не проверяет: ${token}`));
@@ -117,4 +120,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nInvestigative agency smoke passed: deductions, interrogation and final accusation remain player-led in v${pkg.version}.`);
+console.log(`\nInvestigative agency smoke passed: deductions, bounded interrogation proof and final accusation remain player-led in v${pkg.version}.`);

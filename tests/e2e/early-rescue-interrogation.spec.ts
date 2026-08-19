@@ -72,5 +72,7 @@ test('раннее спасение Ильи не возвращает пред�
   const plan = page.locator('[data-present="plan"]');
   await expect(plan).toBeVisible();
   await plan.click();
-  await expect(page.locator('.interrogation-transcript')).toContainText('На архивном плане есть проход между 312 и 314');
+  const transcript = page.locator('.interrogation-transcript');
+  await expect(transcript).toContainText('Старый план показывает связь 312 → V314 → 314');
+  await expect(transcript).toContainText('Не показывает, что этим путём пользовался я');
 });

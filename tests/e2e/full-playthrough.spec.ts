@@ -200,20 +200,36 @@ test('чистое расследование проходит весь марш
   await e009.getByRole('button', { name: 'Закрыть' }).click();
   await expect(page.locator('.identity-v2-backdrop')).toHaveCount(0);
 
-  // Evidence-driven interrogation of Kirill.
+  // The player must individualize Kirill before the key interrogation can close.
   await openTab(page, 'Люди');
   await page.locator('.premium-person-card').filter({ hasText: 'Кирилл Бессонов' }).click();
   await expect(page.locator('.interrogation-shell')).toBeVisible();
   await expect(page.locator('[data-ask="passage"]')).toBeHidden();
   await expect(page.locator('[data-ask="anton"]')).toBeHidden();
-  await page.locator('[data-ask="alibi"]').click();
 
-  for (const id of ['plan', 'panel', 'tracks', 'fibres', 'audio', 'card']) {
+  const actorProof = page.locator('.actor-presence-v2');
+  await expect(actorProof).toBeVisible();
+  await expect(actorProof).toContainText('Свежая повязка на правой ладони');
+  await actorProof.locator('[data-actor-presence-action="observe"]').click();
+  await expect(page.locator('[data-actor-presence-action="compare"]')).toBeEnabled();
+  await page.locator('[data-actor-presence-action="compare"]').click();
+  await expect(page.locator('.actor-presence-lab')).toContainText('16 из 16 исследованных локусов совпадают');
+  await page.locator('[data-actor-presence-action="presence"]').click();
+  await expect(page.locator('.actor-presence-v2.proven')).toContainText('Кирилл физически был в 314');
+
+  // Evidence-driven interrogation of Kirill: order is free, but all proof families must close.
+  await page.locator('[data-ask="alibi"]').click();
+  for (const id of ['audio', 'plan', 'panel', 'tracks', 'opportunity', 'm3', 'threat', 'card']) {
     await page.locator(`[data-present="${id}"]`).click();
   }
+  await expect(page.locator('.interrogation-contradiction.ready')).toHaveCount(0);
+  await page.locator('[data-present="presence"]').click();
   await expect(page.locator('.interrogation-contradiction.ready')).toBeVisible();
+  await expect(page.locator('.interrogation-contradiction')).toContainText('Связка замкнулась');
   await page.locator('[data-conclusion="route"]').click();
-  await expect(page.locator('.interrogation-contradiction.complete')).toContainText('Алиби разрушено');
+  await expect(page.locator('.interrogation-contradiction.complete')).toContainText('Версия Кирилла разрушена');
+  await expect(page.locator('.interrogation-transcript')).toContainText('Дальше — только в присутствии адвоката');
+  await expect(page.locator('.interrogation-transcript')).not.toContainText('старая служебная комната');
   await page.getByRole('button', { name: 'Закрыть допрос' }).click();
 
   // ACT IV — Ilya is already rescued; E011 now closes the still-unresolved B-17 evidence line.
@@ -261,11 +277,15 @@ test('чистое расследование проходит весь марш
     'agency3:archive-requested', 'v2:desk-sampled', 'v2:rescue-complete',
     'agency3:trace-custody', 'agency3:denis-family', 'agency3:id-kirill',
     'agency3:id-elena', 'agency3:identity-requested', 'd-original', 'v-name',
-    'e009:vera-corridor', 'e009:vera-device', 'e009:vera-route'
+    'e009:vera-corridor', 'e009:vera-device', 'e009:vera-route',
+    'actor:k:injury-observed', 'actor:k:comparison-requested', 'actor:k:presence-proven'
   ]));
   expect(saved.act3.complete).toBe(true);
   expect(saved.act3.checkpointAnswer).toBe('separate_lies');
   expect(saved.interrogation.asked).toContain('alibi');
+  expect(saved.interrogation.presented).toEqual(expect.arrayContaining([
+    'opportunity', 'plan', 'panel', 'tracks', 'm3', 'presence', 'threat', 'card'
+  ]));
   expect(saved.interrogation.complete).toBe(true);
   expect(saved.act4.search).toEqual(['entry', 'ilya', 'medical', 'lamp']);
   expect(saved.act4.card).toEqual(['serial', 'copy', 'clip', 'integrity']);

@@ -30,9 +30,12 @@ check(main.includes("./investigationAgencyInterrogation"), 'main.tsx не под
 check(main.indexOf("./interrogationGuidance';") < main.indexOf("./interactiveInterrogation';"), 'Premise guidance должен регистрироваться до перехвата карточки Кирилла');
 
 [
-  'Зафиксировать алиби','Дальше нужны факты, а не догадки',
-  'Закрыть допрос и открыть отчёт №1','Перейти к спасательной операции'
+  'Зафиксировать алиби', 'Дальше нужны факты, а не догадки',
+  'Закрыть допрос и открыть отчёт №1', 'Ключевое противоречие доказано',
+  'не создаёт местонахождение Ильи'
 ].forEach((token) => check(guide.includes(token), `Premise guidance runtime не содержит: ${token}`));
+check(!guide.includes('Кирилл указал новое место поиска'), 'Legacy guidance снова делает признание источником поиска Ильи');
+check(!guide.includes('Перейти к спасательной операции'), 'Legacy guidance снова confession-gates спасательную операцию');
 
 check(guide.includes("const QUESTION_IDS = ['alibi']"), 'Ранний допрос должен требовать только обоснованный вопрос об алиби');
 check(guide.includes("['passage', 'anton']"), 'Преждевременные вопросы не скрываются из ранней линии');
@@ -45,17 +48,21 @@ check(css.includes('.interrogation-premise-note'), 'Нет объяснения 
 [
   'Правильный порядок не показывается',
   'removeGuidedEvidenceHighlight',
-  'Будущие доказательства и их названия здесь не показываются'
+  'Будущие доказательства и их названия здесь не показываются',
+  'key-complete',
+  'Признание подтверждает, а не создаёт доказательства'
 ].forEach((token) => check(agency.includes(token), `Player-led interrogation не нейтрализует старые подсказки: ${token}`));
 
 [
-  'Базовое алиби зафиксировано','data-ask="passage"','toBeHidden()','открыть отчёт №1',
-  'data-interrogation-guide-route="case"','После отчёта №1','checkpoint-panel'
+  'Базовое алиби зафиксировано', 'data-ask="passage"', 'toBeHidden()', 'открыть отчёт №1',
+  'data-interrogation-guide-route="case"', 'После отчёта №1', 'checkpoint-panel'
 ].forEach((token) => check(test.includes(token), `Браузерный тест premise guidance не проверяет: ${token}`));
 [
   'Правильный порядок не показывается',
   'next-guided-evidence',
-  'audio-before-route'
+  'В этом фрагменте нет имён',
+  'data-present="presence"',
+  'Версия Кирилла разрушена'
 ].forEach((token) => check(agencyTest.includes(token), `Браузерный тест player-led допроса не проверяет: ${token}`));
 
 if (failures.length) {
@@ -64,4 +71,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nInterrogation guidance smoke passed: factual premises remain protected while the evidence strategy belongs to the player in v${pkg.version}.`);
+console.log(`\nInterrogation guidance smoke passed: factual premises, proof boundaries and player-led evidence strategy remain protected in v${pkg.version}.`);
