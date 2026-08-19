@@ -53,12 +53,12 @@ async function continueAndOpenKirill(page: Page) {
   await expect(page.locator('.interrogation-shell')).toBeVisible();
 }
 
-test('ключевой допрос не показывает правильный порядок доказательств и позволяет учиться на возражении Кирилла', async ({ page }) => {
+test('ключевой допрос не показывает правильный порядок и требует замкнуть независимые доказательные семьи', async ({ page }) => {
   await seed(page,
     {
       plan: ['wall', 'stamp', 'width'],
       room: ['panel', 'tracks', 'envelope', 'fibres'],
-      questions: ['agency:wall', 'agency:renovation', 'agency:plan-requested']
+      questions: ['agency:wall', 'agency:renovation', 'agency:plan-requested', 'v2:marina-closure', 'v2:m3-log']
     },
     {
       archive: ['catalog', 'contact', 'audio', 'custody'],
@@ -66,7 +66,9 @@ test('ключевой допрос не показывает правильны
       questions: [
         'agency3:envelope', 'agency3:denis-envelope', 'agency3:archive-requested',
         'agency3:trace-custody', 'agency3:denis-family', 'agency3:id-elena',
-        'agency3:identity-requested', 'd-original', 'v-name'
+        'agency3:identity-requested', 'd-original', 'v-name',
+        'e009:vera-corridor', 'e009:vera-device', 'e009:vera-route',
+        'v2:desk-sampled', 'actor:k:injury-observed', 'actor:k:comparison-requested', 'actor:k:presence-proven'
       ],
       checkpointAnswer: 'separate_lies',
       complete: true
@@ -78,29 +80,44 @@ test('ключевой допрос не показывает правильны
   await expect(brief).toBeVisible();
   await expect(brief).toContainText('Проверьте алиби Кирилла своей доказательной цепочкой');
   await expect(brief).toContainText('Правильный порядок не показывается');
+  await expect(brief).toContainText('Все уже добытые вами материалы доступны здесь');
   await expect(page.locator('.interrogation-guide')).toBeHidden();
   await expect(page.locator('.interrogation-evidence.next-guided-evidence')).toHaveCount(0);
   await expect(page.locator('.interrogation-control-title small')).toContainText('Выберите доказательство самостоятельно');
 
   await page.locator('[data-ask="alibi"]').click();
 
-  // Deliberately weak first move: old UI used to prevent this by telling the player the sequence.
+  // Deliberately weak first move. It is allowed, but Kirill correctly narrows what it proves.
   await page.locator('[data-present="audio"]').click();
-  await expect(page.locator('.interrogation-transcript')).toContainText('Старая запись не доказывает, что я куда-либо ходил этой ночью');
+  await expect(page.locator('.interrogation-transcript')).toContainText('В этом фрагменте нет имён');
 
   let saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), INTERROGATION);
-  expect(saved.presented).not.toContain('audio');
-  expect(saved.wrongConclusions).toContain('audio-before-route');
+  expect(saved.presented).toContain('audio');
+  expect(saved.complete).toBe(false);
+  await expect(page.locator('.interrogation-contradiction.ready')).toHaveCount(0);
 
-  // Player can now build a stronger chain without any highlighted "next evidence".
-  for (const id of ['plan', 'panel', 'tracks', 'audio']) {
+  // Route + old context alone is no longer enough. The player must close opportunity,
+  // alternative-access, individualized-presence and motive families too.
+  for (const id of ['plan', 'panel', 'tracks', 'opportunity', 'm3', 'threat', 'card']) {
     await page.locator(`[data-present="${id}"]`).click();
     await expect(page.locator('.interrogation-evidence.next-guided-evidence')).toHaveCount(0);
   }
+  await expect(page.locator('.interrogation-contradiction.ready')).toHaveCount(0);
 
+  await page.locator('[data-present="presence"]').click();
+  await expect(page.locator('.interrogation-transcript')).toContainText('16 из 16 локусов');
   await expect(page.locator('.interrogation-contradiction.ready')).toBeVisible();
+  await expect(page.locator('.interrogation-contradiction')).toContainText('Связка замкнулась');
+
+  // An overclaim is rejected without completing the interrogation.
+  await page.locator('[data-conclusion="presence"]').click();
+  await expect(page.locator('.interrogation-transcript')).toContainText('физическое присутствие нельзя автоматически превращать');
+  saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), INTERROGATION);
+  expect(saved.complete).toBe(false);
+
   await page.locator('[data-conclusion="route"]').click();
-  await expect(page.locator('.interrogation-contradiction.complete')).toContainText('Алиби разрушено');
+  await expect(page.locator('.interrogation-contradiction.complete')).toContainText('Версия Кирилла разрушена');
+  await expect(page.locator('.interrogation-contradiction.complete')).toContainText('Граница доказательства сохранена');
 
   saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), INTERROGATION);
   expect(saved.complete).toBe(true);
@@ -124,10 +141,12 @@ test('ранний повторный допрос не раскрывает н�
   await expect(brief).toContainText('Будущие доказательства и их названия здесь не показываются');
   await expect(page.locator('.interrogation-guide')).toBeHidden();
 
+  await expect(page.locator('[data-present="opportunity"]')).toBeVisible();
   await expect(page.locator('[data-present="plan"]')).toBeVisible();
   await expect(page.locator('[data-present="panel"]')).toBeHidden();
   await expect(page.locator('[data-present="tracks"]')).toBeHidden();
-  await expect(page.locator('[data-present="audio"]')).toBeHidden();
+  await expect(page.locator('[data-present="m3"]')).toBeHidden();
+  await expect(page.locator('[data-present="presence"]')).toBeHidden();
   await expect(page.locator('[data-present="card"]')).toBeHidden();
   await expect(page.locator('.interrogation-control-title small')).toHaveText('Показаны только уже найденные материалы. Будущие доказательства скрыты.');
 });
