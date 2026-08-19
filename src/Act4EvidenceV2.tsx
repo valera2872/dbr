@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ACT4_STORAGE_KEY } from './build';
+import { ACT3_STORAGE_KEY, ACT4_STORAGE_KEY } from './build';
 import { refreshInvestigationState } from './investigationState';
 
 type ActiveEvidence = 'E010' | 'E011' | 'report' | null;
@@ -23,7 +23,6 @@ type Point = {
 };
 
 const E010_CONCLUSION = 'e010:bounded-conclusion';
-const E011_CONCLUSION = 'e011:historical-boundary';
 
 const SEARCH: Point[] = [
   {
@@ -119,6 +118,24 @@ function allSelected(selected: string[], points: Point[]): boolean {
   return points.every((point) => selected.includes(point.id));
 }
 
+function earlyRescueComplete(): boolean {
+  try {
+    const raw = JSON.parse(localStorage.getItem(ACT3_STORAGE_KEY) ?? '{}') as { questions?: unknown };
+    return Array.isArray(raw.questions) && raw.questions.includes('v2:rescue-complete');
+  } catch {
+    return false;
+  }
+}
+
+function e010Ready(state: Act4State): boolean {
+  const factsDone = allSelected(state.search, SEARCH);
+  return state.search.includes(E010_CONCLUSION) || (factsDone && earlyRescueComplete());
+}
+
+function e011Ready(state: Act4State): boolean {
+  return allSelected(state.card, LAB) && state.card.includes('clip');
+}
+
 function clickTab(label: string): void {
   const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.premium-sidebar button, .premium-mobile-nav button'));
   buttons.find((button) => button.textContent?.includes(label))?.click();
@@ -133,7 +150,7 @@ function Shell({ id, title, summary, onClose, children }: {
 }) {
   return createPortal(
     <div className="premium-modal-backdrop act4-v2-backdrop" onMouseDown={onClose}>
-      <section className={`premium-modal evidence-modal-premium act4-v2-modal evidence-${id.toLowerCase()}`} onMouseDown={(event) => event.stopPropagation()}>
+      <section className={`premium-modal evidence-modal-premium react-case-modal act4-v2-modal evidence-${id.toLowerCase()}`} onMouseDown={(event) => event.stopPropagation()}>
         <header className="premium-modal-header">
           <div>
             <p className="premium-kicker">{id === 'E010' ? 'Финальная операция' : 'Цифровая экспертиза'} · {id}</p>
@@ -158,7 +175,7 @@ function EvidenceRows({ points, selected, onSelect }: {
   selected: string[];
   onSelect: (id: string) => void;
 }) {
-  return <div className="act4-v2-rows">{points.map((point) => {
+  return <div className="act4-v2-rows react-point-list">{points.map((point) => {
     const done = selected.includes(point.id);
     return <button key={point.id} type="button" className={done ? 'done' : ''} onClick={() => onSelect(point.id)}>
       <span>{done ? '✓' : point.n}</span>
@@ -252,9 +269,9 @@ export function Act4EvidenceV2() {
   const [clipViewed, setClipViewed] = useState(false);
 
   const searchFactsDone = useMemo(() => allSelected(state.search, SEARCH), [state.search]);
-  const e010Done = state.search.includes(E010_CONCLUSION);
+  const e010Done = e010Ready(state);
   const labChecksDone = useMemo(() => allSelected(state.card, LAB), [state.card]);
-  const e011Done = state.card.includes(E011_CONCLUSION);
+  const e011Done = e011Ready(state);
 
   useEffect(() => {
     const sync = () => setState(readState());
@@ -270,7 +287,7 @@ export function Act4EvidenceV2() {
     const openEvidence = (id: 'E010' | 'E011') => {
       setFeedback('');
       setClipViewed(false);
-      if (id === 'E011' && !readState().search.includes(E010_CONCLUSION)) setActive('E010');
+      if (id === 'E011' && !e010Ready(readState())) setActive('E010');
       else setActive(id);
     };
 
@@ -342,16 +359,15 @@ export function Act4EvidenceV2() {
   };
 
   const selectLab = (id: string) => {
-    update({ ...state, card: unique(state.card, id) }, `act4-v2:lab:${id}`);
+    const nextCard = unique(state.card, id);
+    update({ ...state, card: nextCard }, `act4-v2:lab:${id}`);
+    if (allSelected(nextCard, LAB)) setClipViewed(true);
     setFeedback('');
   };
 
   const chooseE011 = (id: string) => {
     if (id === 'bounded') {
-      const next = {
-        ...state,
-        card: unique(unique(state.card, 'clip'), E011_CONCLUSION)
-      };
+      const next = { ...state, card: unique(state.card, 'clip') };
       update(next, 'act4-v2:e011-conclusion');
       setFeedback('Принято. B-17 доказывает знание опасного состояния и решение продолжить работу; вместе с архивной цепочкой — последующее сокрытие значения нарушения. Умысел на гибель Антона не доказан.');
       return;
@@ -384,7 +400,7 @@ export function Act4EvidenceV2() {
             <button onClick={() => chooseE010('bounded')}>Илью после травмы намеренно изолировали; оставивший его здесь понимал, что он жив, и не получил спрятанную microSD.</button>
             <button onClick={() => chooseE010('murder')}>Помещение доказывает попытку убийства Ильи.</button>
             <button onClick={() => chooseE010('staged')}>Илья сам устроил сцену и запер себя.</button>
-          </Conclusion> : <div className="act4-v2-finding success"><p className="premium-kicker">Вывод E010 зафиксирован</p><h3>Факт сокрытия отделён от личности исполнителя</h3><p>Теперь можно исследовать найденную microSD как самостоятельный источник.</p><button className="premium-cta compact" onClick={() => { setFeedback(''); setClipViewed(false); setActive('E011'); }}>Открыть E011 →</button></div>}
+          </Conclusion> : <div className="act4-v2-finding success"><p className="premium-kicker">Вывод E010 зафиксирован</p><h3>Факт сокрытия отделён от личности исполнителя</h3><p>{earlyRescueComplete() ? 'Этот предел уже был установлен при независимом спасении Ильи. ' : ''}Теперь можно исследовать найденную microSD как самостоятельный источник.</p><button className="premium-cta compact" onClick={() => { setFeedback(''); setClipViewed(false); setActive('E011'); }}>Открыть E011 →</button></div>}
           {feedback && <div className={`act4-v2-feedback ${e010Done ? 'success' : ''}`} role="status">{feedback}</div>}
         </aside>
       </div>
@@ -401,24 +417,24 @@ export function Act4EvidenceV2() {
           <div className="act4-v2-room-label"><span>DBR FORENSIC READER</span><strong>{LAB.filter((point) => state.card.includes(point.id)).length}/3</strong></div>
           <div className="act4-v2-card-object"><span>microSD</span><b>314-17</b><small>{labChecksDone ? 'PROVENANCE + INTEGRITY VERIFIED' : 'EVIDENTIARY STATUS PENDING'}</small></div>
           <EvidenceRows points={LAB} selected={state.card} onSelect={selectLab} />
-          <button
+          {!clipViewed && !e011Done && <button
             className="act4-v2-open-clip"
             disabled={!labChecksDone}
             onClick={() => { setClipViewed(true); setFeedback(''); }}
-          >{labChecksDone ? 'Просмотреть полный B-17 →' : 'Содержание не оценивается до проверки носителя'}</button>
+          >{labChecksDone ? 'Просмотреть полный B-17 →' : 'Содержание не оценивается до проверки носителя'}</button>}
         </section>
         <aside className="act4-v2-panel">
           {!labChecksDone ? <LatestFinding points={LAB} selected={state.card} /> : !clipViewed && !e011Done ? <div className="act4-v2-finding"><p className="premium-kicker">Подлинность установлена</p><h3>Теперь содержание имеет доказательную опору</h3><p>Контрольная сумма существовала до нападения, текущий файл ей соответствует, а носитель связан с архивной цепочкой B-17.</p></div> : !e011Done ? <>
             <div className="act4-v2-clip">
               <p className="premium-kicker">B-17 · полный кадр 21:42</p>
-              <h3>Спор у незакрытого участка ST3</h3>
+              <h3>Старое дело стало мотивом нападения: спор у ST3</h3>
               <p>Антон фиксирует снятое ограждение и требует остановить работу зоны. В полном кадре виден бейдж: <strong>«К. Бессонов · операционная часть»</strong>. Кирилл настаивает, чтобы мероприятие продолжили и материал об опасном участке не входил в общую публикацию.</p>
               <small>Ранний фрагмент E008 не содержал имени; индивидуализация появляется только в полном проверенном B-17.</small>
             </div>
             <Conclusion>
               <h3>Что эта запись позволяет утверждать о 2015 году?</h3>
               <button onClick={() => chooseE011('murder')}>Кирилл заранее спланировал гибель Антона.</button>
-              <button onClick={() => chooseE011('bounded')}>Кирилл знал об опасном открытом участке и решил продолжить работу; вместе с архивной цепочкой это подтверждает последующее сокрытие значения нарушения, но не умысел на убийство.</button>
+              <button onClick={() => { chooseE011('bounded'); setActive(null); clickTab('Дело'); }}>Перейти к обвинению — Кирилл знал об опасном открытом служебном маршруте и решил продолжить работу; архивная цепочка подтверждает последующее сокрытие значения нарушения, но не умысел на убийство.</button>
               <button onClick={() => chooseE011('no_link')}>Запись не связывает Кирилла с опасным участком.</button>
               <button onClick={() => chooseE011('denis')}>B-17 доказывает, что Денис смонтировал запись.</button>
             </Conclusion>
