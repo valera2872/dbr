@@ -108,6 +108,14 @@ function unique(list: string[], id: string): string[] {
   return list.includes(id) ? list : [...list, id];
 }
 
+function canonicalCard(list: string[]): string[] {
+  const canonical = ['serial', 'copy', 'clip', 'integrity'];
+  return [
+    ...canonical.filter((id) => list.includes(id)),
+    ...list.filter((id) => !canonical.includes(id))
+  ];
+}
+
 function saveState(next: Act4State, source: string): void {
   localStorage.setItem(ACT4_STORAGE_KEY, JSON.stringify(next));
   window.dispatchEvent(new CustomEvent('dbr:act4-updated', { detail: { source, complete: next.complete } }));
@@ -317,10 +325,12 @@ export function Act4EvidenceV2() {
 
       const reportButton = target.closest<HTMLButtonElement>('.react-final-panel button');
       const reportNext = nextAction && nextText.includes('Открыть итог дела');
-      if ((reportButton?.textContent?.includes('Открыть итог дела') || reportNext) && readState().complete) {
+      const latest = readState();
+      if ((reportButton?.textContent?.includes('Открыть итог дела') || reportNext) && latest.complete) {
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
+        setState(latest);
         setActive('report');
       }
     };
@@ -367,7 +377,7 @@ export function Act4EvidenceV2() {
 
   const chooseE011 = (id: string) => {
     if (id === 'bounded') {
-      const next = { ...state, card: unique(state.card, 'clip') };
+      const next = { ...state, card: canonicalCard(unique(state.card, 'clip')) };
       update(next, 'act4-v2:e011-conclusion');
       setFeedback('Принято. B-17 доказывает знание опасного состояния и решение продолжить работу; вместе с архивной цепочкой — последующее сокрытие значения нарушения. Умысел на гибель Антона не доказан.');
       return;
