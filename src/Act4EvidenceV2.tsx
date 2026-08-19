@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { ACT4_STORAGE_KEY } from './build';
 import { refreshInvestigationState } from './investigationState';
 
-type ActiveEvidence = 'E010' | 'E011' | null;
+type ActiveEvidence = 'E010' | 'E011' | 'report' | null;
 type Act4State = {
   search: string[];
   card: string[];
@@ -119,6 +119,11 @@ function allSelected(selected: string[], points: Point[]): boolean {
   return points.every((point) => selected.includes(point.id));
 }
 
+function clickTab(label: string): void {
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.premium-sidebar button, .premium-mobile-nav button'));
+  buttons.find((button) => button.textContent?.includes(label))?.click();
+}
+
 function Shell({ id, title, summary, onClose, children }: {
   id: 'E010' | 'E011';
   title: string;
@@ -172,6 +177,74 @@ function Conclusion({ children }: { children: React.ReactNode }) {
   return <section className="act4-v2-conclusion"><p className="premium-kicker">Проверка вывода</p>{children}</section>;
 }
 
+function CaseReport({ state, onClose }: { state: Act4State; onClose: () => void }) {
+  const rank = state.wrongAnswers.length === 0
+    ? 'Следователь высшей категории'
+    : state.wrongAnswers.length <= 2
+      ? 'Точная реконструкция'
+      : 'Дело раскрыто';
+
+  const copy = () => {
+    const text = [
+      'ДБР — дело №001 «Номер 314»',
+      'Илья найден живым в служебной зоне S-3.',
+      'Совокупность окна возможности, маршрута 312↔314, отсутствия открытия M3 и STR-микроследа индивидуализирует Кирилла как участника событий в 314 этой ночью.',
+      'E010 отдельно подтверждает последующую изоляцию травмированного Ильи и поиск носителя.',
+      'Проверенный B-17 доказывает, что в 2015 году Кирилл знал об опасном открытом участке и решил продолжить работу; умысел на гибель Антона не доказан.',
+      `Итог: ${rank}.`
+    ].join('\n');
+    navigator.clipboard?.writeText(text).catch(() => undefined);
+  };
+
+  return createPortal(
+    <div className="act4-report-overlay act4-v2-report-overlay" onMouseDown={onClose}>
+      <article className="act4-report" onMouseDown={(event) => event.stopPropagation()}>
+        <div className="act4-report-grid" />
+        <header>
+          <p>ДБР · ДЕЛО №001</p>
+          <span>РАССЛЕДОВАНИЕ ЗАВЕРШЕНО</span>
+          <h1>Номер 314</h1>
+          <h2>{rank}</h2>
+        </header>
+
+        <section className="act4-report-hero">
+          <strong>Илья найден живым</strong>
+          <p>Он обнаружен травмированным в S-3 и передан медикам. Обстановка комнаты доказывает умышленную изоляцию после травмы, но личность исполнителя устанавливается не этой комнатой, а независимой доказательной совокупностью.</p>
+        </section>
+
+        <div className="act4-report-columns">
+          <section>
+            <small>ЭТОЙ НОЧЬЮ</small>
+            <h3>Исполнитель установлен совокупностью</h3>
+            <p>C3 задаёт окно возможности; E006/E007 подтверждают действующий маршрут 312 ↔ 314; журнал M3 исключает альтернативный staff-вход; STR-микрослед индивидуализирует Кирилла в 314. Допрос подтверждает столкновение из-за B-17.</p>
+          </section>
+          <section>
+            <small>ДЕЛО 2015 ГОДА</small>
+            <h3>Ответственность ограничена доказанным</h3>
+            <p>Аутентифицированный B-17 показывает: Кирилл знал об опасном открытом участке и настоял на продолжении работы. Архивная цепочка подтверждает последующую минимизацию значения нарушения. Запись не доказывает заранее подготовленное убийство Антона.</p>
+          </section>
+        </div>
+
+        <section className="act4-responsibility">
+          <div><span>КИРИЛЛ</span><strong>Нападение, сокрытие Ильи и мотив B-17</strong><p>Личность закрывается независимой совокупностью, а не одной уликой.</p></div>
+          <div><span>ДЕНИС</span><strong>Сокрытие архивного материала</strong><p>Исключил B-17 из цифрового комплекта, но не связан с ночным проникновением.</p></div>
+          <div><span>ВЕРА</span><strong>Скрытая личность и источник оригинала</strong><p>Передала B-17 Илье и скрывала имя, но её возможность нападения не подтверждается.</p></div>
+        </section>
+
+        <footer>
+          <div><small>ИТОГОВАЯ ОЦЕНКА</small><strong>{rank}</strong><span>Ошибочных финальных версий: {state.wrongAnswers.length}</span></div>
+          <div className="act4-report-actions">
+            <button type="button" onClick={copy}>Скопировать итог</button>
+            <button type="button" onClick={onClose}>Закрыть</button>
+            <a href={`${import.meta.env.BASE_URL}?fresh=1`}>Начать дело заново</a>
+          </div>
+        </footer>
+      </article>
+    </div>,
+    document.body
+  );
+}
+
 export function Act4EvidenceV2() {
   const [active, setActive] = useState<ActiveEvidence>(null);
   const [state, setState] = useState(readState);
@@ -194,24 +267,47 @@ export function Act4EvidenceV2() {
   }, []);
 
   useEffect(() => {
-    const intercept = (event: MouseEvent) => {
-      const target = event.target as HTMLElement | null;
-      const card = target?.closest<HTMLElement>('[data-evidence-id]');
-      const id = card?.dataset.evidenceId;
-      if (id !== 'E010' && id !== 'E011') return;
-      if (card instanceof HTMLButtonElement && card.disabled) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
+    const openEvidence = (id: 'E010' | 'E011') => {
       setFeedback('');
       setClipViewed(false);
-      if (id === 'E011' && !readState().search.includes(E010_CONCLUSION)) {
-        setActive('E010');
-      } else {
-        setActive(id);
+      if (id === 'E011' && !readState().search.includes(E010_CONCLUSION)) setActive('E010');
+      else setActive(id);
+    };
+
+    const intercept = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target) return;
+
+      const evidenceCard = target.closest<HTMLElement>('[data-evidence-id]');
+      const evidenceId = evidenceCard?.dataset.evidenceId;
+      if ((evidenceId === 'E010' || evidenceId === 'E011') && !(evidenceCard instanceof HTMLButtonElement && evidenceCard.disabled)) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        openEvidence(evidenceId);
+        return;
+      }
+
+      const nextAction = target.closest<HTMLElement>('.react-next-action');
+      const nextText = nextAction?.textContent ?? '';
+      if (nextAction && (nextText.includes('Найти Илью') || nextText.includes('Проверить карту 314-17'))) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        openEvidence(nextText.includes('Найти Илью') ? 'E010' : 'E011');
+        return;
+      }
+
+      const reportButton = target.closest<HTMLButtonElement>('.react-final-panel button');
+      const reportNext = nextAction && nextText.includes('Открыть итог дела');
+      if ((reportButton?.textContent?.includes('Открыть итог дела') || reportNext) && readState().complete) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        setActive('report');
       }
     };
+
     document.addEventListener('click', intercept, true);
     return () => document.removeEventListener('click', intercept, true);
   }, []);
@@ -326,10 +422,12 @@ export function Act4EvidenceV2() {
               <button onClick={() => chooseE011('no_link')}>Запись не связывает Кирилла с опасным участком.</button>
               <button onClick={() => chooseE011('denis')}>B-17 доказывает, что Денис смонтировал запись.</button>
             </Conclusion>
-          </> : <div className="act4-v2-finding success"><p className="premium-kicker">Вывод E011 зафиксирован</p><h3>Историческая ответственность сформулирована в пределах доказательств</h3><p>B-17 больше не является готовым «ответом»: отдельно доказаны происхождение, неизменность, содержание и допустимый вывод.</p><button className="premium-cta compact" onClick={() => { setActive(null); document.querySelector<HTMLButtonElement>('.premium-sidebar button, .premium-mobile-nav button')?.blur(); }}>Вернуться к окончательному отчёту →</button></div>}
+          </> : <div className="act4-v2-finding success"><p className="premium-kicker">Вывод E011 зафиксирован</p><h3>Историческая ответственность сформулирована в пределах доказательств</h3><p>B-17 больше не является готовым «ответом»: отдельно доказаны происхождение, неизменность, содержание и допустимый вывод.</p><button className="premium-cta compact" onClick={() => { setActive(null); clickTab('Дело'); }}>Собрать окончательный отчёт →</button></div>}
           {feedback && <div className={`act4-v2-feedback ${e011Done ? 'success' : ''}`} role="status">{feedback}</div>}
         </aside>
       </div>
     </Shell>}
+
+    {active === 'report' && <CaseReport state={state} onClose={() => setActive(null)} />}
   </>;
 }
