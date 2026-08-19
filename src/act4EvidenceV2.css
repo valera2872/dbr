@@ -42,3 +42,8 @@
   .act4-v2-body { padding: 12px; }
   .act4-v2-modal .premium-modal-footer { position: static; }
 }
+@media (max-width: 620px) {
+  .act4-v2-modal { grid-template-rows: auto minmax(0, 1fr) !important; }
+  .act4-v2-modal .premium-modal-footer { display: none !important; }
+  .act4-v2-modal .react-case-modal-body { padding-bottom: 22px !important; }
+}
