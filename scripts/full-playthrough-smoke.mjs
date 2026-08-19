@@ -56,7 +56,18 @@ check(test.includes("saved.act4.search"), 'V2 rescue / E010-equivalent search st
   'e009:vera-device',
   'e009:vera-route',
   'Вера — реальный источник B-17',
+  'data-actor-presence-action="observe"',
+  'data-actor-presence-action="compare"',
+  'data-actor-presence-action="presence"',
+  'actor:k:presence-proven',
+  'data-present="opportunity"',
+  'data-present="m3"',
+  'data-present="presence"',
+  'data-present="threat"',
+  'Связка замкнулась',
   'data-conclusion="route"',
+  'Версия Кирилла разрушена',
+  'not.toContainText(\'старая служебная комната\')',
   'final-synthesis',
   'E006 старый план \\+ E007 свежие следы',
   'E008 цепочка оригинала \\+ E011 подлинная карта',
@@ -76,6 +87,7 @@ check(main.includes("from './completedCaseReturn'"), 'main.tsx не подклю
 check(main.includes('installCompletedCaseReturn()'), 'Мост завершённого дела не установлен');
 check(main.includes('FinalSynthesis'), 'main.tsx не монтирует player-built final synthesis');
 check(main.includes('installIdentityEvidenceV2()'), 'main.tsx не устанавливает E009 v2 identity workspace');
+check(main.includes('installActorPresenceV2()'), 'main.tsx не устанавливает actor-presence v2 proof');
 check(returnBridge.includes(".react-final-panel button"), 'Мост не открывает React-отчёт');
 check(returnBridge.includes("'.premium-sidebar button, .premium-mobile-nav button'"), 'Мост не умеет вернуться в раздел «Дело»');
 check(returnBridge.includes('MAX_FRAMES = 90'), 'Ожидание React-отчёта не ограничено');
@@ -93,4 +105,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\nFull playthrough smoke passed: a clean browser route earns the v2 parallel branches, resolves Vera through identity + opportunity evidence, rescues Ilya before confession, builds the final accusation and reaches the epilogue.');
+console.log('\nFull playthrough smoke passed: a clean browser route earns parallel branches, rescues Ilya before confession, individualizes Kirill independently, closes the v2 interrogation proof constellation, builds the final accusation and reaches the epilogue.');
