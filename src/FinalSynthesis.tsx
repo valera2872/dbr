@@ -7,14 +7,17 @@ import {
   type InvestigationSnapshot
 } from './investigationState';
 
-type ChoiceGroup = 'actor' | 'route' | 'motive' | 'past' | 'routeEvidence' | 'motiveEvidence';
+type ChoiceGroup = 'actor' | 'actorEvidence' | 'route' | 'motive' | 'past' | 'routeEvidence' | 'motiveEvidence';
 type Selections = Record<ChoiceGroup, string>;
 
 type Option = { id: string; label: string; note?: string };
 type Group = { id: ChoiceGroup; kicker: string; title: string; options: Option[] };
 
+const E011_CONCLUSION = 'e011:historical-boundary';
+
 const EMPTY: Selections = {
   actor: '',
+  actorEvidence: '',
   route: '',
   motive: '',
   past: '',
@@ -24,6 +27,7 @@ const EMPTY: Selections = {
 
 const CORRECT: Selections = {
   actor: 'kirill',
+  actorEvidence: 'constellation',
   route: 'passage',
   motive: 'card',
   past: 'unsafe-route',
@@ -44,8 +48,19 @@ const GROUPS: Group[] = [
     ]
   },
   {
+    id: 'actorEvidence',
+    kicker: '2 · Индивидуализация исполнителя',
+    title: 'Какая совокупность связывает именно Кирилла с 314 этой ночью?',
+    options: [
+      { id: 'constellation', label: 'Окно возможности C3 + действующий маршрут E006/E007 + отсутствие открытия M3 + STR-совпадение микроследа из 314' },
+      { id: 'plan-only', label: 'Только старый план E006: проход начинается со стороны 312' },
+      { id: 'str-only', label: 'Только STR-совпадение микроследа со стола в 314' },
+      { id: 'motive-only', label: 'Только конфликт Кирилла из-за публикации B-17' }
+    ]
+  },
+  {
     id: 'route',
-    kicker: '2 · Способ',
+    kicker: '3 · Способ',
     title: 'Как был преодолён «запертый номер»?',
     options: [
       { id: 'passage', label: 'Через прежний служебный проём между 312 и 314' },
@@ -56,32 +71,32 @@ const GROUPS: Group[] = [
   },
   {
     id: 'motive',
-    kicker: '3 · Цель этой ночью',
-    title: 'Зачем нападавшему был нужен Илья?',
+    kicker: '4 · Цель этой ночью',
+    title: 'Почему оригинал B-17 создавал непосредственный конфликт?',
     options: [
-      { id: 'card', label: 'Получить носитель B-17 до передачи доказательств' },
-      { id: 'planned-murder', label: 'Заранее подготовить убийство журналиста' },
-      { id: 'money', label: 'Забрать деньги, спрятанные в номере' },
-      { id: 'staging', label: 'Помочь Илье инсценировать исчезновение' }
+      { id: 'card', label: 'Публикация проверенного оригинала могла раскрыть доказанную роль Кирилла в опасном решении 2015 года' },
+      { id: 'planned-murder', label: 'Оригинал доказывал заранее подготовленное убийство Антона' },
+      { id: 'money', label: 'На карте находились данные о спрятанных деньгах' },
+      { id: 'staging', label: 'B-17 был реквизитом для инсценировки Ильи' }
     ]
   },
   {
     id: 'past',
-    kicker: '4 · Что доказано про 2015 год',
-    title: 'Какова доказанная роль Кирилла в старом деле?',
+    kicker: '5 · Предел ответственности за 2015 год',
+    title: 'Что именно допустимо утверждать после E011?',
     options: [
-      { id: 'unsafe-route', label: 'Он знал об опасном открытом служебном маршруте и требовал продолжить мероприятие' },
-      { id: 'anton-murder', label: 'Он заранее спланировал гибель Антона Белова' },
-      { id: 'stole-original', label: 'Он лично украл B-17 из архива после гибели Антона' },
-      { id: 'no-link', label: 'Материалы 2015 года вообще не связывают его с происшествием' }
+      { id: 'unsafe-route', label: 'Кирилл знал об опасном открытом участке и решил продолжить работу; архивная цепочка подтверждает последующую минимизацию нарушения, но не умысел на гибель Антона' },
+      { id: 'anton-murder', label: 'Кирилл заранее спланировал гибель Антона Белова' },
+      { id: 'stole-original', label: 'Кирилл лично украл B-17 из семейного архива после гибели Антона' },
+      { id: 'no-link', label: 'Проверенный B-17 вообще не связывает Кирилла с опасным участком' }
     ]
   },
   {
     id: 'routeEvidence',
-    kicker: '5 · Обоснование маршрута',
-    title: 'Какая пара материалов доказывает способ проникновения?',
+    kicker: '6 · Обоснование маршрута',
+    title: 'Какая пара материалов доказывает существование и использование пути?',
     options: [
-      { id: 'e006-e007', label: 'E006 старый план + E007 свежие следы в 312' },
+      { id: 'e006-e007', label: 'E006 старый план + E007 свежие физические признаки использования' },
       { id: 'e003-e004', label: 'E003 журнал замка + E004 коридорная камера' },
       { id: 'e001-e005', label: 'E001 окно/комната + E005 телефон у лифта' },
       { id: 'e008-e009', label: 'E008 архив B-17 + E009 документы Веры' }
@@ -89,10 +104,10 @@ const GROUPS: Group[] = [
   },
   {
     id: 'motiveEvidence',
-    kicker: '6 · Обоснование мотива',
-    title: 'Какая пара материалов связывает нападение с B-17?',
+    kicker: '7 · Обоснование мотива',
+    title: 'Какая связка устанавливает происхождение оригинала и его проверенное содержание?',
     options: [
-      { id: 'e008-e011', label: 'E008 цепочка оригинала + E011 подлинная карта B-17' },
+      { id: 'e008-e011', label: 'E008 цепочка происхождения B-17 + E011 аутентифицированный оригинал и ограниченный исторический вывод' },
       { id: 'e003-e004', label: 'E003 журнал замка + E004 камера' },
       { id: 'e006-e007', label: 'E006 план + E007 панель и следы' },
       { id: 'e009-e005', label: 'E009 личность Веры + E005 телефон у лифта' }
@@ -106,22 +121,25 @@ function allChosen(selections: Selections): boolean {
 
 function firstProblem(selections: Selections): string | null {
   if (selections.actor !== CORRECT.actor) {
-    return 'Исполнитель не согласуется одновременно с маршрутом из номера 312, допросом и физическими следами этой ночи.';
+    return 'Выбранный исполнитель не выдерживает одновременную проверку окна возможности, маршрута, альтернативного доступа и индивидуального микроследа.';
+  }
+  if (selections.actorEvidence !== CORRECT.actorEvidence) {
+    return 'Одной улики недостаточно для индивидуализации. План доказывает топологию, STR — присутствие, мотив — причину, но только независимая совокупность закрывает вопрос «почему именно Кирилл». ';
   }
   if (selections.route !== CORRECT.route) {
-    return 'Выбранный способ не объясняет одновременно непрерывный журнал замка, закрытое окно и физическую связь 312 ↔ 314.';
+    return 'Выбранный способ не объясняет одновременно непрерывный журнал главной двери, закрытое окно и физическую связь 312 ↔ 314.';
   }
   if (selections.routeEvidence !== CORRECT.routeEvidence) {
-    return 'Эта пара материалов исключает часть версий, но не доказывает сам путь проникновения. Нужны источник о конструкции и независимое подтверждение её использования этой ночью.';
+    return 'Эта пара материалов исключает часть версий, но не доказывает сам путь. Нужны независимые источники о конструкции и её использовании этой ночью.';
   }
   if (selections.motive !== CORRECT.motive) {
-    return 'Эта цель не объясняет пустой футляр Ильи, историю оригинала B-17 и действия Кирилла после конфликта.';
+    return 'Эта цель не согласуется с происхождением оригинала B-17, временем контрольной копии и тем, что проверенная запись действительно ставила под угрозу.';
   }
   if (selections.motiveEvidence !== CORRECT.motiveEvidence) {
-    return 'Эта пара не связывает объект нападения с подлинным содержанием B-17. Отделите доказательства маршрута от доказательств мотива.';
+    return 'Эта связка не устанавливает одновременно происхождение носителя и доказательную силу его содержания. Отделите маршрут от происхождения и аутентификации B-17.';
   }
   if (selections.past !== CORRECT.past) {
-    return 'Финальный вывод приписывает Кириллу больше или меньше, чем действительно подтверждает запись B-17. Формулируйте только доказанную ответственность.';
+    return 'Вывод выходит за доказательный предел E011. B-17 фиксирует знание опасного состояния и решение продолжить работу, но не доказывает заранее подготовленное убийство Антона.';
   }
   return null;
 }
@@ -132,6 +150,12 @@ function readAct4(): Record<string, unknown> {
   } catch {
     return {};
   }
+}
+
+function e011BoundaryReady(): boolean {
+  const raw = readAct4();
+  const card = Array.isArray(raw.card) ? raw.card.filter((item): item is string => typeof item === 'string') : [];
+  return card.includes(E011_CONCLUSION);
 }
 
 function finishCase(snapshot: InvestigationSnapshot, wrongAttemptId: string | null): void {
@@ -150,7 +174,7 @@ function finishCase(snapshot: InvestigationSnapshot, wrongAttemptId: string | nu
     complete: true,
     completedAt: new Date().toISOString()
   }));
-  window.dispatchEvent(new CustomEvent('dbr:act4-updated', { detail: { complete: true, source: 'final-synthesis' } }));
+  window.dispatchEvent(new CustomEvent('dbr:act4-updated', { detail: { complete: true, source: 'final-synthesis-v2' } }));
 }
 
 function recordWrongAttempt(snapshot: InvestigationSnapshot, attemptId: string): void {
@@ -160,7 +184,7 @@ function recordWrongAttempt(snapshot: InvestigationSnapshot, attemptId: string):
     : snapshot.act4.wrongAnswers;
   if (wrongAnswers.includes(attemptId)) return;
   localStorage.setItem(ACT4_STORAGE_KEY, JSON.stringify({ ...raw, wrongAnswers: [...wrongAnswers, attemptId] }));
-  window.dispatchEvent(new CustomEvent('dbr:act4-updated', { detail: { source: 'final-synthesis-wrong' } }));
+  window.dispatchEvent(new CustomEvent('dbr:act4-updated', { detail: { source: 'final-synthesis-v2-wrong' } }));
 }
 
 function openExistingReport(): void {
@@ -177,7 +201,7 @@ export function FinalSynthesis() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
 
-  const active = snapshot.derived.cardCount >= 4 && !snapshot.act4.complete;
+  const active = e011BoundaryReady() && !snapshot.act4.complete;
 
   useEffect(() => subscribeInvestigationState((state) => setSnapshot(state)), []);
 
@@ -213,7 +237,7 @@ export function FinalSynthesis() {
 
   const submit = () => {
     if (!allChosen(selections)) {
-      setFeedback('Соберите все шесть частей версии. Пропущенный элемент нельзя заменить общей догадкой.');
+      setFeedback('Соберите все семь частей версии. Пропущенный элемент нельзя заменить общей догадкой.');
       return;
     }
 
@@ -222,7 +246,7 @@ export function FinalSynthesis() {
       const nextAttempt = attempt + 1;
       setAttempt(nextAttempt);
       setFeedback(problem);
-      recordWrongAttempt(snapshot, `synthesis-${nextAttempt}`);
+      recordWrongAttempt(snapshot, `synthesis-v2-${nextAttempt}`);
       return;
     }
 
@@ -237,9 +261,9 @@ export function FinalSynthesis() {
         <div>
           <p>Окончательный отчёт · самостоятельная реконструкция</p>
           <h2>Соберите обвинение из доказанных частей</h2>
-          <span>Не выбирайте самый длинный готовый ответ. Зафиксируйте отдельно исполнителя, способ, цель, предел ответственности и доказательства двух ключевых связок.</span>
+          <span>Отдельно установите исполнителя, доказательства его индивидуализации, способ, цель, предел исторической ответственности и источники двух ключевых связок.</span>
         </div>
-        <div className="final-synthesis-progress"><b>{chosenCount}/6</b><small>элементов версии</small></div>
+        <div className="final-synthesis-progress"><b>{chosenCount}/7</b><small>элементов версии</small></div>
       </header>
 
       <div className="final-synthesis-groups">
