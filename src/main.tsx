@@ -11,6 +11,7 @@ import PremiumApp from './PremiumApp';
 import { ReactCaseExtension } from './ReactCaseExtension';
 import { PlayerGuidance } from './PlayerGuidance';
 import { FinalSynthesis } from './FinalSynthesis';
+import { Act4EvidenceV2 } from './Act4EvidenceV2';
 import { AppErrorBoundary } from './AppErrorBoundary';
 import { mountActorStudio } from './actorStudio';
 import { mountActorStudioGuide } from './actorStudioGuide';
@@ -44,6 +45,7 @@ import './livingSuspect.css';
 import './actorStudio.css';
 import './actorStudioGuide.css';
 import './act4FinalOperation.css';
+import './act4EvidenceV2.css';
 import './stabilityPass.css';
 import './commercialShell.css';
 import './commercialMobile.css';
@@ -98,6 +100,7 @@ if (actorStudio.mounted) {
         <PremiumApp />
         <ReactCaseExtension />
         <PlayerGuidance />
+        <Act4EvidenceV2 />
         <FinalSynthesis />
       </AppErrorBoundary>
     </React.StrictMode>
