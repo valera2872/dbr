@@ -32,10 +32,12 @@ type GuideRoute = 'case' | 'materials' | 'evidence' | 'contradiction';
 // The old passage/Anton question ids remain in storage for compatibility, but are not offered to new players.
 const QUESTION_IDS = ['alibi'];
 const SOURCE_BY_EVIDENCE: Record<string, string> = {
+  opportunity: 'E004',
   plan: 'E006',
   panel: 'E007',
   tracks: 'E007',
   fibres: 'E007',
+  threat: 'E002',
   audio: 'E008',
   card: 'E008'
 };
@@ -78,17 +80,16 @@ function evidenceProgress(act2: Act2State, act3: Act3State) {
 function nextMissingEvidence(progress: ReturnType<typeof evidenceProgress>): string {
   if (!progress.plan) return 'архивный план этажа';
   if (!progress.panel || !progress.routeTrace) return 'осмотр номера 312';
-  if (!progress.audio) return 'архивная запись Антона';
+  if (!progress.audio) return 'архивный контекст B-17';
   return 'материалы собраны';
 }
 
 function nextPresentation(presented: string[]): { id: string; label: string } | null {
   if (!presented.includes('plan')) return { id: 'plan', label: 'архивный план' };
-  if (!presented.includes('panel')) return { id: 'panel', label: 'свежие винты панели' };
+  if (!presented.includes('panel')) return { id: 'panel', label: 'свежие следы панели' };
   if (!presented.includes('tracks') && !presented.includes('fibres')) {
     return { id: 'tracks', label: 'физический след маршрута' };
   }
-  if (!presented.includes('audio')) return { id: 'audio', label: 'запись разговора Антона' };
   return null;
 }
 
@@ -106,7 +107,7 @@ function phaseMarkup(
     <ol class="interrogation-guide-steps" aria-label="Путь допроса">
       <li class="${questionState}"><span>1</span><div><small>Сначала</small><strong>Зафиксировать алиби</strong><em>${questionsDone}/1 базовый вопрос</em></div></li>
       <li class="${evidenceState}"><span>2</span><div><small>Затем</small><strong>Найти и предъявить основания</strong><em>${foundEvidence}/4 опорных факта</em></div></li>
-      <li class="${contradictionState}"><span>3</span><div><small>Финал допроса</small><strong>Разрушить алиби</strong><em>${complete ? 'выполнено' : ready ? 'доступно' : 'заблокировано'}</em></div></li>
+      <li class="${contradictionState}"><span>3</span><div><small>Финал допроса</small><strong>Проверить версию</strong><em>${complete ? 'выполнено' : ready ? 'доступно' : 'заблокировано'}</em></div></li>
     </ol>`;
 }
 
@@ -120,16 +121,15 @@ function guidanceCopy(
   const ready = (interrogation.asked ?? []).includes('alibi')
     && presented.includes('plan')
     && presented.includes('panel')
-    && (presented.includes('tracks') || presented.includes('fibres'))
-    && presented.includes('audio');
+    && (presented.includes('tracks') || presented.includes('fibres'));
 
   if (interrogation.complete) {
     return {
       kicker: 'Допрос завершён',
-      title: 'Кирилл указал новое место поиска',
-      body: 'Закройте протокол и переходите к материалам: теперь открывается спасательная операция.',
+      title: 'Ключевое противоречие доказано',
+      body: 'Признание подтверждает вход Кирилла в 314 и конфликт, но не создаёт местонахождение Ильи. Если поиск ещё не завершён, его основание должно быть получено независимо из телефона у служебного лифта, топологии сети и следов её использования.',
       route: 'materials',
-      button: 'Перейти к спасательной операции →'
+      button: 'Вернуться к материалам →'
     };
   }
 
@@ -145,7 +145,7 @@ function guidanceCopy(
     return {
       kicker: 'Базовое алиби зафиксировано',
       title: 'Дальше нужны факты, а не догадки',
-      body: 'На этом этапе следователь ещё не знает ни о старом проходе, ни о содержании архивной записи. Закройте допрос и сформулируйте промежуточный отчёт №1. Новые линии допроса возникнут только из найденных доказательств.',
+      body: 'На этом этапе следователь ещё не знает ни о старом проходе, ни о содержании старого архива. Закройте допрос и сформулируйте промежуточный отчёт №1. Новые линии допроса возникнут только из найденных доказательств.',
       route: 'case',
       button: 'Закрыть допрос и открыть отчёт №1 →'
     };
@@ -167,20 +167,18 @@ function guidanceCopy(
       kicker: 'Основания собраны',
       title: 'Теперь вопросы рождаются из доказательств',
       body: next
-        ? `Следующее предъявление: ${next.label}. Порядок важен: план раскрывает существование прохода → панель и следы доказывают его использование → запись связывает Кирилла со знанием маршрута.`
-        : 'Основная цепочка предъявлена. Перейдите к фиксации противоречия.',
-      route: next ? 'evidence' : 'contradiction',
-      button: next ? 'Показать следующее доказательство →' : 'Перейти к противоречию →',
+        ? `Можно предъявить ${next.label}. В ключевом допросе правильный порядок не задаётся: каждое доказательство должно выдержать собственное возражение.`
+        : 'Основная маршрутная связка предъявлена. Продолжайте проверять версии другими уже добытыми доказательствами.',
+      route: next ? 'evidence' : undefined,
+      button: next ? 'Показать материал →' : undefined,
       targetEvidence: next?.id
     };
   }
 
   return {
-    kicker: 'Этап 3 из 3',
-    title: 'Логическая цепочка собрана',
-    body: 'Теперь выберите вывод, который связывает заявленное алиби Кирилла с уже доказанным скрытым маршрутом и физическими следами этой ночи.',
-    route: 'contradiction',
-    button: 'Зафиксировать противоречие →'
+    kicker: 'Маршрутная связка собрана',
+    title: 'Не превращайте маршрут в виновного',
+    body: 'Существование и использование маршрута ещё не индивидуализируют человека. Для ключевого вывода потребуются независимые доказательные семьи.',
   };
 }
 
@@ -249,8 +247,7 @@ function renderGuidance(): void {
   const ready = (interrogation.asked ?? []).includes('alibi')
     && presented.includes('plan')
     && presented.includes('panel')
-    && (presented.includes('tracks') || presented.includes('fibres'))
-    && presented.includes('audio');
+    && (presented.includes('tracks') || presented.includes('fibres'));
   const copy = guidanceCopy(core, questionsDone, evidence, interrogation);
 
   let guide = shell.querySelector<HTMLElement>('.interrogation-guide');
