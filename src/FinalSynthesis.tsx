@@ -10,7 +10,7 @@ import {
 type ChoiceGroup = 'actor' | 'route' | 'motive' | 'past' | 'routeEvidence' | 'motiveEvidence';
 type Selections = Record<ChoiceGroup, string>;
 
-type Option = { id: string; label: string; note?: string };
+type Option = { id: string; label: string };
 type Group = { id: ChoiceGroup; kicker: string; title: string; options: Option[] };
 
 const EMPTY: Selections = {
@@ -57,9 +57,9 @@ const GROUPS: Group[] = [
   {
     id: 'motive',
     kicker: '3 · Цель этой ночью',
-    title: 'Зачем нападавшему был нужен Илья?',
+    title: 'Зачем нападавшему был нужен Илья и B-17?',
     options: [
-      { id: 'card', label: 'Получить носитель B-17 до передачи доказательств' },
+      { id: 'card', label: 'Получить носитель B-17 до публикации проверенного оригинала, раскрывающего доказанную роль Кирилла в 2015 году' },
       { id: 'planned-murder', label: 'Заранее подготовить убийство журналиста' },
       { id: 'money', label: 'Забрать деньги, спрятанные в номере' },
       { id: 'staging', label: 'Помочь Илье инсценировать исчезновение' }
@@ -67,13 +67,13 @@ const GROUPS: Group[] = [
   },
   {
     id: 'past',
-    kicker: '4 · Что доказано про 2015 год',
+    kicker: '4 · Предел ответственности за 2015 год',
     title: 'Какова доказанная роль Кирилла в старом деле?',
     options: [
-      { id: 'unsafe-route', label: 'Он знал об опасном открытом служебном маршруте и требовал продолжить мероприятие' },
+      { id: 'unsafe-route', label: 'Он знал об опасном открытом служебном маршруте и решил продолжить работу; архивная цепочка подтверждает последующую минимизацию нарушения, но не умысел на гибель Антона' },
       { id: 'anton-murder', label: 'Он заранее спланировал гибель Антона Белова' },
-      { id: 'stole-original', label: 'Он лично украл B-17 из архива после гибели Антона' },
-      { id: 'no-link', label: 'Материалы 2015 года вообще не связывают его с происшествием' }
+      { id: 'stole-original', label: 'Он лично украл B-17 из семейного архива после гибели Антона' },
+      { id: 'no-link', label: 'Проверенный B-17 вообще не связывает его с опасным участком' }
     ]
   },
   {
@@ -81,7 +81,7 @@ const GROUPS: Group[] = [
     kicker: '5 · Обоснование маршрута',
     title: 'Какая пара материалов доказывает способ проникновения?',
     options: [
-      { id: 'e006-e007', label: 'E006 старый план + E007 свежие следы в 312' },
+      { id: 'e006-e007', label: 'E006 старый план + E007 свежие следы использования' },
       { id: 'e003-e004', label: 'E003 журнал замка + E004 коридорная камера' },
       { id: 'e001-e005', label: 'E001 окно/комната + E005 телефон у лифта' },
       { id: 'e008-e009', label: 'E008 архив B-17 + E009 документы Веры' }
@@ -92,7 +92,7 @@ const GROUPS: Group[] = [
     kicker: '6 · Обоснование мотива',
     title: 'Какая пара материалов связывает нападение с B-17?',
     options: [
-      { id: 'e008-e011', label: 'E008 цепочка оригинала + E011 подлинная карта B-17' },
+      { id: 'e008-e011', label: 'E008 цепочка оригинала + E011 подлинная карта B-17 после проверки хэша и целостности' },
       { id: 'e003-e004', label: 'E003 журнал замка + E004 камера' },
       { id: 'e006-e007', label: 'E006 план + E007 панель и следы' },
       { id: 'e009-e005', label: 'E009 личность Веры + E005 телефон у лифта' }
@@ -106,22 +106,22 @@ function allChosen(selections: Selections): boolean {
 
 function firstProblem(selections: Selections): string | null {
   if (selections.actor !== CORRECT.actor) {
-    return 'Исполнитель не согласуется одновременно с маршрутом из номера 312, допросом и физическими следами этой ночи.';
+    return 'Выбранный исполнитель не выдерживает одновременную проверку окна возможности, маршрута, альтернативного доступа и индивидуального микроследа.';
   }
   if (selections.route !== CORRECT.route) {
-    return 'Выбранный способ не объясняет одновременно непрерывный журнал замка, закрытое окно и физическую связь 312 ↔ 314.';
+    return 'Выбранный способ не объясняет одновременно непрерывный журнал главной двери, закрытое окно и физическую связь 312 ↔ 314.';
   }
   if (selections.routeEvidence !== CORRECT.routeEvidence) {
-    return 'Эта пара материалов исключает часть версий, но не доказывает сам путь проникновения. Нужны источник о конструкции и независимое подтверждение её использования этой ночью.';
+    return 'Эта пара материалов исключает часть версий, но не доказывает сам путь проникновения. Нужны независимые источники о конструкции и её использовании этой ночью.';
   }
   if (selections.motive !== CORRECT.motive) {
-    return 'Эта цель не объясняет пустой футляр Ильи, историю оригинала B-17 и действия Кирилла после конфликта.';
+    return 'Эта цель не согласуется с происхождением оригинала B-17, временем контрольной копии и тем, что проверенная запись действительно ставила под угрозу.';
   }
   if (selections.motiveEvidence !== CORRECT.motiveEvidence) {
-    return 'Эта пара не связывает объект нападения с подлинным содержанием B-17. Отделите доказательства маршрута от доказательств мотива.';
+    return 'Эта связка не устанавливает одновременно происхождение носителя и доказательную силу его содержания. Отделите маршрут от происхождения и аутентификации B-17.';
   }
   if (selections.past !== CORRECT.past) {
-    return 'Финальный вывод приписывает Кириллу больше или меньше, чем действительно подтверждает запись B-17. Формулируйте только доказанную ответственность.';
+    return 'Вывод выходит за доказательный предел E011. B-17 фиксирует знание опасного состояния и решение продолжить работу, но не доказывает заранее подготовленное убийство Антона.';
   }
   return null;
 }
@@ -132,6 +132,12 @@ function readAct4(): Record<string, unknown> {
   } catch {
     return {};
   }
+}
+
+function finalEvidenceReady(): boolean {
+  const raw = readAct4();
+  const card = Array.isArray(raw.card) ? raw.card.filter((item): item is string => typeof item === 'string') : [];
+  return ['serial', 'copy', 'integrity', 'clip'].every((id) => card.includes(id));
 }
 
 function finishCase(snapshot: InvestigationSnapshot, wrongAttemptId: string | null): void {
@@ -150,7 +156,7 @@ function finishCase(snapshot: InvestigationSnapshot, wrongAttemptId: string | nu
     complete: true,
     completedAt: new Date().toISOString()
   }));
-  window.dispatchEvent(new CustomEvent('dbr:act4-updated', { detail: { complete: true, source: 'final-synthesis' } }));
+  window.dispatchEvent(new CustomEvent('dbr:act4-updated', { detail: { complete: true, source: 'final-synthesis-v2' } }));
 }
 
 function recordWrongAttempt(snapshot: InvestigationSnapshot, attemptId: string): void {
@@ -160,7 +166,7 @@ function recordWrongAttempt(snapshot: InvestigationSnapshot, attemptId: string):
     : snapshot.act4.wrongAnswers;
   if (wrongAnswers.includes(attemptId)) return;
   localStorage.setItem(ACT4_STORAGE_KEY, JSON.stringify({ ...raw, wrongAnswers: [...wrongAnswers, attemptId] }));
-  window.dispatchEvent(new CustomEvent('dbr:act4-updated', { detail: { source: 'final-synthesis-wrong' } }));
+  window.dispatchEvent(new CustomEvent('dbr:act4-updated', { detail: { source: 'final-synthesis-v2-wrong' } }));
 }
 
 function openExistingReport(): void {
@@ -177,7 +183,7 @@ export function FinalSynthesis() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
 
-  const active = snapshot.derived.cardCount >= 4 && !snapshot.act4.complete;
+  const active = finalEvidenceReady() && !snapshot.act4.complete;
 
   useEffect(() => subscribeInvestigationState((state) => setSnapshot(state)), []);
 
@@ -237,12 +243,23 @@ export function FinalSynthesis() {
         <div>
           <p>Окончательный отчёт · самостоятельная реконструкция</p>
           <h2>Соберите обвинение из доказанных частей</h2>
-          <span>Не выбирайте самый длинный готовый ответ. Зафиксируйте отдельно исполнителя, способ, цель, предел ответственности и доказательства двух ключевых связок.</span>
+          <span>Шесть решений остаются за вами. Связка, индивидуализирующая Кирилла, уже заработана ранее в следствии и показана отдельно, чтобы финал не заставлял повторять тот же тест второй раз.</span>
         </div>
         <div className="final-synthesis-progress"><b>{chosenCount}/6</b><small>элементов версии</small></div>
       </header>
 
       <div className="final-synthesis-groups">
+        <article className="final-synthesis-group established-proof">
+          <p>Установленная связка · проверено до финала</p>
+          <h3>Почему именно Кирилл?</h3>
+          <div className="final-synthesis-options">
+            <button type="button" className="chosen" disabled aria-label="Доказательная совокупность индивидуализации Кирилла установлена">
+              <span>✓</span>
+              <strong>Окно возможности C3 + действующий маршрут E006/E007 + отсутствие открытия M3 + STR-совпадение микроследа из 314. Ни один элемент по отдельности не заменяет эту совокупность.</strong>
+            </button>
+          </div>
+        </article>
+
         {GROUPS.map((group) => (
           <article className="final-synthesis-group" key={group.id}>
             <p>{group.kicker}</p>
