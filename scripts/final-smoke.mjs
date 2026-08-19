@@ -45,7 +45,11 @@ check(sw.includes(cacheVersion), `Service worker не использует cache
   'dist/index.html'
 ].forEach((file) => check(exists(file), `Отсутствует ${file}`));
 
-check(interrogation.includes('старая служебная комната'), 'Допрос не открывает направление поиска E010');
+check(interrogation.includes("const M3_LOG = 'v2:m3-log'"), 'Допрос v2 не проверяет альтернативный доступ M3');
+check(interrogation.includes("const PRESENCE_PROVEN = 'actor:k:presence-proven'"), 'Допрос v2 не требует индивидуального присутствия Кирилла в 314');
+check(interrogation.includes("has('opportunity')") && interrogation.includes("has('threat')") && interrogation.includes("has('card')"), 'Допрос v2 не замыкает opportunity + motive доказательные семьи');
+check(!interrogation.includes('Открыто направление поиска — старая служебная комната'), 'Допрос снова делает признание источником спасательной ветки E010');
+check(interrogation.includes('Местонахождение Ильи') && interrogation.includes('не создаются этим признанием'), 'Допрос не фиксирует границу между признанием и независимым поиском Ильи');
 check(reactCore.includes("id: 'kirill_responsibility'"), 'Нет корректной финальной формулировки ответственности');
 check(reactCore.includes('Илья найден живым'), 'Нет результата спасательной операции');
 check(reactCore.includes('РАССЛЕДОВАНИЕ ЗАВЕРШЕНО'), 'Нет итогового отчёта дела');
@@ -63,4 +67,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`\nFinal operation smoke passed: E001–E011, rescue, card verification, accusation and epilogue remain present in React Core build ${pkg.version}.`);
+console.log(`\nFinal operation smoke passed: E001–E011, independent rescue, Kirill proof gate, card verification, accusation and epilogue remain present in React Core build ${pkg.version}.`);
