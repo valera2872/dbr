@@ -9,11 +9,10 @@ let scheduled = false;
 function keyInterrogation(state: InvestigationSnapshot): boolean {
   // Case 001 v2 allows Ilya to be rescued before Kirill is confronted. That can
   // populate Act IV search state early, so the legacy linear derived.stage may
-  // already read as an Act IV stage. The interrogation mode must follow the
-  // actual proof gate instead: Act III is complete, Kirill is not.
-  return state.core.phase === 'hq'
-    && state.act3.complete
-    && !state.interrogation.complete;
+  // already read as an Act IV stage. The interrogation mode follows the actual
+  // proof gate and remains authoritative after completion so legacy guidance
+  // cannot reintroduce confession-gated rescue copy.
+  return state.core.phase === 'hq' && state.act3.complete;
 }
 
 function midInvestigationInterrogation(state: InvestigationSnapshot): boolean {
@@ -52,6 +51,17 @@ function removeGuidedEvidenceHighlight(shell: HTMLElement): void {
 }
 
 function briefingMarkup(mode: 'mid' | 'key', state: InvestigationSnapshot): string {
+  if (mode === 'key' && state.interrogation.complete) {
+    return `<section class="interrogation-agency-brief" data-interrogation-agency-mode="key-complete">
+      <div class="interrogation-agency-copy">
+        <small>Допрос · доказательная граница</small>
+        <strong>Ключевое противоречие доказано</strong>
+        <p>Кирилл признал вход в 314 и конфликт после 00:17 только после того, как связка уже доказала возможность, использование маршрута, отсутствие открытия M3, его физическое присутствие и мотив. Это признание не является источником местонахождения Ильи и не заменяет доказательства событий 2015 года.</p>
+      </div>
+      <div class="interrogation-agency-status"><span>Статус</span><b>✓</b><em>Признание подтверждает, а не создаёт доказательства</em></div>
+    </section>`;
+  }
+
   if (mode === 'key') {
     const presented = state.interrogation.presented.length;
     return `<section class="interrogation-agency-brief" data-interrogation-agency-mode="key">
@@ -91,7 +101,7 @@ function renderBrief(shell: HTMLElement, mode: 'mid' | 'key' | 'off', state: Inv
     guide.style.display = 'none';
   }
 
-  const signature = `${mode}:${state.interrogation.asked.join('|')}:${state.interrogation.presented.join('|')}`;
+  const signature = `${mode}:${state.interrogation.complete ? 'complete' : 'open'}:${state.interrogation.asked.join('|')}:${state.interrogation.presented.join('|')}`;
   if (old?.dataset.signature === signature) return;
   old?.remove();
 
@@ -103,7 +113,7 @@ function renderBrief(shell: HTMLElement, mode: 'mid' | 'key' | 'off', state: Inv
   shell.querySelector('.interrogation-header')?.insertAdjacentElement('afterend', brief);
 }
 
-function rewriteEvidenceCaption(shell: HTMLElement, mode: 'mid' | 'key' | 'off'): void {
+function rewriteEvidenceCaption(shell: HTMLElement, mode: 'mid' | 'key' | 'off', state: InvestigationSnapshot): void {
   const note = shell.querySelector<HTMLElement>('.interrogation-control-title small');
   if (!note) return;
 
@@ -116,9 +126,11 @@ function rewriteEvidenceCaption(shell: HTMLElement, mode: 'mid' | 'key' | 'off')
   }
 
   if (!note.dataset.agencyOriginal) note.dataset.agencyOriginal = note.textContent ?? '';
-  note.textContent = mode === 'key'
-    ? 'Выберите доказательство самостоятельно. Кирилл будет оспаривать слабые связки.'
-    : 'Показаны только уже найденные материалы. Будущие доказательства скрыты.';
+  note.textContent = state.interrogation.complete
+    ? 'Признание не расширяет границы уже доказанных фактов.'
+    : mode === 'key'
+      ? 'Выберите доказательство самостоятельно. Кирилл будет оспаривать слабые связки.'
+      : 'Показаны только уже найденные материалы. Будущие доказательства скрыты.';
 }
 
 function apply(state: InvestigationSnapshot): void {
@@ -135,8 +147,8 @@ function apply(state: InvestigationSnapshot): void {
       : 'off';
 
   renderBrief(shell, mode, state);
-  rewriteEvidenceCaption(shell, mode);
-  shell.dataset.investigationAgency = mode;
+  rewriteEvidenceCaption(shell, mode, state);
+  shell.dataset.investigationAgency = state.interrogation.complete && mode === 'key' ? 'key-complete' : mode;
 }
 
 function schedule(reason: string): void {
